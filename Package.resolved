@@ -1,0 +1,43 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "HDXLAlgebraicUtilities",
+        "repositoryURL": "https://github.com/plx/HDXLAlgebraicUtilities",
+        "state": {
+          "branch": null,
+          "revision": "4f984d0c1141ca13518d1ec4acd6cb749176d9df",
+          "version": "0.0.4"
+        }
+      },
+      {
+        "package": "HDXLCommonUtilities",
+        "repositoryURL": "https://github.com/plx/HDXLCommonUtilities",
+        "state": {
+          "branch": null,
+          "revision": "9c6cff106fbdf8d26fb2afa4557a27802cbfc87c",
+          "version": "0.0.43"
+        }
+      },
+      {
+        "package": "HDXLTestingUtilities",
+        "repositoryURL": "https://github.com/plx/HDXLTestingUtilities",
+        "state": {
+          "branch": null,
+          "revision": "29588df1f073b43137a21d5c20c0267299a0147d",
+          "version": "0.0.8"
+        }
+      },
+      {
+        "package": "swift-numerics",
+        "repositoryURL": "https://github.com/apple/swift-numerics",
+        "state": {
+          "branch": null,
+          "revision": "5dfc460876510988560170cee3702ab01b89587a",
+          "version": "0.0.5"
+        }
+      }
+    ]
+  },
+  "version": 1
+}
