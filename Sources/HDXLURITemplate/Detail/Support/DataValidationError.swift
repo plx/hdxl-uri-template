@@ -1,9 +1,4 @@
-//
-//  DataValidationError.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: DataValidationError - Definition
@@ -25,16 +20,14 @@ import HDXLCommonUtilities
 /// repair non-nan/infinte values by clipping them to that bound (while still
 /// failing unconditionally on nan/inf)...whereas a non-empty string newtype might
 /// just fail, b/c there's no obvious choice of a default non-empty string.
-public struct DataValidationError<T> : Error {
+public struct DataValidationError<T> : Error where T: Sendable {
   
   @usableFromInline
   internal var _repairSuggestion: T?
   
   @inlinable
   public var repairSuggestion: T? {
-    get {
-      return self._repairSuggestion
-    }
+    _repairSuggestion
   }
   
   @usableFromInline
@@ -48,12 +41,12 @@ public struct DataValidationError<T> : Error {
     forType type: T.Type,
     problemDescription: String? = nil,
     repairDescription: String? = nil,
-    repairSuggestion: T? = nil) {
+    repairSuggestion: T? = nil
+  ) {
     self._problemDescription = problemDescription
     self._repairDescription = repairDescription
     self._repairSuggestion = repairSuggestion
   }
   
 }
-
 

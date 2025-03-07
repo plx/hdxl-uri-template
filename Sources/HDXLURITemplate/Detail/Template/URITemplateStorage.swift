@@ -1,9 +1,5 @@
-//
-//  URITemplateStorage.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
+import os.lock
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateStorage - Definition
@@ -11,6 +7,34 @@ import HDXLCommonUtilities
 
 @usableFromInline
 internal final class URITemplateStorage {
+  
+  // ------------------------------------------------------------------------ //
+  // MARK: Fields
+  // ------------------------------------------------------------------------ //
+  
+  @usableFromInline
+  internal var components: [URITemplateComponent] {
+    didSet {
+      guard components != oldValue else {
+        return
+      }
+      resetCachedDerivedProperties()
+    }
+  }
+  
+  /// Used to coordinate access to cached fields, which is necessary b/c they may be mutated w/out exclusive ownership.
+  ///
+  /// For `components` we can assume it's only ever mutated by an exclusive owner, b/c this class is storage for
+  /// a struct implementing the standard COW-style semantics.
+  ///
+  /// For the cached properties, however, these are getting created-and-cached via (non-mutating) getters on the struct,
+  /// which means they're not *necessarily* going to have exclusive ownership, which introduces the risk for problems
+  /// (and does so *even though* the values-to-be-cached should be identical, given what we said about `components`).
+  ///
+  /// As such, we use this lock to protect the cached fields during (a) reads and (b) updates.
+  /// TODO: see how it'd look to setup a cached-fields struct, migrate it into the struct, and keep all the cached state together.
+  @usableFromInline
+  internal var cachedFieldLock: OSAllocatedUnfairLock<Void>
   
   // ------------------------------------------------------------------------ //
   // MARK: `init`
@@ -25,9 +49,9 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal convenience init(component: URITemplateComponent) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(component.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(component.isValid)
+#endif
     self.init(
       components: [component]
     )
@@ -35,11 +59,12 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal required init(components: [URITemplateComponent]) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(components.allElementsAreValid)
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(components.allSatisfy(\.isValid))
+    defer { pedanticAssert(isValid) }
+#endif
     self.components = components
+    self.cachedFieldLock = OSAllocatedUnfairLock()
   }
   
   @inlinable
@@ -52,24 +77,16 @@ internal final class URITemplateStorage {
       )
     }
   }
-  
-  // ------------------------------------------------------------------------ //
-  // MARK: `components`
-  // ------------------------------------------------------------------------ //
-  
-  @usableFromInline
-  internal var components: [URITemplateComponent] {
-    didSet {
-      self.resetCachedDerivedProperties()
-    }
-  }
-  
+    
   @inlinable
   func resetCachedDerivedProperties() {
-    self._templateRepresentation = nil
-    self._templateVariables = nil
-    self._templateVariableNames = nil
-    self._templateRepresentation = nil
+    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.withLock {
+      _templateRepresentation = nil
+      _templateVariables = nil
+      _templateVariableNames = nil
+      _templateRepresentation = nil
+    }
   }
   
   // ------------------------------------------------------------------------ //
@@ -81,24 +98,28 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal var templateRepresentation: String {
-    get {
-      return self._templateRepresentation.obtainAssuredValue(
-        fallingBackUpon: self.prepareTemplateRepresentation()
+    cachedFieldLock.precondition(.notOwner)
+    return cachedFieldLock.withLock {
+      _withLockTemplateRepresentation
+    }
+  }
+
+  @inlinable
+  internal var _withLockTemplateRepresentation: String {
+    cachedFieldLock.precondition(.owner)
+    return cachedFieldLock.withLock {
+      _templateRepresentation.obtainAssuredValue(
+        guaranteedBy: components
+          .lazy
+          .map {
+            (component: URITemplateComponent) -> String
+            in
+            component.templateRepresentation
+          }.joined(separator: "")
       )
     }
   }
-  
-  @inlinable
-  internal func prepareTemplateRepresentation() -> String {
-    return self.components
-      .lazy
-      .map() {
-        (component: URITemplateComponent) -> String
-        in
-        component.templateRepresentation
-    }.joined(separator: "")
-  }
-  
+
   // ------------------------------------------------------------------------ //
   // MARK: `templateVariables`
   // ------------------------------------------------------------------------ //
@@ -108,17 +129,25 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal var templateVariables: Set<URITemplateVariable> {
-    get {
-      return self._templateVariables.obtainAssuredValue(
-        fallingBackUpon: self.prepareTemplateVariables()
-      )
+    cachedFieldLock.precondition(.notOwner)
+    return cachedFieldLock.withLock {
+      _withLockTemplateVariables
     }
   }
-  
+
   @inlinable
-  func prepareTemplateVariables() -> Set<URITemplateVariable> {
+  internal var _withLockTemplateVariables: Set<URITemplateVariable> {
+    cachedFieldLock.precondition(.owner)
+    return _templateVariables.obtainAssuredValue(
+      guaranteedBy: _withLockPrepareTemplateVariables()
+    )
+  }
+
+  @inlinable
+  func _withLockPrepareTemplateVariables() -> Set<URITemplateVariable> {
+    cachedFieldLock.precondition(.owner)
     var result: Set<URITemplateVariable> = []
-    for component in self.components {
+    for component in components {
       component.injectTemplateVariables(into: &result)
     }
     return result
@@ -133,19 +162,12 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal var templateVariablesNames: Set<URITemplateVariableName> {
-    get {
-      return self._templateVariableNames.obtainAssuredValue(
-        fallingBackUpon: self.prepareTemplateVariableNames()
+    _templateVariableNames.obtainAssuredValue(
+      guaranteedBy: Set(
+        _withLockTemplateVariables
+          .lazy
+          .map { $0.variableName }
       )
-    }
-  }
-  
-  @inlinable
-  func prepareTemplateVariableNames() -> Set<URITemplateVariableName> {
-    return Set(
-      self.templateVariables
-        .lazy
-        .map() { $0.variableName }
     )
   }
   
@@ -158,41 +180,34 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal var variableNames: Set<String> {
-    get {
-      return self._variableNames.obtainAssuredValue(
-        fallingBackUpon: self.prepareVariableNames()
-      )
+    cachedFieldLock.precondition(.notOwner)
+    return cachedFieldLock.withLock {
+      withLockVariableNames
     }
   }
-  
+
   @inlinable
-  func prepareVariableNames() -> Set<String> {
-    return Set(
-      self.templateVariables
-        .lazy
-        .map() { $0.variableName.storage }
+  internal var withLockVariableNames: Set<String> {
+    cachedFieldLock.precondition(.owner)
+    return _variableNames.obtainAssuredValue(
+      guaranteedBy: Set(
+        templateVariables
+          .lazy
+          .map(\.variableName.storage)
+      )
     )
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Validatable
+// MARK: - Sendable
 // -------------------------------------------------------------------------- //
 
-extension URITemplateStorage : Validatable {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      return self.components.allElementsAreValid
-    }
-  }
-  
-}
+extension URITemplateStorage: @unchecked Sendable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Equatable
+// MARK: - Equatable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Equatable {
@@ -200,11 +215,12 @@ extension URITemplateStorage : Equatable {
   @inlinable
   internal static func ==(
     lhs: URITemplateStorage,
-    rhs: URITemplateStorage) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    rhs: URITemplateStorage
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
     guard lhs !== rhs else {
       return true
     }
@@ -214,7 +230,7 @@ extension URITemplateStorage : Equatable {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Comparable {
@@ -222,11 +238,12 @@ extension URITemplateStorage : Comparable {
   @inlinable
   internal static func <(
     lhs: URITemplateStorage,
-    rhs: URITemplateStorage) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    rhs: URITemplateStorage
+  ) -> Bool {
+    #if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+    #endif
     guard lhs !== rhs else {
       return false
     }
@@ -236,58 +253,51 @@ extension URITemplateStorage : Comparable {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Hashable
+// MARK: - Hashable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Hashable {
   
   @inlinable
   internal func hash(into hasher: inout Hasher) {
-    self.components.hash(into: &hasher)
+    components.hash(into: &hasher)
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : CustomStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var description: String {
-    get {
-      return "storage for uri template: \"\(self.templateRepresentation)\""
-    }
+    "storage for uri template: \"\(templateRepresentation)\""
   }
   
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : CustomDebugStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var debugDescription: String {
-    get {
-      let components = self.components
-        .lazy
-        .map({$0.debugDescription})
-        .enclosedJoin(
-          endcaps: .squareBrackets,
-          separator: ", "
-      )
-      return "URITemplateStorage(components: \(components))"
-    }
+    let components = components
+      .lazy
+      .map(\.debugDescription)
+      .joined(separator: ", ")
+    return "URITemplateStorage(components: [ \(components) ])"
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Codable
+// MARK: - Codable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Codable {
@@ -295,16 +305,14 @@ extension URITemplateStorage : Codable {
   @inlinable
   internal func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(
-      self.components
-    )
+    try container.encode(components)
   }
   
   @inlinable
   internal convenience init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let components = try container.decode([URITemplateComponent].self)
-    guard components.allElementsAreValid else {
+    guard components.allSatisfy(\.isValid) else {
       throw DataValidationError(
         forType: URITemplateStorage.self,
         problemDescription: "Decoded invalid `components` \(components.debugDescription)!",
@@ -313,6 +321,19 @@ extension URITemplateStorage : Codable {
       )
     }
     self.init(components: components)
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URITemplateStorage {
+  
+  @inlinable
+  internal var isValid: Bool {
+    components.allSatisfy(\.isValid)
   }
   
 }

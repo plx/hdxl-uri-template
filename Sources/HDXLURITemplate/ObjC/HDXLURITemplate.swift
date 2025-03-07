@@ -1,10 +1,5 @@
-//
-//  HDXLURITemplate.swift
-//
-
 import Foundation
 import os.log
-import HDXLCommonUtilities
 
 // ------------------------------------------------------------------------ //
 // MARK: HDXLURITemplate - Definition
@@ -27,27 +22,27 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
     guard let other = object as? URITemplateWrapper else {
       return false
     }
-    return self === other || self.template == other.template
+    return self === other || template == other.template
   }
   
   @objc
   override public var hash: Int {
     get {
-      return self.template.hashValue
+      return template.hashValue
     }
   }
   
   @objc
   override public var description: String {
     get {
-      return "HDXLURITemplate(template: \"\(self.template.description)\")"
+      return "HDXLURITemplate(template: \"\(template.description)\")"
     }
   }
   
   @objc
   override public var debugDescription: String {
     get {
-      return "HDXLURITemplate<\(ObjectIdentifier(self).debugDescription)>(template: \"\(self.template.debugDescription)\")"
+      return "HDXLURITemplate<\(ObjectIdentifier(self).debugDescription)>(template: \"\(template.debugDescription)\")"
     }
   }
   
@@ -63,17 +58,13 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   
   @objc
   public var templateRepresentation: String {
-    get {
-      return self.template.templateRepresentation
-    }
+    template.templateRepresentation
   }
   
   /// The names of the variables within the template (as `String`s).
   @objc
   public var templateVariableNames: Set<String> {
-    get {
-      return self.template.variableNames
-    }
+    template.variableNames
   }
 
   // ------------------------------------------------------------------------ //
@@ -91,21 +82,13 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   // ------------------------------------------------------------------------ //
   
   @objc(initWithURITemplate:)
-  public convenience init?(template: String) {
-    do {
-      self.init(
-        template: try URITemplate(parsing: template)
-      )
-    }
-    catch let e {
-      // TODO: log somewhere useful
-      os_log(
-        "Invalid URI-template detected: \"%{private}@\", with error: %{private}@",
-        template,
-        String(reflecting: e)
-      )
+  public convenience init?(templateString: String) {
+    // TODO: parse-failure hook? not sure objective-c support super-high priority in 2025
+    guard let parsedTemplate = try? URITemplate(parsing: templateString) else {
       return nil
     }
+    
+    self.init(template: parsedTemplate)
   }
     
   // ------------------------------------------------------------------------ //
@@ -113,9 +96,7 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   // ------------------------------------------------------------------------ //
   
   @objc
-  public func copy(with zone: NSZone? = nil) -> Any {
-    return self
-  }
+  public func copy(with zone: NSZone? = nil) -> Any { self }
   
   // ------------------------------------------------------------------------ //
   // MARK: NSCoding Protocol Methods
@@ -127,8 +108,10 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
       let decoder = coder as? NSKeyedUnarchiver,
       let template = decoder.decodeDecodable(
         URITemplate.self,
-        forKey: "template") else {
-          return nil
+        forKey: "template"
+      )
+    else {
+      return nil
     }
     self.template = template
     super.init()
@@ -139,12 +122,13 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
     if let encoder = coder as? NSKeyedArchiver {
       do {
         try encoder.encodeEncodable(
-          self.template,
+          template,
           forKey: "template"
         )
       }
       catch let e {
-        fatalError("Failed to encode our `template` \(self.template.debugDescription) due to error: \(String(reflecting: e))!")
+        // TODO: what's a good way to handle this failure in 2025?
+        fatalError("Failed to encode our `template` \(template.debugDescription) due to error: \(String(reflecting: e))!")
       }
     }
   }
@@ -154,10 +138,6 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   // ------------------------------------------------------------------------ //
   
   @objc
-  public class var supportsSecureCoding: Bool {
-    get {
-      return true
-    }
-  }
+  public class var supportsSecureCoding: Bool { true }
 
 }

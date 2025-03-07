@@ -3,16 +3,13 @@
 //
 
 import Foundation
-import HDXLCommonUtilities
 
 internal extension String {
   
   /// Convenience to get at the code-point count.
   @inlinable
   var codePointCount: Int {
-    get {
-      return self.unicodeScalars.count
-    }
+    unicodeScalars.count
   }
   
   /// Returns `self` after being truncated to `codePointCount` code points.
@@ -21,13 +18,13 @@ internal extension String {
   /// we use it for within the URI template implementation.
   @inlinable
   func constrained(toCodePointCount codePointCount: Int) -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(codePointCount >= 0)
-    // /////////////////////////////////////////////////////////////////////////
+    #if HEAVY_DEBUG
+    pedanticAssert(codePointCount >= 0)
+    #endif
     guard codePointCount >= 0 else {
       return ""
     }
-    let scalars = self.unicodeScalars
+    let scalars = unicodeScalars
     guard codePointCount < scalars.count else {
       return self
     }
@@ -50,10 +47,10 @@ internal extension String {
   /// we use it for within the URI template implementation.
   @inlinable
   mutating func constrain(toCodePointCount codePointCount: Int) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(codePointCount >= 0)
-    // /////////////////////////////////////////////////////////////////////////
-    self = self.constrained(toCodePointCount: codePointCount)
+#if HEAVY_DEBUG
+    pedanticAssert(codePointCount >= 0)
+#endif
+    self = constrained(toCodePointCount: codePointCount)
   }
   
 }

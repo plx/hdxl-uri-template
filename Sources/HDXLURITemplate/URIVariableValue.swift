@@ -1,9 +1,4 @@
-//
-//  URIVariableValue.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValue - Definition
@@ -27,7 +22,6 @@ import HDXLCommonUtilities
 /// - note: This conforms to `Comparable`, but the sort is *structural* (by flavor, then content) rather than "semantic" (e.g. by textual representation).
 /// - note: When deserializing this throws `DataValidationError` if the deserialized value is somehow invalid. That error gives you a chance to "repair" the value in some circumstances.
 ///
-@frozen
 public struct URIVariableValue {
 
   // ------------------------------------------------------------------------ //
@@ -49,10 +43,10 @@ public struct URIVariableValue {
   /// Designated internal-use-only initializer.
   @inlinable
   internal init(storage: URIVariableValueData) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(storage.isValid)
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(storage.isValid)
+    defer { pedanticAssert(isValid) }
+#endif
     self.storage = storage
   }
   
@@ -119,143 +113,12 @@ public struct URIVariableValue {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Core API
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-public extension URIVariableValue {
-  
-  /// `true` iff this value counts as *empty*.
-  ///
-  /// - `.undefined`: always *empty*
-  /// - `.text`: is *empty* when the underlying string is empty
-  /// - `.list`: is *empty* when the underlying list is empty
-  /// - `.association`: is *empty* when the underlying association is empty
-  ///
-  /// This is a superficial emptiness, and e.g. `[""]` and `[("","")]` (etc.) aren't empty.
-  ///
-  @inlinable
-  var isEmpty: Bool {
-    get {
-      return self.storage.isEmpty
-    }
-  }
-  
-  /// Returns a count of the defined "sub-values" within `self`.
-  ///
-  /// - `.undefined`: always *0*
-  /// - `.text`: always *1* (even for empty strings)
-  /// - `.list`: count of the underlying list
-  /// - `.association`: count of the underlying association
-  ///
-  @inlinable
-  var count: Int {
-    get {
-      return self.storage.count
-    }
-  }
-  
-  /// The flavor of the value: `.undefined`, `.text`, and so on.
-  @inlinable
-  var valueType: URIVariableValueType {
-    get {
-      return self.storage.valueType
-    }
-  }
-  
-  /// `true` if this has one of the *defined* flavors (e.g. anything other than `.undefined`).
-  @inlinable
-  var isDefined: Bool {
-    get {
-      return self.storage.isDefined
-    }
-  }
-
-  /// `true` if this is of the `.undefined ` flavor.
-  @inlinable
-  var isUndefined: Bool {
-    get {
-      return self.storage.isUndefined
-    }
-  }
-
-  /// Synonym for `isUndefined`--exists for analogy with other `is$Value` properties.
-  @inlinable
-  var isUndefinedValue: Bool {
-    get {
-      return self.storage.isUndefined
-    }
-  }
-
-  /// `true` iff this has the `.text` flavor.
-  @inlinable
-  var isTextValue: Bool {
-    get {
-      return self.storage.isTextValue
-    }
-  }
-
-  /// `true` iff this has the `.list` flavor.
-  @inlinable
-  var isListValue: Bool {
-    get {
-      return self.storage.isListValue
-    }
-  }
-
-  /// `true` iff this has the `.association` flavor.
-  @inlinable
-  var isAssociationValue: Bool {
-    get {
-      return self.storage.isAssociationValue
-    }
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValue : Validatable {
-  
-  @inlinable
-  public var isValid: Bool {
-    get {
-      return self.storage.isValid
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValue : Equatable {
-  
-  @inlinable
-  public static func ==(
-    lhs: URIVariableValue,
-    rhs: URIVariableValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage == rhs.storage
-  }
-
-  @inlinable
-  public static func !=(
-    lhs: URIVariableValue,
-    rhs: URIVariableValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage != rhs.storage
-  }
-
-}
+extension URIVariableValue : Sendable { }
+extension URIVariableValue : Equatable { }
+extension URIVariableValue : Hashable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValue - Comparable
@@ -266,73 +129,26 @@ extension URIVariableValue : Comparable {
   @inlinable
   public static func <(
     lhs: URIVariableValue,
-    rhs: URIVariableValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    rhs: URIVariableValue
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
     return lhs.storage < rhs.storage
   }
 
-  @inlinable
-  public static func >(
-    lhs: URIVariableValue,
-    rhs: URIVariableValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage > rhs.storage
-  }
-
-  @inlinable
-  public static func <=(
-    lhs: URIVariableValue,
-    rhs: URIVariableValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage <= rhs.storage
-  }
-
-  @inlinable
-  public static func >=(
-    lhs: URIVariableValue,
-    rhs: URIVariableValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage >= rhs.storage
-  }
-
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValue : Hashable {
-  
-  @inlinable
-  public func hash(into hasher: inout Hasher) {
-    self.storage.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValue : CustomStringConvertible {
   
   @inlinable
   public var description: String {
-    get {
-      return self.storage.description
-    }
+    storage.description
   }
   
 }
@@ -345,9 +161,7 @@ extension URIVariableValue : CustomDebugStringConvertible {
   
   @inlinable
   public var debugDescription: String {
-    get {
-      return "URIVariableValue(storage: \(self.storage.debugDescription))"
-    }
+    "URIVariableValue(storage: \(storage.debugDescription))"
   }
   
 }
@@ -361,7 +175,7 @@ extension URIVariableValue : Codable {
   @inlinable
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(self.storage)
+    try container.encode(storage)
   }
   
   @inlinable
@@ -408,6 +222,96 @@ extension URIVariableValue : Codable {
       }
     }
     self.init(storage: storage)
+  }
+  
+}
+
+
+// -------------------------------------------------------------------------- //
+// MARK: URIVariableValue - Core API
+// -------------------------------------------------------------------------- //
+
+extension URIVariableValue {
+  
+  /// `true` iff this value counts as *empty*.
+  ///
+  /// - `.undefined`: always *empty*
+  /// - `.text`: is *empty* when the underlying string is empty
+  /// - `.list`: is *empty* when the underlying list is empty
+  /// - `.association`: is *empty* when the underlying association is empty
+  ///
+  /// This is a superficial emptiness, and e.g. `[""]` and `[("","")]` (etc.) aren't empty.
+  ///
+  @inlinable
+  public var isEmpty: Bool {
+    storage.isEmpty
+  }
+  
+  /// Returns a count of the defined "sub-values" within `self`.
+  ///
+  /// - `.undefined`: always *0*
+  /// - `.text`: always *1* (even for empty strings)
+  /// - `.list`: count of the underlying list
+  /// - `.association`: count of the underlying association
+  ///
+  @inlinable
+  public var count: Int {
+    storage.count
+  }
+  
+  /// The flavor of the value: `.undefined`, `.text`, and so on.
+  @inlinable
+  public var valueType: URIVariableValueType {
+    storage.valueType
+  }
+  
+  /// `true` if this has one of the *defined* flavors (e.g. anything other than `.undefined`).
+  @inlinable
+  public var isDefined: Bool {
+    storage.isDefined
+  }
+  
+  /// `true` if this is of the `.undefined ` flavor.
+  @inlinable
+  public var isUndefined: Bool {
+    storage.isUndefined
+  }
+  
+  /// Synonym for `isUndefined`--exists for analogy with other `is$Value` properties.
+  @inlinable
+  public var isUndefinedValue: Bool {
+    storage.isUndefined
+  }
+  
+  /// `true` iff this has the `.text` flavor.
+  @inlinable
+  public var isTextValue: Bool {
+    storage.isTextValue
+  }
+  
+  /// `true` iff this has the `.list` flavor.
+  @inlinable
+  public var isListValue: Bool {
+    storage.isListValue
+  }
+  
+  /// `true` iff this has the `.association` flavor.
+  @inlinable
+  public var isAssociationValue: Bool {
+    storage.isAssociationValue
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URIVariableValue {
+  
+  @inlinable
+  internal var isValid: Bool {
+    storage.isValid
   }
   
 }

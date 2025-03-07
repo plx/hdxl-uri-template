@@ -3,8 +3,6 @@
 //
 
 import Foundation
-import HDXLCommonUtilities
-import HDXLAlgebraicUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: String - URITemplate Chunking
@@ -34,7 +32,7 @@ internal extension String {
   
   @inlinable
   func parseIntoURITemplateComponents() throws -> [URITemplateComponent] {
-    let ranges = try self.identifyURITemplateChunkRanges()
+    let ranges = try identifyURITemplateChunkRanges()
     return try ranges.map() {
       (chunkRange) throws -> URITemplateComponent
       in
@@ -57,20 +55,21 @@ internal extension String {
 
   @inlinable
   func identifyURITemplateChunkRanges() throws -> [URITemplateChunkRange] {
-    guard !self.isEmpty else {
+    guard !isEmpty else {
       return []
     }
     var state: URITemplateChunkingState = .literal
-    var currentLowerBound: String.Index = self.startIndex
+    var currentLowerBound: String.Index = startIndex
     var ranges: [URITemplateChunkRange] = []
-    for (index,character) in self.enumeratingIndicesByIndex() {
-      // ///////////////////////////////////////////////////////////////////////
+    for (_index,character) in enumerated() {
+      let index = index(startIndex, offsetBy: _index)
+      #if HEAVY_DEBUG
       // rare, valid usage: we need to be able to advance `index` at least once,
       // and thus it's critical `index` never be `endIndex`. This should be true
-      // as long as `self.enumerateIndices()` is implemented OK, but never hurts
+      // as long as `enumerateIndices()` is implemented OK, but never hurts
       // to be careful (and to document the requiremnet in case I refactor).
-      pedantic_precondition(index < self.endIndex)
-      // ///////////////////////////////////////////////////////////////////////
+      pedanticPrecondition(index < endIndex)
+      #endif
       switch (character, state) {
       case ("{", .literal):
         // finishing a literal, starting a expression;
@@ -109,9 +108,9 @@ internal extension String {
     }
     switch state {
     case .literal:
-      if currentLowerBound < self.endIndex {
+      if currentLowerBound < endIndex {
         ranges.append(
-          .literal(currentLowerBound..<self.endIndex)
+          .literal(currentLowerBound..<endIndex)
         )
       }
     case .expression:

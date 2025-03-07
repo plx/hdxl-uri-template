@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: HDXLURIVariableValue - Definition
@@ -15,7 +14,7 @@ import HDXLCommonUtilities
 /// is entirely-unnecessary when used only from Swift.
 ///
 @objc(HDXLURIVariableValue)
-public class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding  {
+public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding  {
   
   // ------------------------------------------------------------------------ //
   // MARK: NSObject Overrides
@@ -26,28 +25,22 @@ public class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCo
     guard let other = object as? URIVariableValueWrapper else {
       return false
     }
-    return self === other || self.variableValue == other.variableValue
+    return self === other || variableValue == other.variableValue
   }
   
   @objc
   override public var hash: Int {
-    get {
-      return self.variableValue.hashValue
-    }
+    variableValue.hashValue
   }
   
   @objc
   override public var description: String {
-    get {
-      return "HDXLURIVariableValue(variableValue: \"\(self.variableValue.description)\")"
-    }
+    "HDXLURIVariableValue(variableValue: \"\(variableValue.description)\")"
   }
 
   @objc
   override public var debugDescription: String {
-    get {
-      return "HDXLURIVariableValue<\(ObjectIdentifier(self).debugDescription)>(variableValue: \"\(self.variableValue.debugDescription)\")"
-    }
+    "HDXLURIVariableValue<\(ObjectIdentifier(self).debugDescription)>(variableValue: \"\(variableValue.debugDescription)\")"
   }
 
   // ------------------------------------------------------------------------ //
@@ -62,91 +55,73 @@ public class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCo
   
   @objc
   public var variableValueType: URIVariableValueType {
-    get {
-      return self.variableValue.valueType
-    }
+    variableValue.valueType
   }
 
   @objc
   public var isDefinedVariableValue: Bool {
-    get {
-      return self.variableValue.isDefined
-    }
+    variableValue.isDefined
   }
 
   @objc
   public var isUndefinedVariableValue: Bool {
-    get {
-      return self.variableValue.isDefined
-    }
+    variableValue.isDefined
   }
 
   @objc
   public var isTextVariableValue: Bool {
-    get {
-      return self.variableValue.isTextValue
-    }
+    variableValue.isTextValue
   }
 
   @objc
   public var isListVariableValue: Bool {
-    get {
-      return self.variableValue.isListValue
-    }
+    variableValue.isListValue
   }
 
   @objc
   public var isAssociationVariableValue: Bool {
-    get {
-      return self.variableValue.isAssociationValue
-    }
+    variableValue.isAssociationValue
   }
   
   @objc
   public var textValue: String? {
-    get {
-      switch self.variableValue.storage {
-      case .text(let text):
-        return text.storage
-      default:
-        return nil
-      }
+    switch variableValue.storage {
+    case .text(let text):
+      text.storage
+    default:
+      nil
     }
   }
 
   @objc
   public var listValue: [String]? {
-    get {
-      switch self.variableValue.storage {
-      case .list(let list):
-        return list.storage.map() {
-          $0.storage
-        }
-      default:
-        return nil
+    switch variableValue.storage {
+    case .list(let list):
+      list.storage.map() {
+        $0.storage
       }
+    default:
+      nil
     }
   }
 
   @objc
   public var associationValueAsDictionary: [String:String]? {
-    get {
-      switch self.variableValue.storage {
-      case .association(let association):
-        var result: [String:String] = [String:String](minimumCapacity: association.count)
-        for pair in association.storage {
-          result[pair.key.storage] = pair.value.storage
-        }
-        return result
-      default:
-        return nil
+    switch self.variableValue.storage {
+    case .association(let association):
+      var result: [String:String] = [String:String](minimumCapacity: association.count)
+      for pair in association.storage {
+        result[pair.key.storage] = pair.value.storage
       }
+      return result
+    default:
+      return nil
     }
   }
   
   @objc(enumerateAssociationPairsUsingBlock:)
   func enumerateAssociation(using block: (String, String, Int, UnsafeMutablePointer<ObjCBool>) -> Void) {
-    switch self.variableValue.storage {
+    switch variableValue.storage {
     case .association(let association):
       var stop: ObjCBool = false
       for (index,pair) in association.storage.enumerated() {
@@ -222,7 +197,7 @@ public class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCo
         from: dictionary.sorted() {
           (l,r) -> Bool
           in
-          return comparator(l.0,r.0).impliesLessThan
+          comparator(l.0,r.0) == .orderedAscending
         }
       )
     )
@@ -234,47 +209,23 @@ public class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCo
 
   @objc(undefinedVariableValue)
   public class var undefined: URIVariableValueWrapper {
-    get {
-      return self._emptyString
-    }
+    _undefined
   }
 
   @objc(emptyStringVariableValue)
   public class var emptyString: URIVariableValueWrapper {
-    get {
-      return self._emptyString
-    }
+    _emptyString
   }
   
   @objc(emptyListVariableValue)
   public class var emptyList: URIVariableValueWrapper {
-    get {
-      return self._emptyList
-    }
+    _emptyList
   }
   
   @objc(emptyAssociationVariableValue)
   public class var emptyAssociation: URIVariableValueWrapper {
-    get {
-      return self._emptyAssociation
-    }
+    _emptyAssociation
   }
-
-  // ------------------------------------------------------------------------ //
-  // MARK: Storage For Well-Known Values
-  // ------------------------------------------------------------------------ //
-
-  @nonobjc
-  internal static let _undefined: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .undefined)
-  
-  @nonobjc
-  internal static let _emptyString: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .emptyString)
-  
-  @nonobjc
-  internal static let _emptyList: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .emptyList)
-  
-  @nonobjc
-  internal static let _emptyAssociation: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .emptyAssociation)
 
   // ------------------------------------------------------------------------ //
   // MARK: NSCopying Protocol Methods
@@ -328,6 +279,22 @@ public class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCo
     }
   }
   
+  // ------------------------------------------------------------------------ //
+  // MARK: Storage For Well-Known Values
+  // ------------------------------------------------------------------------ //
+  
+  @nonobjc
+  internal static let _undefined: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .undefined)
+  
+  @nonobjc
+  internal static let _emptyString: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .emptyString)
+  
+  @nonobjc
+  internal static let _emptyList: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .emptyList)
+  
+  @nonobjc
+  internal static let _emptyAssociation: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .emptyAssociation)
+
 }
 
-
+extension URIVariableValueWrapper: @unchecked Sendable { }

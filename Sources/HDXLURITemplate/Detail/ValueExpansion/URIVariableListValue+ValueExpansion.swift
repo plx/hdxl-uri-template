@@ -1,9 +1,4 @@
-//
-//  URIVariableListValue+ValueExpansion.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 internal extension URIVariableListValue {
   
@@ -16,12 +11,13 @@ internal extension URIVariableListValue {
   @inlinable
   func expansion(
     expansionType: URIValueExpansionType,
-    templateVariable: URITemplateVariable) throws -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(templateVariable.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return try self.expansion(
+    templateVariable: URITemplateVariable
+  ) throws -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(templateVariable.isValid)
+    pedanticAssert(isValid)
+#endif
+    return try expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -32,28 +28,29 @@ internal extension URIVariableListValue {
   func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
-    expansionModifier: URIValueExpansionModifier) throws -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(variableName.isValid)
-    pedantic_assert(expansionModifier.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    guard !self.isEmpty else {
+    expansionModifier: URIValueExpansionModifier
+  ) throws -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(variableName.isValid)
+    pedanticAssert(expansionModifier.isValid)
+    pedanticAssert(isValid)
+#endif
+    guard !isEmpty else {
       return ""
     }
     switch expansionModifier {
     case .unmodified:
-      return try self.unexplodedExpansion(
+      return try unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .explode:
-      return try self.explodedExpansion(
+      return try explodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .prefix(_):
-      return try self.unexplodedExpansion(
+      return try unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
@@ -63,11 +60,12 @@ internal extension URIVariableListValue {
   @inlinable
   func explodedExpansion(
     expansionType: URIValueExpansionType,
-    variableName: URITemplateVariableName) throws -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(variableName.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    variableName: URITemplateVariableName
+  ) throws -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(variableName.isValid)
+    pedanticAssert(isValid)
+#endif
     // we inline this logic instead of using `variableName.escapedVariableName`
     // because the code flow is a bit weird (despite originally intending to do it like that...)
     guard let escapedName = variableName.storage.escaped(forValueExpansionType: expansionType) else {
@@ -76,14 +74,14 @@ internal extension URIVariableListValue {
         expansionType
       )
     }
-    return try self.storage
+    return try storage
       .lazy
       .map() {
         (text)
         in
         guard let escapedValue = text.storage.escaped(forValueExpansionType: expansionType) else {
           throw ExpansionError.internalValueFailedToEscape(
-            self.storage.map({$0.storage}),
+            storage.map({$0.storage}),
             text.storage,
             variableName.storage,
             expansionType
@@ -98,19 +96,20 @@ internal extension URIVariableListValue {
   @inlinable
   func unexplodedExpansion(
     expansionType: URIValueExpansionType,
-    variableName: URITemplateVariableName) throws -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(variableName.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    let joinedValues = try self.storage
+    variableName: URITemplateVariableName
+  ) throws -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(variableName.isValid)
+    pedanticAssert(isValid)
+#endif
+    let joinedValues = try storage
       .lazy
       .map() {
         (text)
         in
         guard let escaped = text.storage.escaped(forValueExpansionType: expansionType) else {
           throw ExpansionError.internalValueFailedToEscape(
-            self.storage.map({$0.storage}),
+            storage.map({$0.storage}),
             text.storage,
             variableName.storage,
             expansionType

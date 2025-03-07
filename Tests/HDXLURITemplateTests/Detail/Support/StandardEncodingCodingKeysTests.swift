@@ -4,8 +4,6 @@
 
 import Foundation
 import XCTest
-import HDXLCommonUtilities
-import HDXLTestingUtilities
 @testable import HDXLURITemplate
 
 class StandardEncodingCodingKeysTests : XCTestCase {

@@ -1,9 +1,4 @@
-//
-//  URITemplateLiteralComponent.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateLiteralComponent - Definition
@@ -24,67 +19,23 @@ internal struct URITemplateLiteralComponent {
   
   @inlinable
   internal init(storage: Storage) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(!storage.isEmpty)
-    pedantic_assert(Self.validationRegularExpression.matchesEntirety(of: storage))
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(!storage.isEmpty)
+    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
+    defer { pedanticAssert(isValid) }
+#endif
     self.storage = storage
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Validatable
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URITemplateLiteralComponent : Validatable {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      guard
-        !self.storage.isEmpty,
-        URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(
-          of: self.storage
-        ) else {
-          return false
-      }
-      return true
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateLiteralComponent : Equatable {
-  
-  @inlinable
-  internal static func ==(
-    lhs: URITemplateLiteralComponent,
-    rhs: URITemplateLiteralComponent) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage == rhs.storage
-  }
-
-  @inlinable
-  internal static func !=(
-    lhs: URITemplateLiteralComponent,
-    rhs: URITemplateLiteralComponent) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage != rhs.storage
-  }
-
-}
+extension URITemplateLiteralComponent : Sendable { }
+extension URITemplateLiteralComponent : Equatable { }
+extension URITemplateLiteralComponent : Hashable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateLiteralComponent - Comparable
@@ -95,94 +46,43 @@ extension URITemplateLiteralComponent : Comparable {
   @inlinable
   internal static func <(
     lhs: URITemplateLiteralComponent,
-    rhs: URITemplateLiteralComponent) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    rhs: URITemplateLiteralComponent
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
     return lhs.storage < rhs.storage
   }
   
-  @inlinable
-  internal static func >(
-    lhs: URITemplateLiteralComponent,
-    rhs: URITemplateLiteralComponent) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage > rhs.storage
-  }
-
-  @inlinable
-  internal static func <=(
-    lhs: URITemplateLiteralComponent,
-    rhs: URITemplateLiteralComponent) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage <= rhs.storage
-  }
-  
-  @inlinable
-  internal static func >=(
-    lhs: URITemplateLiteralComponent,
-    rhs: URITemplateLiteralComponent) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage >= rhs.storage
-  }
-
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateLiteralComponent : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    self.storage.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : CustomStringConvertible {
   
-  @inlinable
-  internal var description: String {
-    get {
-      return self.storage
-    }
-  }
+  @usableFromInline
+  internal var description: String { storage }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var debugDescription: String {
-    get {
-      return "URITemplateLiteralComponent(storage: \"\(self.storage)\")"
-    }
+    "URITemplateLiteralComponent(storage: \"\(storage)\")"
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Codable
+// MARK: - Codable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Codable {
@@ -190,7 +90,7 @@ extension URITemplateLiteralComponent : Codable {
   @inlinable
   func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(self.storage)
+    try container.encode(storage)
   }
   
   @inlinable
@@ -212,10 +112,10 @@ extension URITemplateLiteralComponent : Codable {
 // MARK: URITemplateLiteralComponent - Validation Support
 // -------------------------------------------------------------------------- //
 
-internal extension URITemplateLiteralComponent {
+extension URITemplateLiteralComponent {
   
   @inlinable
-  static func prepareValidationRegularExpression() throws -> NSRegularExpression {
+  internal static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     /*
      The characters outside of expressions in a URI Template string are
      intended to be copied literally to the URI reference if the character
@@ -281,3 +181,23 @@ internal extension URITemplateLiteralComponent {
 
 }
 
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URITemplateLiteralComponent {
+  
+  @inlinable
+  internal var isValid: Bool {
+    guard
+      !storage.isEmpty,
+      URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(
+        of: storage
+      )
+    else {
+      return false
+    }
+    return true
+  }
+  
+}

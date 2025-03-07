@@ -1,11 +1,6 @@
-//
-//  String+URITemplatePrefixManipulations.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
-internal extension String {
+extension String {
   
   /// Finds the range of `prefix` *iff* it actually is a prefix.
   ///
@@ -14,8 +9,9 @@ internal extension String {
   @inlinable
   func range(forPrefix prefix: String) -> Range<String.Index>? {
     guard
-      !self.isEmpty,
-      !prefix.isEmpty else {
+      !isEmpty,
+      !prefix.isEmpty
+    else {
       return nil
     }
     return self.range(

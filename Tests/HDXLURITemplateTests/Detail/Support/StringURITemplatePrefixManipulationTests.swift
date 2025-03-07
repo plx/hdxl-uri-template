@@ -4,9 +4,6 @@
 
 import Foundation
 import XCTest
-import HDXLCommonUtilities
-import HDXLTestingUtilities
-import HDXLAlgebraicUtilities
 @testable import HDXLURITemplate
 
 class StringURITemplatePrefixManipulationTests : XCTestCase {

@@ -1,15 +1,9 @@
-//
-//  URIVariableListValue.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableListValue - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal struct URIVariableListValue {
   
@@ -25,9 +19,9 @@ internal struct URIVariableListValue {
 
   @inlinable
   internal init(value: URIVariableTextValue) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(value.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(value.isValid)
+#endif
     self.init(
       values: [value]
     )
@@ -35,170 +29,129 @@ internal struct URIVariableListValue {
 
   @inlinable
   internal init(values: [URIVariableTextValue]) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(values.allElementsAreValid)
-    defer { pedantic_assert(self.isValid)}
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(values.allSatisfy(\.isValid))
+    defer { pedanticAssert(isValid)}
+#endif
     self.storage = values
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Core API
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-internal extension URIVariableListValue {
-  
-  @inlinable
-  var isEmpty: Bool {
-    get {
-      return self.storage.isEmpty
-    }
-  }
-  
-  @inlinable
-  var count: Int {
-    get {
-      return self.storage.count
-    }
-  }
-  
-  @inlinable
-  subscript(index: Int) -> URIVariableTextValue {
-    get {
-      return self.storage[index]
-    }
-  }
-    
-}
+extension URIVariableListValue: Sendable { }
+extension URIVariableListValue: Equatable { }
+extension URIVariableListValue: Hashable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableListValue : Validatable {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      return self.storage.allElementsAreValid
-    }
-  }
-    
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableListValue : Equatable {
-
-  @inlinable
-  internal static func ==(
-    lhs: URIVariableListValue,
-    rhs: URIVariableListValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage == rhs.storage
-  }
-  
-  @inlinable
-  internal static func !=(
-    lhs: URIVariableListValue,
-    rhs: URIVariableListValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage != rhs.storage
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : Comparable {
   
   @inlinable
   internal static func <(
-    lhs: URIVariableListValue,
-    rhs: URIVariableListValue) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    lhs: Self,
+    rhs: Self
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
     return lhs.storage.lexicographicallyPrecedes(rhs.storage)
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableListValue : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    self.storage.hash(into: &hasher)
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : CustomStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var description: String {
-    get {
-      return self.storage
-        .lazy
-        .map() { $0.description }
-        .enclosedJoin(
-          endcaps: .squareBrackets,
-          separator: ", "
-        )
-    }
+    let values = storage
+      .lazy
+      .map(\.description)
+      .joined(separator: ", ")
+    
+    return "[ \(values) ]"
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : CustomDebugStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var debugDescription: String {
-    get {
-      let values = self.storage
-        .lazy
-        .map() { $0.debugDescription }
-        .enclosedJoin(
-          endcaps: .squareBrackets,
-          separator: ", "
-      )
-      return "URIVariableListValue(values: \(values))"
-    }
+    let values = storage
+      .lazy
+      .map(\.debugDescription)
+      .joined(separator: ", ")
+    return "URIVariableListValue(values: [ \(values) ])"
   }
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Codable
+// MARK: - Codable
 // -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : Codable {
 
-  // syntheiszed ok
+  @usableFromInline
+  internal func encode(to encoder: any Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(storage)
+  }
+  
+  @usableFromInline
+  internal init(from decoder: any Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    self.init(values: try container.decode([URIVariableTextValue].self))
+  }
   
 }
 
+// -------------------------------------------------------------------------- //
+// MARK: - Core API
+// -------------------------------------------------------------------------- //
+
+extension URIVariableListValue {
+  
+  @inlinable
+  internal var isEmpty: Bool {
+    storage.isEmpty
+  }
+  
+  @inlinable
+  internal var count: Int {
+    storage.count
+  }
+  
+  @inlinable
+  internal subscript(index: Int) -> URIVariableTextValue {
+    storage[index]
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URIVariableListValue {
+  
+  @inlinable
+  internal var isValid: Bool {
+    storage.allSatisfy(\.isValid)
+  }
+  
+}

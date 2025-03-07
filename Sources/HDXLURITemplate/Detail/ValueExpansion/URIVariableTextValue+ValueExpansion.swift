@@ -1,30 +1,24 @@
-//
-//  URIVariableTextValue+ValueExpansion.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
-internal extension URIVariableTextValue {
+extension URIVariableTextValue {
   
   @usableFromInline
-  enum ExpansionError : Error, LocalizedError {
+  internal enum ExpansionError : Error, LocalizedError {
     
     case unableToEscapeVariableValue(String, String, URIValueExpansionType, URIValueExpansionModifier)
     case unableToEscapeVariableName(String, URIValueExpansionType)
     
+    @usableFromInline
     internal var localizedDescription: String {
-      get {
-        switch self {
-        case .unableToEscapeVariableValue(let textValue, let variableName, let expansionType, let expansionModifier):
-          return """
-          Unable to escape "\(textValue)" with expansion-type \(expansionType.debugDescription), expansion-modifier \(expansionModifier.debugDescription) (as variable "\(variableName)").
-          """
-        case .unableToEscapeVariableName(let variableName, let expansionType):
-          return """
-          Unable to escape variable-name "\(variableName)" with expansion-type \(expansionType.debugDescription).
-          """
-        }
+      switch self {
+      case .unableToEscapeVariableValue(let textValue, let variableName, let expansionType, let expansionModifier):
+        """
+        Unable to escape "\(textValue)" with expansion-type \(expansionType.debugDescription), expansion-modifier \(expansionModifier.debugDescription) (as variable "\(variableName)").
+        """
+      case .unableToEscapeVariableName(let variableName, let expansionType):
+        """
+        Unable to escape variable-name "\(variableName)" with expansion-type \(expansionType.debugDescription).
+        """
       }
     }
   }
@@ -32,12 +26,13 @@ internal extension URIVariableTextValue {
   @inlinable
   func expansion(
     expansionType: URIValueExpansionType,
-    templateVariable: URITemplateVariable) throws -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(templateVariable.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return try self.expansion(
+    templateVariable: URITemplateVariable
+  ) throws -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(templateVariable.isValid)
+    pedanticAssert(isValid)
+#endif
+    return try expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -48,17 +43,18 @@ internal extension URIVariableTextValue {
   func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
-    expansionModifier: URIValueExpansionModifier) throws -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(variableName.isValid)
-    pedantic_assert(expansionModifier.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    guard let escapedVariableValue = self.escapedVariableValue(
+    expansionModifier: URIValueExpansionModifier
+  ) throws -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(variableName.isValid)
+    pedanticAssert(expansionModifier.isValid)
+    pedanticAssert(isValid)
+#endif
+    guard let escapedVariableValue = escapedVariableValue(
       expansionType: expansionType,
       expansionModifier: expansionModifier) else {
         throw ExpansionError.unableToEscapeVariableValue(
-          self.storage,
+          storage,
           variableName.storage,
           expansionType,
           expansionModifier
@@ -85,12 +81,13 @@ internal extension URIVariableTextValue {
   @inlinable
   func escapedVariableValue(
     expansionType: URIValueExpansionType,
-    expansionModifier: URIValueExpansionModifier) -> String? {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(expansionModifier.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return self.effectiveVariableValue(
+    expansionModifier: URIValueExpansionModifier
+  ) -> String? {
+#if HEAVY_DEBUG
+    pedanticAssert(expansionModifier.isValid)
+    pedanticAssert(isValid)
+#endif
+    return effectiveVariableValue(
       forExpansionModifier: expansionModifier
     ).escaped(
       forValueExpansionType: expansionType
@@ -99,18 +96,19 @@ internal extension URIVariableTextValue {
   
   @inlinable
   func effectiveVariableValue(
-    forExpansionModifier expansionModifier: URIValueExpansionModifier) -> String {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(expansionModifier.isValid)
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
+    forExpansionModifier expansionModifier: URIValueExpansionModifier
+  ) -> String {
+#if HEAVY_DEBUG
+    pedanticAssert(expansionModifier.isValid)
+    pedanticAssert(isValid)
+#endif
     switch expansionModifier {
     case .unmodified:
-      return self.storage
+      return storage
     case .explode:
-      return self.storage
+      return storage
     case .prefix(let codePointCount):
-      return self.storage.constrained(
+      return storage.constrained(
         toCodePointCount: codePointCount
       )
     }

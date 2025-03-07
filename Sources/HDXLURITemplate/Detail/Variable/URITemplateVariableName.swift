@@ -1,9 +1,4 @@
-//
-//  URITemplateVariableName.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateVariableName - Definition
@@ -24,67 +19,19 @@ internal struct URITemplateVariableName {
   
   @inlinable
   internal init(storage: Storage) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(!storage.isEmpty)
-    pedantic_assert(Self.validationRegularExpression.matchesEntirety(of: storage))
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(!storage.isEmpty)
+    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
+    defer { pedanticAssert(isValid) }
+#endif
     self.storage = storage
   }
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariableName : Validatable {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      guard
-        !self.storage.isEmpty,
-        URITemplateVariableName.validationRegularExpression.matchesEntirety(
-          of: self.storage
-        ) else {
-          return false
-      }
-      return true
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariableName : Equatable {
-  
-  @inlinable
-  internal static func ==(
-    lhs: URITemplateVariableName,
-    rhs: URITemplateVariableName) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage == rhs.storage
-  }
-  
-  @inlinable
-  internal static func !=(
-    lhs: URITemplateVariableName,
-    rhs: URITemplateVariableName) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage != rhs.storage
-  }
-  
-}
+extension URITemplateVariableName : Sendable { }
+extension URITemplateVariableName : Equatable { }
+extension URITemplateVariableName : Hashable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateVariableName - Comparable
@@ -95,88 +42,40 @@ extension URITemplateVariableName : Comparable {
   @inlinable
   internal static func <(
     lhs: URITemplateVariableName,
-    rhs: URITemplateVariableName) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
+    rhs: URITemplateVariableName
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
     // /////////////////////////////////////////////////////////////////////////
     return lhs.storage < rhs.storage
   }
   
-  @inlinable
-  internal static func >(
-    lhs: URITemplateVariableName,
-    rhs: URITemplateVariableName) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage > rhs.storage
-  }
-  
-  @inlinable
-  internal static func <=(
-    lhs: URITemplateVariableName,
-    rhs: URITemplateVariableName) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage <= rhs.storage
-  }
-  
-  @inlinable
-  internal static func >=(
-    lhs: URITemplateVariableName,
-    rhs: URITemplateVariableName) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage >= rhs.storage
-  }
-  
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariableName : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    self.storage.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : CustomStringConvertible {
   
   @inlinable
   internal var description: String {
-    get {
-      return self.storage
-    }
+    storage
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : CustomDebugStringConvertible {
   
   @inlinable
   internal var debugDescription: String {
-    get {
-      return "URITemplateVariableName(storage: \"\(self.storage)\")"
-    }
+    "URITemplateVariableName(storage: \"\(storage)\")"
   }
   
 }
@@ -190,7 +89,7 @@ extension URITemplateVariableName : Codable {
   @inlinable
   func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(self.storage)
+    try container.encode(storage)
   }
   
   @inlinable
@@ -264,3 +163,23 @@ internal extension URITemplateVariableName {
     
 }
 
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URITemplateVariableName {
+  
+  @inlinable
+  internal var isValid: Bool {
+    guard
+      !storage.isEmpty,
+      URITemplateVariableName.validationRegularExpression.matchesEntirety(
+        of: storage
+      )
+    else {
+      return false
+    }
+    return true
+  }
+  
+}

@@ -3,8 +3,6 @@
 //
 
 import Foundation
-import HDXLCommonUtilities
-
 //internal extension Scanner {
 //  
 //  enum CharacterScanOutcomeInterpretation {

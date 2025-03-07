@@ -1,9 +1,3 @@
-//
-//  URIVariableValueDataData.swift
-//
-
-import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValueData - Definition
@@ -17,7 +11,6 @@ import HDXLCommonUtilities
 ///
 /// Keeping it internal is also the only way to hide the newtype-style wrappers
 /// from the public API--which *is* another goal, here, too!
-@frozen
 @usableFromInline
 internal enum URIVariableValueData {
   
@@ -34,9 +27,9 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init(from text: String) {
-    // /////////////////////////////////////////////////////////////////////////
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    defer { pedanticAssert(isValid) }
+#endif
     self = .text(
       URIVariableTextValue(text: text)
     )
@@ -44,9 +37,9 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init<S:Sequence>(from texts: S) where S.Element == String {
-    // /////////////////////////////////////////////////////////////////////////
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    defer { pedanticAssert(isValid) }
+#endif
     self = .list(
       URIVariableListValue(
         values: texts.map() {
@@ -58,9 +51,9 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init(singleElementListFrom text: String) {
-    // /////////////////////////////////////////////////////////////////////////
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    defer { pedanticAssert(isValid) }
+#endif
     self = .list(
       URIVariableListValue(
         value: URIVariableTextValue(text: text)
@@ -70,9 +63,9 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init(from pair: (String,String)) {
-    // /////////////////////////////////////////////////////////////////////////
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    defer { pedanticAssert(isValid) }
+#endif
     self = .association(
       URIVariableAssociationValue(
         value: URIVariablePairValue(
@@ -85,9 +78,9 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init<S:Sequence>(from pairs: S) where S.Element == (String,String) {
-    // /////////////////////////////////////////////////////////////////////////
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    defer { pedanticAssert(isValid) }
+#endif
     self = .association(
       URIVariableAssociationValue(
         values: pairs.map() {
@@ -103,246 +96,39 @@ internal enum URIVariableValueData {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Core API
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-internal extension URIVariableValueData {
-  
-  @inlinable
-  var valueType: URIVariableValueType {
-    get {
-      switch self {
-      case .undefined:
-        return .undefined
-      case .text(_):
-        return .text
-      case .list(_):
-        return .list
-      case .association(_):
-        return .association
-      }
-    }
-  }
-  
-  @inlinable
-  var isEmpty: Bool {
-    get {
-      switch self {
-      case .undefined:
-        return true
-      case .text(let text):
-        return text.isEmpty
-      case .list(let list):
-        return list.isEmpty
-      case .association(let association):
-        return association.isEmpty
-      }
-    }
-  }
-  
-  @inlinable
-  var isDefined: Bool {
-    get {
-      switch self {
-      case .undefined:
-        return false
-      case .text(_):
-        return true
-      case .list(_):
-        return true
-      case .association(_):
-        return true
-      }
-    }
-  }
-  
-  @inlinable
-  var isUndefined: Bool {
-    get {
-      switch self {
-      case .undefined:
-        return true
-      case .text(_):
-        return false
-      case .list(_):
-        return false
-      case .association(_):
-        return false
-      }
-    }
-  }
-
-  @inlinable
-  var count: Int {
-    get {
-      switch self {
-      case .undefined:
-        return 0
-      case .text(_):
-        return 1
-      case .list(let list):
-        return list.count
-      case .association(let association):
-        return association.count
-      }
-    }
-  }
-
-  @inlinable
-  var isUndefinedValue: Bool {
-    get {
-      switch self {
-      case .undefined:
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  
-  @inlinable
-  var isTextValue: Bool {
-    get {
-      switch self {
-      case .text(_):
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  
-  @inlinable
-  var isListValue: Bool {
-    get {
-      switch self {
-      case .list(_):
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  
-  @inlinable
-  var isAssociationValue: Bool {
-    get {
-      switch self {
-      case .association(_):
-        return true
-      default:
-        return false
-      }
-    }
-  }
-
-}
+extension URIVariableValueData : Sendable { }
+extension URIVariableValueData : Equatable { }
+extension URIVariableValueData : Hashable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueData : Validatable {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      switch self {
-      case .undefined:
-        return true
-      case .text(let text):
-        return text.isValid
-      case .list(let list):
-        return list.isValid
-      case .association(let association):
-        return association.isValid
-      }
-    }
-  }
-    
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueData : Equatable {
- 
-  @inlinable
-  internal static func ==(
-    lhs: URIVariableValueData,
-    rhs: URIVariableValueData) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    switch (lhs,rhs) {
-    case (.undefined, .undefined):
-      return true
-    case (.text(let l), .text(let r)):
-      return l == r
-    case (.list(let l), .list(let r)):
-      return l == r
-    case (.association(let l), .association(let r)):
-      return l == r
-    default:
-      return false
-    }
-  }
-
-}
-
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueData : Comparable {
-
+  
   @inlinable
   internal static func <(
     lhs: URIVariableValueData,
-    rhs: URIVariableValueData) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    switch (lhs,rhs) {
+    rhs: URIVariableValueData
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
+    return switch (lhs,rhs) {
     case (.undefined, .undefined):
-      return false
+      false
     case (.text(let l), .text(let r)):
-      return l < r
+      l < r
     case (.list(let l), .list(let r)):
-      return l < r
+      l < r
     case (.association(let l), .association(let r)):
-      return l < r
+      l < r
     default:
-      return lhs.valueType < rhs.valueType
-    }
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueData : Hashable {
-
-  @inlinable
-  func hash(into hasher: inout Hasher) {
-    switch self {
-    case .undefined:
-      URIVariableValueType.undefined.hash(into: &hasher)
-    case .text(let text):
-      URIVariableValueType.text.hash(into: &hasher)
-      text.hash(into: &hasher)
-    case .list(let list):
-      URIVariableValueType.list.hash(into: &hasher)
-      list.hash(into: &hasher)
-    case .association(let association):
-      URIVariableValueType.association.hash(into: &hasher)
-      association.hash(into: &hasher)
+      lhs.valueType < rhs.valueType
     }
   }
   
@@ -353,20 +139,18 @@ extension URIVariableValueData : Hashable {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueData : CustomStringConvertible {
-
-  @inlinable
+  
+  @usableFromInline
   internal var description: String {
-    get {
-      switch self {
-      case .undefined:
-        return ".undefined"
-      case .text(let text):
-        return ".text(\"\(text.storage)\")"
-      case .list(let list):
-        return ".list(\(list.description))"
-      case .association(let association):
-        return ".association(\(association.description))"
-      }
+    switch self {
+    case .undefined:
+      ".undefined"
+    case .text(let text):
+      ".text(\"\(text.storage)\")"
+    case .list(let list):
+      ".list(\(list.description))"
+    case .association(let association):
+      ".association(\(association.description))"
     }
   }
   
@@ -378,26 +162,24 @@ extension URIVariableValueData : CustomStringConvertible {
 
 extension URIVariableValueData : CustomDebugStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var debugDescription: String {
-    get {
-      switch self {
-      case .undefined:
-        return "URIVariableValueData.undefined"
-      case .text(let text):
-        return "URIVariableValueData.text(\(text.debugDescription))"
-      case .list(let list):
-        return "URIVariableValueData.list(\(list.debugDescription))"
-      case .association(let association):
-        return "URIVariableValueData.association(\(association.debugDescription))"
-      }
+    switch self {
+    case .undefined:
+      "URIVariableValueData.undefined"
+    case .text(let text):
+      "URIVariableValueData.text(\(text.debugDescription))"
+    case .list(let list):
+      "URIVariableValueData.list(\(list.debugDescription))"
+    case .association(let association):
+      "URIVariableValueData.association(\(association.debugDescription))"
     }
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - NSCoder
+// MARK: - Codable
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueData : Codable {
@@ -405,13 +187,13 @@ extension URIVariableValueData : Codable {
   @usableFromInline
   internal typealias CodingKeys = StandardEnumerationCodingKeys
   
-  @inlinable
+  @usableFromInline
   internal func encode(to encoder: Encoder) throws {
     var container = encoder.container(
       keyedBy: CodingKeys.self
     )
     try container.encode(
-      self.valueType,
+      valueType,
       forKey: .type
     )
     switch self {
@@ -435,7 +217,7 @@ extension URIVariableValueData : Codable {
     }
   }
   
-  @inlinable
+  @usableFromInline
   internal init(from decoder: Decoder) throws {
     let container = try decoder.container(
       keyedBy: CodingKeys.self
@@ -471,4 +253,144 @@ extension URIVariableValueData : Codable {
     }
   }
   
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: URIVariableValueData - Core API
+// -------------------------------------------------------------------------- //
+
+extension URIVariableValueData {
+  
+  @inlinable
+  internal var valueType: URIVariableValueType {
+    switch self {
+    case .undefined:
+      .undefined
+    case .text(_):
+      .text
+    case .list(_):
+      .list
+    case .association(_):
+      .association
+    }
+  }
+  
+  @inlinable
+  internal var isEmpty: Bool {
+    switch self {
+    case .undefined:
+      true
+    case .text(let text):
+      text.isEmpty
+    case .list(let list):
+      list.isEmpty
+    case .association(let association):
+      association.isEmpty
+    }
+  }
+  
+  @inlinable
+  internal var isDefined: Bool {
+    switch self {
+    case .undefined:
+      false
+    case .text(_):
+      true
+    case .list(_):
+      true
+    case .association(_):
+      true
+    }
+  }
+  
+  @inlinable
+  internal var isUndefined: Bool {
+    switch self {
+    case .undefined:
+      true
+    case .text(_):
+      false
+    case .list(_):
+      false
+    case .association(_):
+      false
+    }
+  }
+
+  @inlinable
+  internal var count: Int {
+    switch self {
+    case .undefined:
+      0
+    case .text(_):
+      1
+    case .list(let list):
+      list.count
+    case .association(let association):
+      association.count
+    }
+  }
+
+  @inlinable
+  internal var isUndefinedValue: Bool {
+    switch self {
+    case .undefined:
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
+  internal var isTextValue: Bool {
+    switch self {
+    case .text(_):
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
+  internal var isListValue: Bool {
+    switch self {
+    case .list(_):
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
+  internal var isAssociationValue: Bool {
+    switch self {
+    case .association(_):
+      true
+    default:
+      false
+    }
+  }
+
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URIVariableValueData {
+  
+  @inlinable
+  internal var isValid: Bool {
+    switch self {
+    case .undefined:
+      true
+    case .text(let text):
+      text.isValid
+    case .list(let list):
+      list.isValid
+    case .association(let association):
+      association.isValid
+    }
+  }
+    
 }

@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URIValueExpansionModifier - Definition
@@ -111,7 +110,7 @@ internal extension URIValueExpansionModifier {
 // MARK: URIValueExpansionModifier - Validatable
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifier : Validatable {
+extension URIValueExpansionModifier {
   
   @inlinable
   internal var isValid: Bool {

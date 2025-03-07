@@ -3,7 +3,6 @@
 //
 
 import Foundation
-import HDXLCommonUtilities
 
 // ------------------------------------------------------------------------ //
 // MARK: URITemplate.ParseError - Definition

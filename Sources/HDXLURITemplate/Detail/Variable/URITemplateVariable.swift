@@ -1,15 +1,9 @@
-//
-//  URITemplateVariable.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateVariable - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal struct URITemplateVariable {
   
@@ -22,12 +16,13 @@ internal struct URITemplateVariable {
   @inlinable
   internal init(
     variableName: URITemplateVariableName,
-    expansionModifier: URIValueExpansionModifier) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(variableName.isValid)
-    pedantic_assert(expansionModifier.isValid)
-    defer { pedantic_assert(self.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+    expansionModifier: URIValueExpansionModifier
+  ) {
+#if HEAVY_DEBUG
+    pedanticAssert(variableName.isValid)
+    pedanticAssert(expansionModifier.isValid)
+    defer { pedanticAssert(isValid) }
+#endif
     self.variableName = variableName
     self.expansionModifier = expansionModifier
   }
@@ -35,62 +30,16 @@ internal struct URITemplateVariable {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Core API
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-internal extension URITemplateVariable {
-  
-  @inlinable
-  var templateRepresentation: String {
-    get {
-      return "\(self.variableName.storage)\(self.expansionModifier.templateRepresentation)"
-    }
-  }
-  
-}
+extension URITemplateVariable : Sendable { }
+extension URITemplateVariable : Equatable { }
+extension URITemplateVariable : Hashable { }
+extension URITemplateVariable : Codable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariable : Validatable {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      return self.variableName.isValid && self.expansionModifier.isValid
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariable : Equatable {
-  
-  @inlinable
-  internal static func ==(
-    lhs: URITemplateVariable,
-    rhs: URITemplateVariable) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    guard
-      lhs.variableName == rhs.variableName,
-      lhs.expansionModifier == rhs.expansionModifier else {
-        return false
-    }
-    return true
-
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateVariable : Comparable {
@@ -98,44 +47,30 @@ extension URITemplateVariable : Comparable {
   @inlinable
   internal static func <(
     lhs: URITemplateVariable,
-    rhs: URITemplateVariable) -> Bool {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(lhs.isValid)
-    pedantic_assert(rhs.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    return ComparisonResult.coalescing(
-      lhs.variableName <=> rhs.variableName,
-      lhs.expansionModifier <=> rhs.expansionModifier
-    ).impliesLessThan
+    rhs: URITemplateVariable
+  ) -> Bool {
+#if HEAVY_DEBUG
+    pedanticAssert(lhs.isValid)
+    pedanticAssert(rhs.isValid)
+#endif
+    guard lhs.variableName == rhs.variableName else {
+      return lhs.variableName < rhs.variableName
+    }
+    
+    return lhs.expansionModifier < rhs.expansionModifier
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariable : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    self.variableName.hash(into: &hasher)
-    self.expansionModifier.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateVariable : CustomStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var description: String {
-    get {
-      return "\"\(self.variableName)\", \(self.expansionModifier.description)"
-    }
+    "\"\(variableName)\", \(expansionModifier.description)"
   }
   
 }
@@ -146,21 +81,35 @@ extension URITemplateVariable : CustomStringConvertible {
 
 extension URITemplateVariable : CustomDebugStringConvertible {
   
-  @inlinable
+  @usableFromInline
   internal var debugDescription: String {
-    get {
-      return "URITemplateVariable(variableName: \(self.variableName.debugDescription), expansionModifier: \(self.expansionModifier.debugDescription))"
-    }
+    "URITemplateVariable(variableName: \(String(reflecting: variableName)), expansionModifier: \(String(reflecting: expansionModifier)))"
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Codable
+// MARK: - Core API
 // -------------------------------------------------------------------------- //
 
-extension URITemplateVariable : Codable {
+extension URITemplateVariable {
   
-  // synthesized ok
+  @inlinable
+  internal var templateRepresentation: String {
+    "\(variableName.storage)\(expansionModifier.templateRepresentation)"
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URITemplateVariable {
+  
+  @inlinable
+  internal var isValid: Bool {
+    variableName.isValid && expansionModifier.isValid
+  }
   
 }

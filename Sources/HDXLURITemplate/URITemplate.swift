@@ -1,9 +1,4 @@
-//
-//  URITemplate.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplate - Definition
@@ -33,10 +28,10 @@ public struct URITemplate {
   
   @inlinable
   internal init(storage: URITemplateStorage) {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(storage.isValid)
-    defer { pedantic_assert(storage.isValid) }
-    // /////////////////////////////////////////////////////////////////////////
+#if HEAVY_DEBUG
+    pedanticAssert(storage.isValid)
+    defer { pedanticAssert(storage.isValid) }
+#endif
     self.storage = storage
   }
 
@@ -72,24 +67,20 @@ public struct URITemplate {
 // MARK: URITemplate - Core API
 // -------------------------------------------------------------------------- //
 
-public extension URITemplate {
+extension URITemplate {
   
   /// Returns a URI template string *equivalent* to this template.
   /// In general should be identical to the template from-which it was parsed,
   /// but at present I don't guarantee that it's identical.
   @inlinable
-  var templateRepresentation: String {
-    get {
-      return self.storage.templateRepresentation
-    }
+  public var templateRepresentation: String {
+    storage.templateRepresentation
   }
   
   /// The names of the variables within the template (as `String`s).
   @inlinable
-  var variableNames: Set<String> {
-    get {
-      return self.storage.variableNames
-    }
+  public var variableNames: Set<String> {
+    storage.variableNames
   }
   
 }
@@ -98,13 +89,11 @@ public extension URITemplate {
 // MARK: URITemplate - Validatable
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : Validatable {
+extension URITemplate {
   
   @inlinable
   public var isValid: Bool {
-    get {
-      return self.storage.isValid
-    }
+    storage.isValid
   }
   
 }
@@ -113,16 +102,10 @@ extension URITemplate : Validatable {
 // MARK: URITemplate - Equatable
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : Equatable {
-  
-  @inlinable
-  public static func ==(
-    lhs: URITemplate,
-    rhs: URITemplate) -> Bool {
-    return lhs.storage == rhs.storage
-  }
-  
-}
+extension URITemplate : Sendable { }
+extension URITemplate : Equatable { }
+extension URITemplate : Hashable { }
+extension URITemplate : Codable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplate - Comparable
@@ -133,36 +116,22 @@ extension URITemplate : Comparable {
   @inlinable
   public static func <(
     lhs: URITemplate,
-    rhs: URITemplate) -> Bool {
-    return lhs.storage < rhs.storage
+    rhs: URITemplate
+  ) -> Bool {
+    lhs.storage < rhs.storage
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplate - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URITemplate : Hashable {
-  
-  @inlinable
-  public func hash(into hasher: inout Hasher) {
-    self.storage.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplate : CustomStringConvertible {
   
   @inlinable
   public var description: String {
-    get {
-      return self.storage.description
-    }
+    storage.description
   }
   
 }
@@ -176,19 +145,7 @@ extension URITemplate : CustomDebugStringConvertible {
   
   @inlinable
   public var debugDescription: String {
-    get {
-      return "URITemplate(storage: \(self.storage.debugDescription)) ('\(self.templateRepresentation)')"
-    }
+    "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"
   }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Codable
-// -------------------------------------------------------------------------- //
-
-extension URITemplate : Codable {
-  
-  // synthesized ok
   
 }

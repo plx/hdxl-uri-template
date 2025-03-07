@@ -1,9 +1,4 @@
-//
-//  URITemplateVariableName+TextVariableNameExpansion.swift
-//
-
 import Foundation
-import HDXLCommonUtilities
 
 internal extension URITemplateVariableName {
   
@@ -17,14 +12,15 @@ internal extension URITemplateVariableName {
   @inlinable
   func escapedVariableName(
     forExpansionType expansionType: URIValueExpansionType,
-    forced: Bool = false) -> TextVariableNameEscapeResult {
-    // /////////////////////////////////////////////////////////////////////////
-    pedantic_assert(self.isValid)
-    // /////////////////////////////////////////////////////////////////////////
-    guard forced || self.shouldEscapeName(forExpansionType: expansionType) else {
+    forced: Bool = false
+  ) -> TextVariableNameEscapeResult {
+#if HEAVY_DEBUG
+    pedanticAssert(isValid)
+#endif
+    guard forced || shouldEscapeName(forExpansionType: expansionType) else {
       return .unnecessary
     }
-    guard let escapedName = self.storage.escaped(forValueExpansionType: expansionType) else {
+    guard let escapedName = storage.escaped(forValueExpansionType: expansionType) else {
       return .failure
     }
     return .escaped(escapedName)
@@ -32,7 +28,8 @@ internal extension URITemplateVariableName {
   
   @inlinable
   func shouldEscapeName(
-    forExpansionType expansionType: URIValueExpansionType) -> Bool {
+    forExpansionType expansionType: URIValueExpansionType
+  ) -> Bool {
     switch expansionType {
     case .simple:
       return false
