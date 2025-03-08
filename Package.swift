@@ -29,6 +29,20 @@ let package = Package(
       name: "HDXLURITemplateTests",
       dependencies: [
         "HDXLURITemplate", 
+      ],
+      resources: [
+        Resource.copy(
+          "Resources/extended-tests.json"
+        ),
+        Resource.copy(
+          "Resources/negative-tests.json"
+        ),
+        Resource.copy(
+          "Resources/spec-examples.json"
+        ),
+        Resource.copy(
+          "Resources/spec-examples-by-section.json"
+        )
       ]
     )
   ],
