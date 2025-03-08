@@ -1,14 +1,9 @@
-//
-//  URIValueExpansionModifier.swift
-//
-
 import Foundation
 
 // -------------------------------------------------------------------------- //
 // MARK: URIValueExpansionModifier - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal enum URIValueExpansionModifier {
   
@@ -23,137 +18,15 @@ internal enum URIValueExpansionModifier {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Core API
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-internal extension URIValueExpansionModifier {
-  
-  @inlinable
-  var requiresAction: Bool {
-    get {
-      switch self {
-      case .unmodified:
-        return false
-      default:
-        return true
-      }
-    }
-  }
-  
-  @inlinable
-  var isUnmodifiedType: Bool {
-    get {
-      switch self {
-      case .unmodified:
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  
-  @inlinable
-  var isExplodeType: Bool {
-    get {
-      switch self {
-      case .explode:
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  
-  @inlinable
-  var isPrefixType: Bool {
-    get {
-      switch self {
-      case .prefix(_):
-        return true
-      default:
-        return false
-      }
-    }
-  }
-  
-  @inlinable
-  var modifierType: URIValueExpansionModifierType {
-    get {
-      switch self {
-      case .unmodified:
-        return .unmodified
-      case .explode:
-        return .explode
-      case .prefix(_):
-        return .prefix
-      }
-    }
-  }
-  
-  @inlinable
-  var templateRepresentation: String {
-    get {
-      switch self {
-      case .unmodified:
-        return ""
-      case .explode:
-        return "*"
-      case .prefix(let codePointCount):
-        return ":\(codePointCount)"
-      }
-    }
-  }
-  
-}
+extension URIValueExpansionModifier : Sendable { }
+extension URIValueExpansionModifier : Equatable { }
+extension URIValueExpansionModifier : Hashable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionModifier {
-  
-  @inlinable
-  internal var isValid: Bool {
-    get {
-      switch self {
-      case .unmodified:
-        return true
-      case .explode:
-        return true
-      case .prefix(let codePointCount):
-        return URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.contains(codePointCount)
-      }
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionModifier : Equatable {
-  
-  @inlinable
-  internal static func ==(
-    lhs: URIValueExpansionModifier,
-    rhs: URIValueExpansionModifier) -> Bool {
-    switch (lhs,rhs) {
-    case (.unmodified, .unmodified):
-      return true
-    case (.explode, .explode):
-      return true
-    case (.prefix(let l), .prefix(let r)):
-      return l == r
-    default:
-      return false
-    }
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : Comparable {
@@ -161,69 +34,47 @@ extension URIValueExpansionModifier : Comparable {
   @inlinable
   internal static func <(
     lhs: URIValueExpansionModifier,
-    rhs: URIValueExpansionModifier) -> Bool {
+    rhs: URIValueExpansionModifier
+  ) -> Bool {
     switch (lhs,rhs) {
     case (.unmodified, .unmodified):
-      return false
+      false
     case (.unmodified, .explode):
-      return true
+      true
     case (.unmodified, .prefix(_)):
-      return true
+      true
     case (.explode, .unmodified):
-      return false
+      false
     case (.explode, .explode):
-      return false
+      false
     case (.explode, .prefix(_)):
-      return true
+      true
     case (.prefix(_), .unmodified):
-      return false
+      false
     case (.prefix(_), .explode):
-      return false
+      false
     case (.prefix(let l), .prefix(let r)):
-      return l < r
+      l < r
     }
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionModifier : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    switch self {
-    case .unmodified:
-      URIValueExpansionModifierType.unmodified.hash(into: &hasher)
-    case .explode:
-      URIValueExpansionModifierType.explode.hash(into: &hasher)
-    case .prefix(let codePointCount):
-      URIValueExpansionModifierType.prefix.hash(into: &hasher)
-      codePointCount.hash(into: &hasher)
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : CustomStringConvertible {
 
   @inlinable
   internal var description: String {
-    get {
-      switch self {
-      case .unmodified:
-        return ".unmodified"
-      case .explode:
-        return ".explode"
-      case .prefix(let codePointCount):
-        return ".prefix(\(codePointCount))"
-      }
+    switch self {
+    case .unmodified:
+      ".unmodified"
+    case .explode:
+      ".explode"
+    case .prefix(let codePointCount):
+      ".prefix(\(codePointCount))"
     }
   }
 }
@@ -236,15 +87,13 @@ extension URIValueExpansionModifier : CustomDebugStringConvertible {
 
   @inlinable
   internal var debugDescription: String {
-    get {
-      switch self {
-      case .unmodified:
-        return "URIValueExpansionModifier.unmodified"
-      case .explode:
-        return "URIValueExpansionModifier.explode"
-      case .prefix(let codePointCount):
-        return "URIValueExpansionModifier.prefix(\(codePointCount))"
-      }
+    switch self {
+    case .unmodified:
+      "URIValueExpansionModifier.unmodified"
+    case .explode:
+      "URIValueExpansionModifier.explode"
+    case .prefix(let codePointCount):
+      "URIValueExpansionModifier.prefix(\(codePointCount))"
     }
   }
 }
@@ -334,22 +183,106 @@ extension URIValueExpansionModifier : CaseIterable {
   @usableFromInline
   internal typealias AllCases = [URIValueExpansionModifier]
   
+  @usableFromInline
+  internal static let allCases: AllCases = [
+    .unmodified,
+    .explode
+  ] + URIValueExpansionModifier
+    .rangeOfValidPrefixCodePointCounts
+    .lazy
+    .map {
+      .prefix($0)
+    }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK:  - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URIValueExpansionModifier {
+  
   @inlinable
-  internal static var allCases: AllCases {
-    get {
-      var result: AllCases = [
-        .unmodified,
+  internal var isValid: Bool {
+    switch self {
+    case .unmodified:
+      true
+    case .explode:
+      true
+    case .prefix(let codePointCount):
+      URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.contains(codePointCount)
+    }
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: URIValueExpansionModifier - Core API
+// -------------------------------------------------------------------------- //
+
+extension URIValueExpansionModifier {
+  
+  @inlinable
+  internal var requiresAction: Bool {
+    switch self {
+    case .unmodified:
+      false
+    default:
+      true
+    }
+  }
+  
+  @inlinable
+  internal var isUnmodifiedType: Bool {
+    switch self {
+    case .unmodified:
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
+  internal var isExplodeType: Bool {
+    switch self {
+    case .explode:
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
+  internal var isPrefixType: Bool {
+    switch self {
+    case .prefix(_):
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
+  internal var modifierType: URIValueExpansionModifierType {
+    switch self {
+    case .unmodified:
+        .unmodified
+    case .explode:
         .explode
-      ]
-      result.append(
-        contentsOf: URIValueExpansionModifier
-          .rangeOfValidPrefixCodePointCounts
-          .lazy
-          .map() {
-            .prefix($0)
-        }
-      )
-      return result
+    case .prefix(_):
+        .prefix
+    }
+  }
+  
+  @inlinable
+  internal var templateRepresentation: String {
+    switch self {
+    case .unmodified:
+      ""
+    case .explode:
+      "*"
+    case .prefix(let codePointCount):
+      ":\(codePointCount)"
     }
   }
   

@@ -1,19 +1,15 @@
-//
-//  URITemplateLiteralComponent+Parsing.swift
-//
-
 import Foundation
 
-internal extension URITemplateLiteralComponent {
+extension URITemplateLiteralComponent {
   
   @usableFromInline
-  enum ParseError : Error {
+  internal enum ParseError : Error {
     case unexpectedlyEmpty
     case invalidContent(String)
   }
   
   @inlinable
-  init(parsing string: String) throws {
+  internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.unexpectedlyEmpty
     }

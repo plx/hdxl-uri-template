@@ -27,23 +27,17 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   
   @objc
   override public var hash: Int {
-    get {
-      return template.hashValue
-    }
+    template.hashValue
   }
   
   @objc
   override public var description: String {
-    get {
-      return "HDXLURITemplate(template: \"\(template.description)\")"
-    }
+    "HDXLURITemplate(template: \"\(template.description)\")"
   }
   
   @objc
   override public var debugDescription: String {
-    get {
-      return "HDXLURITemplate<\(ObjectIdentifier(self).debugDescription)>(template: \"\(template.debugDescription)\")"
-    }
+    "HDXLURITemplate<\(ObjectIdentifier(self).debugDescription)>(template: \"\(template.debugDescription)\")"
   }
   
   // ------------------------------------------------------------------------ //

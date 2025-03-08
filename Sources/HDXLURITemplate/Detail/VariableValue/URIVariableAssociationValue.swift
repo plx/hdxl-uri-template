@@ -108,12 +108,12 @@ extension URIVariableAssociationValue {
   internal var isEmpty: Bool {
     storage.isEmpty
   }
-
+  
   @inlinable
   internal var count: Int {
     storage.count
   }
-
+  
   @inlinable
   internal subscript(index: Int) -> URIVariablePairValue {
     storage[index]
@@ -128,7 +128,7 @@ extension URIVariableAssociationValue {
   internal subscript(key: URIVariableTextValue) -> URIVariableTextValue? {
     storage.first(where: { key == $0.key })?.value
   }
-
+  
 }
 
 // -------------------------------------------------------------------------- //

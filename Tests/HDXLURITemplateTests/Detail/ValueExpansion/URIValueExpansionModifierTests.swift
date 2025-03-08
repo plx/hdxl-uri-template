@@ -1,125 +1,84 @@
-//
-//  URIValueExpansionModifierTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URIValueExpansionModifierTests : XCTestCase {
-  
-  // big array and don't want to keep re-constructing it each time:
-  let probes = URIValueExpansionModifier.allCases
-  
-  lazy var reducedProbes: URIValueExpansionModifier.AllCases = Array(self.probes[0..<25])
-  
-  func testAllCasesOrdering() {
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }
-  
-  func testFixtureValidity() {
-    self.haltingOnFirstError {
-      self.probes.forEach() {
-        XCTAssertTrue($0.isValid)
-      }
-    }
-  }
-  
-  func testCaseIterableCompleteness() {
-    XCTAssertEqual(
-      self.probes.count,
-      2 + URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.count
-    )
-    XCTAssertTrue(
-      self.probes.contains(
-        .unmodified
-      )
-    )
-    XCTAssertTrue(
-      self.probes.contains(
-        .explode
-      )
-    )
-    self.haltingOnFirstError {
-      for codePointCount in URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts {
-        XCTAssertTrue(
-          self.probes.contains(
-            .prefix(codePointCount)
-          )
-        )
-      }
-    }
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.reducedProbes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.reducedProbes
-    )
-  }
-  
-  func testDistinctValues() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URIValueExpansionModifier.allCases.map() { $0.description }
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URIValueExpansionModifier.allCases.map() { $0.debugDescription }
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URIValueExpansionModifier.allCases.map() { $0.templateRepresentation }
-    )
-  }
-  
-  func testCodableRoundTrip() {
-    HDXLAssertCodableRoundTrip(
-      URIValueExpansionModifier.allCases
-    )
-  }
-  
-  func testInterpretationUtilities() {
-    self.haltingOnFirstError {
-      for probe in probes {
-        switch probe {
-        case .unmodified:
-          XCTAssertFalse(probe.requiresAction)
-          XCTAssertTrue(probe.isUnmodifiedType)
-          XCTAssertFalse(probe.isExplodeType)
-          XCTAssertFalse(probe.isPrefixType)
-          XCTAssertEqual(
-            probe.modifierType,
-            .unmodified
-          )
-        case .explode:
-          XCTAssertTrue(probe.requiresAction)
-          XCTAssertFalse(probe.isUnmodifiedType)
-          XCTAssertTrue(probe.isExplodeType)
-          XCTAssertFalse(probe.isPrefixType)
-          XCTAssertEqual(
-            probe.modifierType,
-            .explode
-          )
-        case .prefix(_):
-          XCTAssertTrue(probe.requiresAction)
-          XCTAssertFalse(probe.isUnmodifiedType)
-          XCTAssertFalse(probe.isExplodeType)
-          XCTAssertTrue(probe.isPrefixType)
-          XCTAssertEqual(
-            probe.modifierType,
-            .prefix
-          )
-        }
-      }
-    }
-  }
-  
+extension Tag {
+  @Tag
+  static var uriValueExpansionModifier: Self
 }
+
+@Test(
+  "`URIValueExpansionModifier.allCases` is ordered ascending",
+  .tags(.uriValueExpansionModifier)
+)
+private func allCasesOrderedAscending() {
+  verifyOrderedAscending(URIValueExpansionModifier.allCases)
+}
+
+@Test(
+  "`URIValueExpansionModifier` has unique descriptions",
+  .tags(.uriValueExpansionModifier)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    URIValueExpansionModifier.allCases,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URIValueExpansionModifier` has unique debugDescriptions",
+  .tags(.uriValueExpansionModifier)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    URIValueExpansionModifier.allCases,
+    using: \.debugDescription
+  )
+}
+
+@Test(
+  "`URIValueExpansionModifier.requiresAction`",
+  .tags(.uriValueExpansionModifier),
+  arguments: URIValueExpansionModifier.allCases
+)
+private func requiresActionOK(expansionModifier: URIValueExpansionModifier) throws {
+  switch expansionModifier {
+  case .unmodified:
+    #expect(!expansionModifier.requiresAction)
+  case .explode:
+    #expect(expansionModifier.requiresAction)
+  case .prefix:
+    #expect(expansionModifier.requiresAction)
+  }
+}
+
+@Test(
+  "`URIValueExpansionModifier` is-type checks",
+  .tags(.uriValueExpansionModifier),
+  arguments: URIValueExpansionModifier.allCases
+)
+private func isTypeChecks(expansionModifier: URIValueExpansionModifier) throws {
+  switch expansionModifier {
+  case .unmodified:
+    #expect(expansionModifier.isUnmodifiedType)
+    #expect(!expansionModifier.isExplodeType)
+    #expect(!expansionModifier.isPrefixType)
+    #expect(expansionModifier.modifierType == .unmodified)
+  case .explode:
+    #expect(!expansionModifier.isUnmodifiedType)
+    #expect(expansionModifier.isExplodeType)
+    #expect(!expansionModifier.isPrefixType)
+    #expect(expansionModifier.modifierType == .explode)
+  case .prefix:
+    #expect(!expansionModifier.isUnmodifiedType)
+    #expect(!expansionModifier.isExplodeType)
+    #expect(expansionModifier.isPrefixType)
+    #expect(expansionModifier.modifierType == .prefix)
+  }
+}
+
+
+// MARK: Fixtures
+
+private let probes = URIValueExpansionModifier.allCases
+private let reducedProbes = Array(probes[0..<25])

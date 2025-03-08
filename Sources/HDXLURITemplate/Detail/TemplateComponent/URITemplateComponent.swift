@@ -84,7 +84,7 @@ extension URITemplateComponent : CustomDebugStringConvertible {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateComponent - Core API
+// MARK: - Core API
 // -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
@@ -92,9 +92,9 @@ extension URITemplateComponent {
   @inlinable
   internal var isLiteralComponent: Bool {
     switch self {
-    case .literal(_):
+    case .literal:
       true
-    case .expression(_):
+    case .expression:
       false
     }
   }
@@ -102,9 +102,9 @@ extension URITemplateComponent {
   @inlinable
   internal var isExpressionComponent: Bool {
     switch self {
-    case .literal(_):
+    case .literal:
       false
-    case .expression(_):
+    case .expression:
       true
     }
   }
@@ -122,10 +122,10 @@ extension URITemplateComponent {
   @inlinable
   internal var templateComponentType: URITemplateComponentType {
     switch self {
-    case .literal(_):
-        .literal
-    case .expression(_):
-        .expression
+    case .literal:
+      .literal
+    case .expression:
+      .expression
     }
   }
   
@@ -142,7 +142,6 @@ extension URITemplateComponent {
   }
   
 }
-
 
 // -------------------------------------------------------------------------- //
 // MARK: - Validatable

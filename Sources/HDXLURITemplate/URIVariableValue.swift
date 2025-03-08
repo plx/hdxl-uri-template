@@ -80,7 +80,7 @@ public struct URIVariableValue {
 
   /// Constructs a `.list`-flavored `URIVariableValue` wrapping `texts`.
   @inlinable
-  public init<S:Sequence>(from texts: S) where S.Element == String {
+  public init(from texts: some Sequence<String>) {
     self.init(
       storage: Storage(from: texts)
     )
@@ -96,7 +96,7 @@ public struct URIVariableValue {
 
   /// Constructs an `.association`-flavored `URIVariableValue` wrapping `pairs`.
   @inlinable
-  public init<S:Sequence>(from pairs: S) where S.Element == (String,String) {
+  public init(from pairs: some Sequence<(String, String)>) {
     self.init(
       storage: Storage(from: pairs)
     )
@@ -228,7 +228,7 @@ extension URIVariableValue : Codable {
 
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Core API
+// MARK: - Core API
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValue {

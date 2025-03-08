@@ -7,14 +7,14 @@ extension String {
   /// - note: For `""` prefixes this returns `nil` (rather than, say, a `0..<0`-equivalent).
   ///
   @inlinable
-  func range(forPrefix prefix: String) -> Range<String.Index>? {
+  internal func range(forPrefix prefix: String) -> Range<String.Index>? {
     guard
       !isEmpty,
       !prefix.isEmpty
     else {
       return nil
     }
-    return self.range(
+    return range(
       of: prefix,
       options: [.anchored]
     )
@@ -22,8 +22,8 @@ extension String {
 
   /// Returns the result of removing `prefix` iff `self` actually has `prefix` as a prefix.
   @inlinable
-  func conditionallyRemoving(prefix: String) -> String {
-    return self.mutated() {
+  internal func conditionallyRemoving(prefix: String) -> String {
+    mutated {
       $0.conditionallyRemove(prefix: prefix)
     }
   }
@@ -31,8 +31,8 @@ extension String {
   /// In-place removes `prefix` iff it's actually present as a prefix on `self`.
   @inlinable
   mutating func conditionallyRemove(prefix: String) {
-    if let prefixRange = self.range(forPrefix: prefix) {
-      self.removeSubrange(prefixRange)
+    if let prefixRange = range(forPrefix: prefix) {
+      removeSubrange(prefixRange)
     }
   }
 

@@ -1,15 +1,15 @@
 import Foundation
 
-internal extension URIVariableListValue {
+extension URIVariableListValue {
   
   @usableFromInline
-  enum ExpansionError : Error, LocalizedError {
+  internal enum ExpansionError : Error, LocalizedError {
     case internalValueFailedToEscape([String], String, String, URIValueExpansionType)
     case unableToEscapeVariableName(String, URIValueExpansionType)
   }
   
   @inlinable
-  func expansion(
+  internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) throws -> String {
@@ -25,7 +25,7 @@ internal extension URIVariableListValue {
   }
   
   @inlinable
-  func expansion(
+  internal func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
@@ -38,19 +38,19 @@ internal extension URIVariableListValue {
     guard !isEmpty else {
       return ""
     }
-    switch expansionModifier {
+    return switch expansionModifier {
     case .unmodified:
-      return try unexplodedExpansion(
+      try unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .explode:
-      return try explodedExpansion(
+      try explodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .prefix(_):
-      return try unexplodedExpansion(
+      try unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
@@ -58,7 +58,7 @@ internal extension URIVariableListValue {
   }
   
   @inlinable
-  func explodedExpansion(
+  internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) throws -> String {
@@ -76,7 +76,7 @@ internal extension URIVariableListValue {
     }
     return try storage
       .lazy
-      .map() {
+      .map {
         (text)
         in
         guard let escapedValue = text.storage.escaped(forValueExpansionType: expansionType) else {
@@ -94,7 +94,7 @@ internal extension URIVariableListValue {
   }
 
   @inlinable
-  func unexplodedExpansion(
+  internal func unexplodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) throws -> String {
@@ -104,7 +104,7 @@ internal extension URIVariableListValue {
 #endif
     let joinedValues = try storage
       .lazy
-      .map() {
+      .map {
         (text)
         in
         guard let escaped = text.storage.escaped(forValueExpansionType: expansionType) else {

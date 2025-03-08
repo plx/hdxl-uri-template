@@ -20,7 +20,6 @@ import Foundation
 /// Note that (2) exists primarily for testing. I'm not opposed in principle to
 /// including mutable methods on the public API, but it doesn't seem necessary.
 ///
-@frozen
 public struct URITemplate {
   
   @usableFromInline
@@ -59,41 +58,6 @@ public struct URITemplate {
         underlyingError: underlyingError
       )
     }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Core API
-// -------------------------------------------------------------------------- //
-
-extension URITemplate {
-  
-  /// Returns a URI template string *equivalent* to this template.
-  /// In general should be identical to the template from-which it was parsed,
-  /// but at present I don't guarantee that it's identical.
-  @inlinable
-  public var templateRepresentation: String {
-    storage.templateRepresentation
-  }
-  
-  /// The names of the variables within the template (as `String`s).
-  @inlinable
-  public var variableNames: Set<String> {
-    storage.variableNames
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplate {
-  
-  @inlinable
-  public var isValid: Bool {
-    storage.isValid
   }
   
 }
@@ -138,7 +102,7 @@ extension URITemplate : CustomStringConvertible {
 
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplate - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplate : CustomDebugStringConvertible {
@@ -149,3 +113,39 @@ extension URITemplate : CustomDebugStringConvertible {
   }
   
 }
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URITemplate {
+  
+  @inlinable
+  public var isValid: Bool {
+    storage.isValid
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Core API
+// -------------------------------------------------------------------------- //
+
+extension URITemplate {
+  
+  /// Returns a URI template string *equivalent* to this template.
+  /// In general should be identical to the template from-which it was parsed,
+  /// but at present I don't guarantee that it's identical.
+  @inlinable
+  public var templateRepresentation: String {
+    storage.templateRepresentation
+  }
+  
+  /// The names of the variables within the template (as `String`s).
+  @inlinable
+  public var variableNames: Set<String> {
+    storage.variableNames
+  }
+  
+}
+

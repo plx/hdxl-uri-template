@@ -1,14 +1,12 @@
-//
-//  String+URITemplateManipulations.swift
-//
-
 import Foundation
 
-internal extension String {
+extension String {
   
   /// Utility to return the result of a mutable operation on `String`.
   @inlinable
-  func mutated(by mutation: (inout String) throws -> Void) rethrows -> String {
+  internal func mutated(
+    by mutation: (inout String) throws -> Void
+  ) rethrows -> String {
     var clone = self
     try mutation(&clone)
     return clone

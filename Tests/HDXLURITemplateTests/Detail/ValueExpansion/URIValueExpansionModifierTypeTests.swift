@@ -1,69 +1,37 @@
-//
-//  URIValueExpansionModifierTypeTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URIValueExpansionModifierTypeTests : XCTestCase {
-  
-  func testAllCasesOrdering() {
-    XCTAssertTrue(URIValueExpansionModifierType.allCases.isOrderedStrictlyAscending)
-  }
-  
-  func testCaseIterableCompleteness() {
-    XCTAssertEqual(
-      URIValueExpansionModifierType.allCases.count,
-      3
-    )
-    XCTAssertTrue(
-      URIValueExpansionModifierType.allCases.contains(
-        .unmodified
-      )
-    )
-    XCTAssertTrue(
-      URIValueExpansionModifierType.allCases.contains(
-        .explode
-      )
-    )
-    XCTAssertTrue(
-      URIValueExpansionModifierType.allCases.contains(
-        .prefix
-      )
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: URIValueExpansionModifierType.allCases
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: URIValueExpansionModifierType.allCases
-    )
-  }
-  
-  func testDistinctValues() {
-    HDXLAssertPairwiseDistinctElements(
-      URIValueExpansionModifierType.allCases
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URIValueExpansionModifierType.allCases.map() { $0.description }
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URIValueExpansionModifierType.allCases.map() { $0.debugDescription }
-    )
-  }
-  
-  func testCodableRoundTrip() {
-    HDXLAssertCodableRoundTrip(
-      URIValueExpansionModifierType.allCases
-    )
-  }
-  
+extension Tag {
+  @Tag
+  static var uriValueExpansionModifierType: Self
+}
+
+@Test(
+  "`URIValueExpansionModifierType.allCases` is ordered ascending",
+  .tags(.uriValueExpansionModifierType)
+)
+private func allCasesOrderedAscending() {
+  verifyOrderedAscending(URIValueExpansionModifierType.allCases)
+}
+
+@Test(
+  "`URIValueExpansionModifierType` has unique descriptions",
+  .tags(.uriValueExpansionModifierType)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    URIValueExpansionModifierType.allCases,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URIValueExpansionModifierType` has unique debugDescriptions",
+  .tags(.uriValueExpansionModifierType)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    URIValueExpansionModifierType.allCases,
+    using: \.debugDescription
+  )
 }

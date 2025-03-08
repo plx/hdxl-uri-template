@@ -1,17 +1,13 @@
-//
-//  String+URITemplateLiteralVariableDecomposition.swift
-//
-
 import Foundation
 
 // -------------------------------------------------------------------------- //
 // MARK: String - URITemplate Chunking
 // -------------------------------------------------------------------------- //
 
-internal extension String {
+extension String {
 
   @usableFromInline
-  enum URITemplateChunkingError : Error {
+  internal enum URITemplateChunkingError : Error {
     case emptyVariableChunk(String)
     case strayOpenBracketWithinVariableChunk(String)
     case unexpectedCloseBracketWithinLiteralChunk(String)
@@ -19,32 +15,29 @@ internal extension String {
   }
   
   @usableFromInline
-  enum URITemplateChunkingState {
+  internal enum URITemplateChunkingState {
     case literal
     case expression
   }
 
   @usableFromInline
-  enum URITemplateChunkRange {
+  internal enum URITemplateChunkRange {
     case literal(Range<String.Index>)
     case expression(Range<String.Index>)
   }
   
   @inlinable
-  func parseIntoURITemplateComponents() throws -> [URITemplateComponent] {
-    let ranges = try identifyURITemplateChunkRanges()
-    return try ranges.map() {
-      (chunkRange) throws -> URITemplateComponent
-      in
+  internal func parseIntoURITemplateComponents() throws -> [URITemplateComponent] {
+    try identifyURITemplateChunkRanges().map() { chunkRange in
       switch chunkRange {
       case .literal(let literalRange):
-        return .literal(
+        .literal(
           try URITemplateLiteralComponent(
             parsing: String(self[literalRange])
           )
         )
       case .expression(let expressionRange):
-        return .expression(
+        .expression(
           try URITemplateExpressionComponent(
             parsing: String(self[expressionRange])
           )
@@ -54,10 +47,11 @@ internal extension String {
   }
 
   @inlinable
-  func identifyURITemplateChunkRanges() throws -> [URITemplateChunkRange] {
+  internal func identifyURITemplateChunkRanges() throws -> [URITemplateChunkRange] {
     guard !isEmpty else {
       return []
     }
+    
     var state: URITemplateChunkingState = .literal
     var currentLowerBound: String.Index = startIndex
     var ranges: [URITemplateChunkRange] = []

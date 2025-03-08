@@ -1,14 +1,9 @@
-//
-//  URIValueExpansionType.swift
-//
-
 import Foundation
 
 // -------------------------------------------------------------------------- //
 // MARK: URIValueExpansionType - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal enum URIValueExpansionType : UInt8 {
     
@@ -108,86 +103,165 @@ internal enum URIValueExpansionType : UInt8 {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Core API
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-internal extension URIValueExpansionType {
-    
-  @inlinable
-  var formatString: String {
-    get {
-      switch self {
-      case .simple:
-        return Self.simpleFormatString
-      case .reserved:
-        return Self.reservedFormatString
-      case .fragment:
-        return Self.fragmentFormatString
-      case .label:
-        return Self.labelFormatString
-      case .pathSegment:
-        return Self.pathSegmentFormatString
-      case .pathParameter:
-        return Self.pathParameterFormatString
-      case .query:
-        return Self.queryFormatString
-      case .queryContinuation:
-        return Self.queryContinuationFormatString
-      }
-    }
-  }
+extension URIValueExpansionType : Sendable { }
+extension URIValueExpansionType : Equatable { }
+extension URIValueExpansionType : Hashable { }
+extension URIValueExpansionType : Codable { }
+extension URIValueExpansionType : CaseIterable { }
+
+// -------------------------------------------------------------------------- //
+// MARK: - Comparable
+// -------------------------------------------------------------------------- //
+
+extension URIValueExpansionType : Comparable {
   
   @inlinable
-  var prefixForExpandedVariableList: String {
-    get {
-      switch self {
-      case .simple:
-        return Self.simplePrefixForExpandedVariableList
-      case .reserved:
-        return Self.reservedPrefixForExpandedVariableList
-      case .fragment:
-        return Self.fragmentPrefixForExpandedVariableList
-      case .label:
-        return Self.labelPrefixForExpandedVariableList
-      case .pathSegment:
-        return Self.pathSegmentPrefixForExpandedVariableList
-      case .pathParameter:
-        return Self.pathParameterPrefixForExpandedVariableList
-      case .query:
-        return Self.queryPrefixForExpandedVariableList
-      case .queryContinuation:
-        return Self.queryContinuationPrefixForExpandedVariableList
-      }
-    }
-  }
-  
-  @inlinable
-  var separatorForExpandedVariableList: String {
-    get {
-      switch self {
-      case .simple:
-        return Self.simpleSeparatorForExpandedVariableList
-      case .reserved:
-        return Self.reservedSeparatorForExpandedVariableList
-      case .fragment:
-        return Self.fragmentSeparatorForExpandedVariableList
-      case .label:
-        return Self.labelSeparatorForExpandedVariableList
-      case .pathSegment:
-        return Self.pathSegmentSeparatorForExpandedVariableList
-      case .pathParameter:
-        return Self.pathParameterSeparatorForExpandedVariableList
-      case .query:
-        return Self.querySeparatorForExpandedVariableList
-      case .queryContinuation:
-        return Self.queryContinuationSeparatorForExpandedVariableList
-      }
-    }
+  internal static func <(
+    lhs: Self,
+    rhs: Self
+  ) -> Bool {
+    lhs.rawValue < rhs.rawValue
   }
 
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - CustomStringConvertible
+// -------------------------------------------------------------------------- //
+
+extension URIValueExpansionType : CustomStringConvertible {
   
   @inlinable
-  init?(formatString: String) {
+  internal var description: String {
+    switch self {
+    case .simple:
+      "simple"
+    case .reserved:
+      "reserved"
+    case .fragment:
+      "fragment"
+    case .label:
+      "label"
+    case .pathSegment:
+      "pathSegment"
+    case .pathParameter:
+      "pathParameter"
+    case .query:
+      "query"
+    case .queryContinuation:
+      "queryContinuation"
+    }
+  }
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - CustomStringConvertible
+// -------------------------------------------------------------------------- //
+
+extension URIValueExpansionType : CustomDebugStringConvertible {
+  
+  @inlinable
+  internal var debugDescription: String {
+    switch self {
+    case .simple:
+      "URIValueExpansionType.simple"
+    case .reserved:
+      "URIValueExpansionType.reserved"
+    case .fragment:
+      "URIValueExpansionType.fragment"
+    case .label:
+      "URIValueExpansionType.label"
+    case .pathSegment:
+      "URIValueExpansionType.pathSegment"
+    case .pathParameter:
+      "URIValueExpansionType.pathParameter"
+    case .query:
+      "URIValueExpansionType.query"
+    case .queryContinuation:
+      "URIValueExpansionType.queryContinuation"
+    }
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Core API
+// -------------------------------------------------------------------------- //
+
+extension URIValueExpansionType {
+  
+  @inlinable
+  internal var formatString: String {
+    switch self {
+    case .simple:
+      Self.simpleFormatString
+    case .reserved:
+      Self.reservedFormatString
+    case .fragment:
+      Self.fragmentFormatString
+    case .label:
+      Self.labelFormatString
+    case .pathSegment:
+      Self.pathSegmentFormatString
+    case .pathParameter:
+      Self.pathParameterFormatString
+    case .query:
+      Self.queryFormatString
+    case .queryContinuation:
+      Self.queryContinuationFormatString
+    }
+  }
+  
+  @inlinable
+  internal var prefixForExpandedVariableList: String {
+    switch self {
+    case .simple:
+      Self.simplePrefixForExpandedVariableList
+    case .reserved:
+      Self.reservedPrefixForExpandedVariableList
+    case .fragment:
+      Self.fragmentPrefixForExpandedVariableList
+    case .label:
+      Self.labelPrefixForExpandedVariableList
+    case .pathSegment:
+      Self.pathSegmentPrefixForExpandedVariableList
+    case .pathParameter:
+      Self.pathParameterPrefixForExpandedVariableList
+    case .query:
+      Self.queryPrefixForExpandedVariableList
+    case .queryContinuation:
+      Self.queryContinuationPrefixForExpandedVariableList
+    }
+  }
+  
+  @inlinable
+  internal var separatorForExpandedVariableList: String {
+    switch self {
+    case .simple:
+      Self.simpleSeparatorForExpandedVariableList
+    case .reserved:
+      Self.reservedSeparatorForExpandedVariableList
+    case .fragment:
+      Self.fragmentSeparatorForExpandedVariableList
+    case .label:
+      Self.labelSeparatorForExpandedVariableList
+    case .pathSegment:
+      Self.pathSegmentSeparatorForExpandedVariableList
+    case .pathParameter:
+      Self.pathParameterSeparatorForExpandedVariableList
+    case .query:
+      Self.querySeparatorForExpandedVariableList
+    case .queryContinuation:
+      Self.queryContinuationSeparatorForExpandedVariableList
+    }
+  }
+  
+  
+  @inlinable
+  internal init?(formatString: String) {
     switch formatString {
     case Self.simpleFormatString:
       self = .simple
@@ -208,174 +282,6 @@ internal extension URIValueExpansionType {
     default:
       // TODO: consider logging values?
       return nil
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionType : Equatable {
-
-  @inlinable
-  internal static func ==(
-    lhs: URIValueExpansionType,
-    rhs: URIValueExpansionType) -> Bool {
-    return lhs.rawValue == rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func !=(
-    lhs: URIValueExpansionType,
-    rhs: URIValueExpansionType) -> Bool {
-    return lhs.rawValue != rhs.rawValue
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Comparable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionType : Comparable {
-  
-  @inlinable
-  internal static func <(
-    lhs: URIValueExpansionType,
-    rhs: URIValueExpansionType) -> Bool {
-    return lhs.rawValue < rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func >(
-    lhs: URIValueExpansionType,
-    rhs: URIValueExpansionType) -> Bool {
-    return lhs.rawValue > rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func <=(
-    lhs: URIValueExpansionType,
-    rhs: URIValueExpansionType) -> Bool {
-    return lhs.rawValue <= rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func >=(
-    lhs: URIValueExpansionType,
-    rhs: URIValueExpansionType) -> Bool {
-    return lhs.rawValue >= rhs.rawValue
-  }
-
-}
-
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionType : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    self.rawValue.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - CustomStringConvertible
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionType : CustomStringConvertible {
-  
-  @inlinable
-  internal var description: String {
-    get {
-      switch self {
-      case .simple:
-        return "simple"
-      case .reserved:
-        return "reserved"
-      case .fragment:
-        return "fragment"
-      case .label:
-        return "label"
-      case .pathSegment:
-        return "pathSegment"
-      case .pathParameter:
-        return "PathParameter"
-      case .query:
-        return "query"
-      case .queryContinuation:
-        return "queryContinuation"
-      }
-    }
-  }
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - CustomStringConvertible
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionType : CustomDebugStringConvertible {
-  
-  @inlinable
-  internal var debugDescription: String {
-    get {
-      switch self {
-      case .simple:
-        return "URIValueExpansionType.simple"
-      case .reserved:
-        return "URIValueExpansionType.reserved"
-      case .fragment:
-        return "URIValueExpansionType.fragment"
-      case .label:
-        return "URIValueExpansionType.label"
-      case .pathSegment:
-        return "URIValueExpansionType.pathSegment"
-      case .pathParameter:
-        return "URIValueExpansionType.PathParameter"
-      case .query:
-        return "URIValueExpansionType.query"
-      case .queryContinuation:
-        return "URIValueExpansionType.queryContinuation"
-      }
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Codable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionType : Codable {
-  
-  // synthesized ok
-  
-}
-
-extension URIValueExpansionType : CaseIterable {
-  
-  @usableFromInline
-  internal typealias AllCases = [URIValueExpansionType]
-  
-  @inlinable
-  internal static var allCases: AllCases {
-    get {
-      return [
-        .simple,
-        .reserved,
-        .fragment,
-        .label,
-        .pathSegment,
-        .pathParameter,
-        .query,
-        .queryContinuation
-      ]
     }
   }
   

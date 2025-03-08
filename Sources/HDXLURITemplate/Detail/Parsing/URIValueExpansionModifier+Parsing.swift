@@ -1,18 +1,14 @@
-//
-//  URIValueExpansionModifier+Parsing.swift
-//
-
 import Foundation
 
-internal extension URIValueExpansionModifier {
+extension URIValueExpansionModifier {
   
   @usableFromInline
-  enum ParseError : Error {
+  internal enum ParseError : Error {
     case invalidPrefixSpecification(String)
   }
   
   @inlinable
-  init(parsing string: inout String) throws {
+  internal init(parsing string: inout String) throws {
     if string.hasSuffix("*") {
       self = .explode
       string.conditionallyRemove(suffix: "*")

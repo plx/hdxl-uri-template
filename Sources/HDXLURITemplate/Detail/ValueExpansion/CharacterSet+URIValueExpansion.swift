@@ -1,13 +1,9 @@
-//
-//  CharacterSet+URIValueExpansion.swift
-//
-
 import Foundation
 
-internal extension CharacterSet {
+extension CharacterSet {
   
   @inlinable
-  init(allowedCharactersForValueExpansionType valueExpansionType: URIValueExpansionType) {
+  internal init(allowedCharactersForValueExpansionType valueExpansionType: URIValueExpansionType) {
     switch valueExpansionType {
     case .simple:
       self = simpleExpansionAllowedCharacterSet

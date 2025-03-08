@@ -1,7 +1,3 @@
-//
-//  HDXLURIVariableValue.swift
-//
-
 import Foundation
 
 // -------------------------------------------------------------------------- //
@@ -95,50 +91,52 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
 
   @objc
   public var listValue: [String]? {
-    switch variableValue.storage {
-    case .list(let list):
-      list.storage.map() {
-        $0.storage
-      }
-    default:
-      nil
+    guard
+      case .list(let list) = variableValue.storage
+    else {
+      return nil
+    }
+    
+    return list.storage.map {
+      $0.storage
     }
   }
 
   @objc
   public var associationValueAsDictionary: [String:String]? {
-    switch self.variableValue.storage {
-    case .association(let association):
-      var result: [String:String] = [String:String](minimumCapacity: association.count)
-      for pair in association.storage {
-        result[pair.key.storage] = pair.value.storage
-      }
-      return result
-    default:
+    guard
+      case .association(let association) = variableValue.storage
+    else {
       return nil
     }
+
+    // safe to assume truly-unique b/c we're just stripping a newtype
+    // wrapper from an underlying, already-existing dictionary
+    return [String:String](uniqueKeysWithValues: association.storage.map {
+      ($0.key.storage, $0.value.storage)
+    })
   }
   
   @objc(enumerateAssociationPairsUsingBlock:)
-  func enumerateAssociation(using block: (String, String, Int, UnsafeMutablePointer<ObjCBool>) -> Void) {
-    switch variableValue.storage {
-    case .association(let association):
-      var stop: ObjCBool = false
-      for (index,pair) in association.storage.enumerated() {
-        block(
-          pair.key.storage,
-          pair.value.storage,
-          index,
-          &stop
-        )
-        if stop.boolValue {
-          return
-        }
-      }
-    default:
-      ();
+  public func enumerateAssociation(
+    using block: (String, String, Int, UnsafeMutablePointer<ObjCBool>) -> Void
+  ) {
+    guard case .association(let association) = variableValue.storage else {
+      return
     }
-
+    
+    var stop: ObjCBool = false
+    for (index,pair) in association.storage.enumerated() {
+      block(
+        pair.key.storage,
+        pair.value.storage,
+        index,
+        &stop
+      )
+      if stop.boolValue {
+        return
+      }
+    }
   }
 
   // ------------------------------------------------------------------------ //
@@ -246,9 +244,12 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
       let decoder = coder as? NSKeyedUnarchiver,
       let variableValue = decoder.decodeDecodable(
         URIVariableValue.self,
-        forKey: "variableValue") else {
+        forKey: "variableValue"
+      )
+    else {
       return nil
     }
+    
     self.variableValue = variableValue
     super.init()
   }
@@ -263,6 +264,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
         )
       }
       catch let e {
+        // TODO: just fail quietly? What's best in 2025?
         fatalError("Failed to encode our `variableValue` \(self.variableValue.debugDescription) due to error: \(String(reflecting: e))!")
       }
     }
@@ -273,11 +275,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   // ------------------------------------------------------------------------ //
 
   @objc
-  public class var supportsSecureCoding: Bool {
-    get {
-      return true
-    }
-  }
+  public class var supportsSecureCoding: Bool { true }
   
   // ------------------------------------------------------------------------ //
   // MARK: Storage For Well-Known Values
@@ -297,4 +295,5 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
 
 }
 
+// ok to be `Sendable` b/c we're internally-immutable
 extension URIVariableValueWrapper: @unchecked Sendable { }

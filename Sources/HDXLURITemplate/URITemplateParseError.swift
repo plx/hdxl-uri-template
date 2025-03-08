@@ -1,16 +1,12 @@
-//
-//  URITemplateParseError.swift
-//
-
 import Foundation
 
 // ------------------------------------------------------------------------ //
 // MARK: URITemplate.ParseError - Definition
 // ------------------------------------------------------------------------ //
 
-public extension URITemplate {
+extension URITemplate {
   
-  struct ParseError : Error, LocalizedError {
+  public struct ParseError : Error, LocalizedError {
     
     public let template: String
     public let underlyingError: Error
@@ -22,13 +18,9 @@ public extension URITemplate {
     }
     
     public var localizedDescription: String {
-      get {
-        return (
-          """
-          Couldn't parse template-string "\(self.template)" due to underlying-error: \(self.underlyingError.bestAvailableExplanation)
-          """
-        )
-      }
+      """
+      Couldn't parse template-string "\(template)" due to underlying-error: \(underlyingError.bestAvailableExplanation)
+      """
     }
     
   }

@@ -24,7 +24,7 @@ extension URIVariableTextValue {
   }
   
   @inlinable
-  func expansion(
+  internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) throws -> String {
@@ -50,25 +50,28 @@ extension URIVariableTextValue {
     pedanticAssert(expansionModifier.isValid)
     pedanticAssert(isValid)
 #endif
-    guard let escapedVariableValue = escapedVariableValue(
-      expansionType: expansionType,
-      expansionModifier: expansionModifier) else {
-        throw ExpansionError.unableToEscapeVariableValue(
-          storage,
-          variableName.storage,
-          expansionType,
-          expansionModifier
-        )
+    guard
+      let escapedVariableValue = escapedVariableValue(
+        expansionType: expansionType,
+        expansionModifier: expansionModifier
+      )
+    else {
+      throw ExpansionError.unableToEscapeVariableValue(
+        storage,
+        variableName.storage,
+        expansionType,
+        expansionModifier
+      )
     }
     switch variableName.escapedVariableName(forExpansionType: expansionType) {
     case .unnecessary:
       return escapedVariableValue
     case .escaped(let variableName):
-      switch escapedVariableValue.isEmpty {
+      return switch escapedVariableValue.isEmpty {
       case true:
-        return variableName
+        variableName
       case false:
-        return "\(variableName)=\(escapedVariableValue)"
+        "\(variableName)=\(escapedVariableValue)"
       }
     case .failure:
       throw ExpansionError.unableToEscapeVariableName(

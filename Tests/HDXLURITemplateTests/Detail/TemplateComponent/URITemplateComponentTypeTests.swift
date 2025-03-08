@@ -1,64 +1,38 @@
-//
-//  URITemplateComponentTypeTests.swift
-//
-
 import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URITemplateComponentTypeTests : XCTestCase {
-  
-  func testAllCasesOrdering() {
-    XCTAssertTrue(URITemplateComponentType.allCases.isOrderedStrictlyAscending)
-  }
-  
-  func testCaseIterableCompleteness() {
-    XCTAssertEqual(
-      URITemplateComponentType.allCases.count,
-      2
-    )
-    XCTAssertTrue(
-      URITemplateComponentType.allCases.contains(
-        .literal
-      )
-    )
-    XCTAssertTrue(
-      URITemplateComponentType.allCases.contains(
-        .expression
-      )
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: URITemplateComponentType.allCases
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: URITemplateComponentType.allCases
-    )
-  }
-  
-  func testDistinctValues() {
-    HDXLAssertPairwiseDistinctElements(
-      URITemplateComponentType.allCases
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URITemplateComponentType.allCases.map() { $0.description }
-    )
-    HDXLAssertPairwiseDistinctElements(
-      URITemplateComponentType.allCases.map() { $0.debugDescription }
-    )
-  }
-  
-  func testCodableRoundTrip() {
-    HDXLAssertCodableRoundTrip(
-      URITemplateComponentType.allCases
-    )
-  }
-  
+extension Tag {
+  @Tag
+  static var uriTemplateComponentType: Self
+}
+
+@Test(
+  "`URITemplateComponentType.allCases` is ordered ascending",
+  .tags(.uriTemplateComponentType)
+)
+private func allCasesOrderedAscending() {
+  verifyOrderedAscending(URITemplateComponentType.allCases)
+}
+
+@Test(
+  "`URITemplateComponentType` has unique descriptions",
+  .tags(.uriTemplateComponentType)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    URITemplateComponentType.allCases,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URITemplateComponentType` has unique debugDescriptions",
+  .tags(.uriTemplateComponentType)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    URITemplateComponentType.allCases,
+    using: \.debugDescription
+  )
 }

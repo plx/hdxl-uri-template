@@ -1,113 +1,88 @@
-//
-//  URIVariableAssociationValueTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URIVariableAssociationValueTests : XCTestCase {
-  
-  let keys: [URIVariableTextValue] = [
-    "a",
-    "ab",
-    "abc"
-    ].map() {
-      URIVariableTextValue(text: $0)
-  }
-  
-  let values: [URIVariableTextValue] = [
-    "m",
-    "mn",
-    "mno"
-    ].map() {
-      URIVariableTextValue(text: $0)
-  }
-  
-  lazy var pairs: [URIVariablePairValue] = CartesianProduct(self.keys,self.values)
-    .asTuples()
-    .map() {
-      URIVariablePairValue(
-        key: $0,
-        value: $1
-      )
-    }.dropLast()
-
-  lazy var probes: [URIVariableAssociationValue] = self.pairs
-    .smallPowerSet()
-    .map() {
-      URIVariableAssociationValue(values: $0)
-  }
-  
-  func testFixtureSetup() {
-    XCTAssertTrue(self.keys.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.values.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.pairs.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }  
-  
-  func testProbesPassValidation() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertTrue(
-          probe.isValid,
-          "Unexpectedly got invalid `probe`: \(probe.debugDescription)"
-        )
-      }
-    }
-  }
-
-  func testProbeDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentEquality(
-      forDistinctValues: self.probes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.probes
-    )
-  }
-  
-  func testDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.description
-      }
-    )
-  }
-  
-  func testDebugDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.debugDescription
-      }
-    )
-  }
-  
-  func testDescriptionDebugDescriptionDifferent() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertNotEqual(
-          probe.description,
-          probe.debugDescription
-        )
-      }
-    }
-  }
-  
-  func testCodableRoundTrips() {
-    HDXLAssertCodableRoundTrip(
-      self.probes
-    )
-  }
-  
+extension Tag {
+  @Tag
+  static var uriVariableAssociationValue: Self
 }
+
+@Test(
+  "`URIVariableAssociationValue` fixtures",
+  .tags(.uriVariableAssociationValue)
+)
+private func validateFixtures() {
+  verifyOrderedAscending(keys)
+  verifyOrderedAscending(values)
+  verifyOrderedAscending(pairs)
+  verifyOrderedAscending(probes)
+  
+  verifyAllSatisfy(
+    probes,
+    explanation: "Expect all probes to be valid.",
+    predicate: \.isValid
+  )
+  
+  verifyPairwiseDistinct(probes)
+}
+
+
+@Test(
+  "`URIVariableAssociationValue` has unique descriptions",
+  .tags(.uriVariableAssociationValue)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URIVariableAssociationValue` has unique debugDescriptions",
+  .tags(.uriVariableAssociationValue)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.debugDescription
+  )
+}
+
+// MARK: Fixtures
+
+private let keys: [URIVariableTextValue] = [
+  "a",
+  "ab",
+  "abc"
+].map {
+  URIVariableTextValue(text: $0)
+}
+
+private let values: [URIVariableTextValue] = [
+  "m",
+  "mn",
+  "mno"
+].map {
+  URIVariableTextValue(text: $0)
+}
+
+private let pairs: [URIVariablePairValue] = cartesianProduct(keys,values)
+  .map {
+    URIVariablePairValue(
+      key: $0,
+      value: $1
+    )
+  }
+  .dropLast()
+  .sorted()
+
+private let probes: [URIVariableAssociationValue] = pairs
+  .smallPowerSet
+  .filter { subset in
+    Set(subset.lazy.map(\.key)).count == subset.count
+  }
+  .map {
+    URIVariableAssociationValue(values: $0)
+  }
+  .sorted()
+

@@ -1,127 +1,119 @@
-//
-//  URITemplateExpressionComponentTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URITemplateExpressionComponentTests : XCTestCase {
-  
-  let probeStrings: [String] = [
-    "a",
-    "ab",
-    "abc"
-  ]
-  
-  lazy var variableNames: [URITemplateVariableName] = self
-    .probeStrings
-    .map() {
-      URITemplateVariableName(storage: $0)
+extension Tag {
+  @Tag
+  static var uriTemplateExpressionComponent: Self
+}
+
+@Test(
+  "`URITemplateExpressionComponent` test-fixture validation",
+  .tags(.uriTemplateExpressionComponent)
+)
+private func textFixtureIsOk() {
+  #expect(variableNameSubsets.count == 8)
+  verifyOrderedAscending(probeStrings)
+  verifyOrderedAscending(variableNames)
+  verifyOrderedAscending(probes)
+  verifyPairwiseDistinct(variableNameSubsets)
+  verifyPairwiseDistinct(variableSubsets)
+
+  verifyAllSatisfy(
+    probes,
+    explanation: "`URITemplateExpressionComponent.isValid` should be true for all test-fixture probes!",
+    predicate: \.isValid
+  )
+  verifyPairwiseDistinct(probes)
+}
+
+@Test(
+  "`URITemplateExpressionComponent` has unique descriptions",
+  .tags(.uriTemplateExpressionComponent)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URITemplateExpressionComponent` has unique debugDescriptions",
+  .tags(.uriTemplateExpressionComponent)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.debugDescription
+  )
+}
+
+// MARK: Fixtures
+
+private let probeStrings: [String] = [
+  "a",
+  "ab",
+  "abc"
+]
+
+private let variableNames: [URITemplateVariableName] = probeStrings
+  .map {
+    URITemplateVariableName(storage: $0)
+  }
+
+private let variableNameSubsets: [[URITemplateVariableName]] = {
+  var result: [[URITemplateVariableName]] = []
+  for mask in 0...7 {
+    // used to use a cartesian-product and small-power-set utility,
+    // but don't want to drag in a dependency just for this use case
+    var subset: [URITemplateVariableName] = []
+    if 0 != (1 & mask) {
+      subset.append(variableNames[0])
+    }
+    if 0 != (2 & mask) {
+      subset.append(variableNames[1])
+    }
+    if 0 != (4 & mask) {
+      subset.append(variableNames[2])
+    }
+    subset.sort()
+    result.append(subset)
   }
   
-  lazy var variableSubsets: [[URITemplateVariable]] =
-    CartesianProduct(
-      self.variableNames.smallPowerSet(),
-      URIValueExpansionModifier.allCases[0..<5]
-    )
-      .asTuples()
-      .map() {
-        (names,modifier)
-        in
-        names.map() {
+  return result.sorted { $0.lexicographicallyPrecedes($1) }
+}()
+
+private let variableSubsets: [[URITemplateVariable]] = {
+  var result: [[URITemplateVariable]] = []
+  for expansionModifier in URIValueExpansionModifier.allCases[0..<5] {
+    for variableNameSubset in variableNameSubsets {
+      result.append(
+        variableNameSubset.map { variableName in
           URITemplateVariable(
-            variableName: $0,
-            expansionModifier: modifier
+            variableName: variableName,
+            expansionModifier: expansionModifier
           )
         }
-      }
-    .sorted() {
-      $0.lexicographicallyPrecedes($1)
+      )
     }
+  }
+  
+  return result.sorted { $0.lexicographicallyPrecedes($1) }
+}()
 
-  lazy var probes: [URITemplateExpressionComponent] =
-    CartesianProduct(
-      URIValueExpansionType.allCases,
-      self.variableSubsets
-    )
-      .asTuples()
-      .map() {
+private let probes: [URITemplateExpressionComponent] = {
+  var result: [URITemplateExpressionComponent] = []
+  for expansionType in URIValueExpansionType.allCases.sorted() {
+    for variableSubset in variableSubsets where !variableSubset.isEmpty {
+      result.append(
         URITemplateExpressionComponent(
-          expansionType: $0,
-          variables: $1
+          expansionType: expansionType,
+          variables: variableSubset
         )
-  }
-  
-  func testFixtureSetup() {
-    XCTAssertTrue(self.probeStrings.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.variableNames.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }
-  
-  func testProbesPassValidation() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertTrue(
-          probe.isValid,
-          "Unexpectedly got invalid `probe`: \(probe.debugDescription)"
-        )
-      }
+      )
     }
   }
   
-  func testProbeDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentEquality(
-      forDistinctValues: self.probes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.probes
-    )
-  }
-  
-  func testDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.description
-        
-      }
-    )
-  }
-  
-  func testDebugDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.debugDescription
-      }
-    )
-  }
-  
-  func testDescriptionDebugDescriptionDifferent() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertNotEqual(
-          probe.description,
-          probe.debugDescription
-        )
-      }
-    }
-  }
-  
-  func testCodableRoundTrips() {
-    HDXLAssertCodableRoundTrip(
-      self.probes
-    )
-  }
-  
-}
+  return result.sorted()
+}()
+

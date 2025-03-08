@@ -4,7 +4,6 @@ import Foundation
 // MARK: URITemplateVariableName - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal struct URITemplateVariableName {
   
@@ -28,6 +27,10 @@ internal struct URITemplateVariableName {
   }
   
 }
+
+// -------------------------------------------------------------------------- //
+// MARK: - Synthesized Conformances
+// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : Sendable { }
 extension URITemplateVariableName : Equatable { }
@@ -111,7 +114,7 @@ extension URITemplateVariableName : Codable {
 // MARK: URITemplateVariableName - Validation Support
 // -------------------------------------------------------------------------- //
 
-internal extension URITemplateVariableName {
+extension URITemplateVariableName {
   
   @inlinable
   static func prepareValidationRegularExpression() throws -> NSRegularExpression {

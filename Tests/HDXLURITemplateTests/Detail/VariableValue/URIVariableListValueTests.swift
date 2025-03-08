@@ -1,130 +1,80 @@
-//
-//  URIVariableListValueTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URIVariableListValueTests : XCTestCase {
-  
-  lazy var probeStrings: [String] = [
-    "",
-    "a",
-    "ab",
-    "abc",
-    "abcd",
-    "abcde",
-    "abcdef",
-    "abcdefg"
-  ]
-  
-  lazy var probes: [URIVariableListValue] = self.probeStrings
-    .smallPowerSet()
-    .map() {
-      (strings: [String]) -> URIVariableListValue
-      in
-      URIVariableListValue(
-        values: strings.map() {
-          URIVariableTextValue(text: $0)
-        }
-      )
-    }
-  
-  func testFixtureSetup() {
-    XCTAssertTrue(self.probeStrings.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }
-  
-  func testProbesPassValidation() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertTrue(
-          probe.isValid,
-          "Unexpectedly got invalid `probe`: \(probe.debugDescription)"
-        )
-      }
-    }
-  }
-
-  func testIsEmptyCoherence() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertEqual(
-          probe.isEmpty,
-          probe.storage.isEmpty
-        )
-        XCTAssertEqual(
-          probe.isEmpty,
-          probe.count == 0
-        )
-      }
-    }
-  }
-
-  func testCountCoherence() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertEqual(
-          probe.count,
-          probe.storage.count
-        )
-      }
-    }
-  }
-
-  func testProbeDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentEquality(
-      forDistinctValues: self.probes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.probes
-    )
-  }
-  
-  func testDescriptionDistinctness() {    
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.description
-        
-      }
-    )
-  }
-  
-  func testDebugDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.debugDescription
-      }
-    )
-  }
-  
-  func testDescriptionDebugDescriptionDifferent() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertNotEqual(
-          probe.description,
-          probe.debugDescription
-        )
-      }
-    }
-  }
-  
-  func testCodableRoundTrips() {
-    HDXLAssertCodableRoundTrip(
-      self.probes
-    )
-  }
-  
+extension Tag {
+  @Tag
+  static var uriVariableListValue: Self
 }
+
+@Test(
+  "`URIVariableListValue` fixtures",
+  .tags(.uriVariableListValue)
+)
+private func validateFixtures() {
+  verifyOrderedAscending(probeStrings)
+  verifyOrderedAscending(probes)
+  
+  verifyAllSatisfy(
+    probes,
+    explanation: "Expect all probes to be valid.",
+    predicate: \.isValid
+  )
+  
+  verifyPairwiseDistinct(probes)
+}
+
+
+@Test(
+  "`URIVariableListValue` has unique descriptions",
+  .tags(.uriVariableListValue)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URIVariablePairValue` has unique debugDescriptions",
+  .tags(.uriVariableListValue)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.debugDescription
+  )
+}
+
+@Test(
+  "`URIVariablePairValue` isEmpty coherence",
+  .tags(.uriVariableListValue),
+  arguments: probes
+)
+private func isEmptyCoherence(probe: URIVariableListValue) {
+  #expect(probe.isEmpty == probe.storage.isEmpty)
+}
+
+// MARK: Fixtures
+
+private let probeStrings: [String] = [
+  "",
+  "a",
+  "ab",
+  "abc",
+  "abcd",
+  "abcde",
+  "abcdef",
+  "abcdefg"
+]
+
+private let probes: [URIVariableListValue] = probeStrings
+  .smallPowerSet
+  .map { strings in
+    URIVariableListValue(
+      values: strings.map {
+        URIVariableTextValue(text: $0)
+      }
+    )
+  }
+  .sorted()

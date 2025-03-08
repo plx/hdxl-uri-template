@@ -1,14 +1,9 @@
-//
-//  URIValueExpansionModifierType.swift
-//
-
 import Foundation
 
 // -------------------------------------------------------------------------- //
 // MARK: URIValueExpansionModifierType - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal enum URIValueExpansionModifierType : UInt8 {
   
@@ -19,29 +14,17 @@ internal enum URIValueExpansionModifierType : UInt8 {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - Equatable
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifierType : Equatable {
-  
-  @inlinable
-  internal static func ==(
-    lhs: URIValueExpansionModifierType,
-    rhs: URIValueExpansionModifierType) -> Bool {
-    return lhs.rawValue == rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func !=(
-    lhs: URIValueExpansionModifierType,
-    rhs: URIValueExpansionModifierType) -> Bool {
-    return lhs.rawValue != rhs.rawValue
-  }
-
-}
+extension URIValueExpansionModifierType : Sendable { }
+extension URIValueExpansionModifierType : Equatable { }
+extension URIValueExpansionModifierType : Hashable { }
+extension URIValueExpansionModifierType : CaseIterable { }
+extension URIValueExpansionModifierType : Codable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : Comparable {
@@ -49,116 +32,47 @@ extension URIValueExpansionModifierType : Comparable {
   @inlinable
   internal static func <(
     lhs: URIValueExpansionModifierType,
-    rhs: URIValueExpansionModifierType) -> Bool {
-    return lhs.rawValue < rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func >(
-    lhs: URIValueExpansionModifierType,
-    rhs: URIValueExpansionModifierType) -> Bool {
-    return lhs.rawValue > rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func <=(
-    lhs: URIValueExpansionModifierType,
-    rhs: URIValueExpansionModifierType) -> Bool {
-    return lhs.rawValue <= rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func >=(
-    lhs: URIValueExpansionModifierType,
-    rhs: URIValueExpansionModifierType) -> Bool {
-    return lhs.rawValue >= rhs.rawValue
+    rhs: URIValueExpansionModifierType
+  ) -> Bool {
+    lhs.rawValue < rhs.rawValue
   }
 
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionModifierType : Hashable {
-  
-  @inlinable
-  internal func hash(into hasher: inout Hasher) {
-    self.rawValue.hash(into: &hasher)
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : CustomStringConvertible {
   
   @inlinable
   internal var description: String {
-    get {
-      switch self {
-      case .unmodified:
-        return "unmodified"
-      case .explode:
-        return "explode"
-      case .prefix:
-        return "prefix"
-      }
+    switch self {
+    case .unmodified:
+      ".unmodified"
+    case .explode:
+      ".explode"
+    case .prefix:
+      ".prefix"
     }
   }
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : CustomDebugStringConvertible {
   
   @inlinable
   internal var debugDescription: String {
-    get {
-      switch self {
-      case .unmodified:
-        return "URIValueExpansionModifierType.unmodified"
-      case .explode:
-        return "URIValueExpansionModifierType.explode"
-      case .prefix:
-        return "URIValueExpansionModifierType.prefix"
-      }
+    switch self {
+    case .unmodified:
+      "URIValueExpansionModifierType.unmodified"
+    case .explode:
+      "URIValueExpansionModifierType.explode"
+    case .prefix:
+      "URIValueExpansionModifierType.prefix"
     }
   }
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - Codable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionModifierType : Codable {
-    
-  // synthesized ok
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - CaseIterable
-// -------------------------------------------------------------------------- //
-
-extension URIValueExpansionModifierType : CaseIterable {
-  
-  @usableFromInline
-  internal typealias AllCases = [URIValueExpansionModifierType]
-  
-  @inlinable
-  internal static var allCases: AllCases {
-    get {
-      return [
-        .unmodified,
-        .explode,
-        .prefix
-      ]
-    }
-  }
-  
 }

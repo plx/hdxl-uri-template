@@ -1,14 +1,10 @@
-//
-//  String+URITemplateLengthManipulations.swift
-//
-
 import Foundation
 
-internal extension String {
+extension String {
   
   /// Convenience to get at the code-point count.
   @inlinable
-  var codePointCount: Int {
+  internal var codePointCount: Int {
     unicodeScalars.count
   }
   
@@ -17,7 +13,7 @@ internal extension String {
   /// This truncation isn't useful for arbitrary strings, but it's fine for what
   /// we use it for within the URI template implementation.
   @inlinable
-  func constrained(toCodePointCount codePointCount: Int) -> String {
+  internal func constrained(toCodePointCount codePointCount: Int) -> String {
     #if HEAVY_DEBUG
     pedanticAssert(codePointCount >= 0)
     #endif
@@ -46,7 +42,7 @@ internal extension String {
   /// This truncation isn't useful for arbitrary strings, but it's fine for what
   /// we use it for within the URI template implementation.
   @inlinable
-  mutating func constrain(toCodePointCount codePointCount: Int) {
+  internal mutating func constrain(toCodePointCount codePointCount: Int) {
 #if HEAVY_DEBUG
     pedanticAssert(codePointCount >= 0)
 #endif

@@ -1,18 +1,14 @@
-//
-//  URIValueExpansionType+Parsing.swift
-//
-
 import Foundation
 
-internal extension URIValueExpansionType {
+extension URIValueExpansionType {
   
   @usableFromInline
-  enum ParseError : Error {
+  internal enum ParseError : Error {
     case invalidEmptyString
   }
   
   @inlinable
-  init(parsing string: inout String) throws {
+  internal init(parsing string: inout String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString
     }

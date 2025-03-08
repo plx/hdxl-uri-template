@@ -1,18 +1,14 @@
-//
-//  URITemplateVariable+Parsing.swift
-//
-
 import Foundation
 
-internal extension URITemplateVariable {
+extension URITemplateVariable {
   
   @usableFromInline
-  enum ParseError : Error {
+  internal enum ParseError : Error {
     case invalidEmptyString
   }
   
   @inlinable
-  init(parsing string: String) throws {
+  internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString
     }

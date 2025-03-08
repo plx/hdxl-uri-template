@@ -1,104 +1,70 @@
-//
-//  URIVariableTextValueTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URIVariableTextValueTests : XCTestCase {
-  
-  lazy var probeStrings: [String] = [
-    "",
-    "a",
-    "ab",
-    "abc",
-    "abcde"
-  ]
-  
-  lazy var probes: [URIVariableTextValue] = self.probeStrings.map() {
-    URIVariableTextValue(text: $0)
-  }
-  
-  func testFixtureSetup() {
-    XCTAssertTrue(self.probeStrings.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }
-  
-  func testProbesPassValidation() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertTrue(
-          probe.isValid,
-          "Unexpectedly got invalid `probe`: \(probe.debugDescription)"
-        )
-      }
-    }
-  }
-
-  func testIsEmptyCoherence() {
-    self.haltingOnFirstError {
-      for (ps,p) in zip(self.probeStrings,self.probes) {
-        XCTAssertEqual(
-          ps.isEmpty,
-          p.isEmpty
-        )
-      }
-    }
-  }
-  
-  func testProbeDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentEquality(
-      forDistinctValues: self.probes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.probes
-    )
-  }
-  
-  func testDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.description
-        
-      }
-    )
-  }
-
-  func testDebugDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.debugDescription
-      }
-    )
-  }
-  
-  func testDescriptionDebugDescriptionDifferent() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertNotEqual(
-          probe.description,
-          probe.debugDescription
-        )
-      }
-    }
-  }
-  
-  func testCodableRoundTrips() {
-    HDXLAssertCodableRoundTrip(
-      self.probes
-    )
-  }
-
+extension Tag {
+  @Tag
+  static var uriVariableTextValue: Self
 }
+
+@Test(
+  "`URIVariableTextValue` fixtures",
+  .tags(.uriVariableTextValue)
+)
+private func validateFixtures() {
+  verifyOrderedAscending(probeStrings)
+  verifyOrderedAscending(probes)
+  
+  verifyAllSatisfy(
+    probes,
+    explanation: "Expect all probes to be valid.",
+    predicate: \.isValid
+  )
+  
+  verifyPairwiseDistinct(probes)
+}
+
+@Test(
+  "`URIVariableTextValue` has unique descriptions",
+  .tags(.uriVariableTextValue)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URIVariableTextValue` has unique debugDescriptions",
+  .tags(.uriVariableTextValue)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.debugDescription
+  )
+}
+
+@Test(
+  "`URIVariableTextValue` isEmpty coherence",
+  .tags(.uriVariableTextValue),
+  arguments: probes
+)
+private func isEmptyCoherence(probe: URIVariableTextValue) {
+  #expect(probe.isEmpty == probe.storage.isEmpty)
+}
+
+// MARK: Fixtures
+
+private let probeStrings: [String] = [
+  "",
+  "a",
+  "ab",
+  "abc",
+  "abcde"
+]
+
+private let probes: [URIVariableTextValue] = probeStrings.map {
+  URIVariableTextValue(text: $0)
+}
+

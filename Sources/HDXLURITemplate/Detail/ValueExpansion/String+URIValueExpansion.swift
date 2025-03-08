@@ -1,14 +1,10 @@
-//
-//  String+URIValueExpansion.swift
-//
-
 import Foundation
 
-internal extension String {
+extension String {
   
   @inlinable
-  func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
-    return self.addingPercentEncoding(
+  internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
+    addingPercentEncoding(
       withAllowedCharacters: CharacterSet(
         allowedCharactersForValueExpansionType: valueExpansionType
       )

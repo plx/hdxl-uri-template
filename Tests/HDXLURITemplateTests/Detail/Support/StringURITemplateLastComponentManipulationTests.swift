@@ -1,83 +1,85 @@
-//
-//  StringURITemplateLastComponentManipulationTests.swift
-//
-
-import Foundation
-import XCTest
+import Testing
 @testable import HDXLURITemplate
 
-class StringURITemplateLastComponentManipulationTests : XCTestCase {
-  
-  func testDegenerateScenarios() {
-    // all-empty
-    self.checkLastComponent(
-      of: "",
-      forSeparator: "",
-      yields: nil
-    )
-    self.checkRemovingLastComponent(
-      of: "",
-      forSeparator: "",
-      yields: ""
-    )
-    
-    // empty-target
-    self.checkLastComponent(
-      of: "",
-      forSeparator: ",",
-      yields: nil
-    )
-    self.checkRemovingLastComponent(
-      of: "",
-      forSeparator: ",",
-      yields: ""
-    )
-    
-    // empty-separator
-    self.checkLastComponent(
-      of: "abc",
-      forSeparator: "",
-      yields: nil
-    )
-    self.checkRemovingLastComponent(
-      of: "abc",
-      forSeparator: "",
-      yields: "abc"
-    )
-    
+extension Tag {
+  @Tag
+  static var lastComponentManipulation: Self
+}
 
-  }
+@Test(
+  "`String+URITemplateLastComponentManipulation` degenerate scenarios",
+  .tags(.stringManipulation, .lastComponentManipulation)
+)
+private func checkDegenerateLastComponentManipulationScenarios() {
+  // all-empty
+  verifyLastComponent(
+    of: "",
+    forSeparator: "",
+    yields: nil
+  )
+  verifyRemovingLastComponent(
+    of: "",
+    forSeparator: "",
+    yields: ""
+  )
+  
+  // empty-target
+  verifyLastComponent(
+    of: "",
+    forSeparator: ",",
+    yields: nil
+  )
+  verifyRemovingLastComponent(
+    of: "",
+    forSeparator: ",",
+    yields: ""
+  )
+  
+  // empty-separator
+  verifyLastComponent(
+    of: "abc",
+    forSeparator: "",
+    yields: nil
+  )
+  verifyRemovingLastComponent(
+    of: "abc",
+    forSeparator: "",
+    yields: "abc"
+  )
   
 }
 
-fileprivate extension StringURITemplateLastComponentManipulationTests {
-  
-  func checkLastComponent(
-    of target: String,
-    forSeparator separator: String,
-    yields expectation: String?) {
-    let result = target.lastComponent(forSeparator: separator)
-    XCTAssertEqual(
-      result,
-      expectation,
-      """
-      Expected `"\(target)".lastComponent(forSeparator: "\(separator)") == "\(expectation ?? "<nil>")"`, but got "\(result ?? "<nil>")" instead!
-      """
-    )
-  }
-  
-  func checkRemovingLastComponent(
-    of target: String,
-    forSeparator separator: String,
-    yields expectation: String) {
-    let result = target.removingLastComponent(forSeparator: separator)
-    XCTAssertEqual(
-      result,
-      expectation,
-      """
-      Expected `"\(target)".removingLastComponent(forSeparator: "\(separator)") == "\(expectation)"`, but got "\(result)" instead!
-      """
-    )
-  }
-  
+// MARK: Verifications
+
+private func verifyLastComponent(
+  of target: String,
+  forSeparator separator: String,
+  yields expectation: String?,
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
+) {
+  let result = target.lastComponent(forSeparator: separator)
+  #expect(
+    result == expectation,
+    """
+    Expected `"\(target)".lastComponent(forSeparator: "\(separator)") == "\(expectation ?? "<nil>")"`, but got "\(result ?? "<nil>")" instead!
+    """,
+    sourceLocation: sourceLocation
+  )
 }
+
+private func verifyRemovingLastComponent(
+  of target: String,
+  forSeparator separator: String,
+  yields expectation: String,
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
+) {
+  let result = target.removingLastComponent(forSeparator: separator)
+  #expect(
+    result == expectation,
+    """
+    Expected `"\(target)".removingLastComponent(forSeparator: "\(separator)") == "\(String(reflecting: expectation))"`, but got "\(result)" instead!
+    """,
+    sourceLocation: sourceLocation
+  )
+}
+

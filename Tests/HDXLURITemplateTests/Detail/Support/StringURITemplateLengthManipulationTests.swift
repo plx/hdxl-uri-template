@@ -1,132 +1,123 @@
-//
-//  StringURITemplateLengthManipulationTests.swift
-//
-
-import Foundation
-import XCTest
+import Testing
 @testable import HDXLURITemplate
 
-class StringURITemplateLengthManipulationTests : XCTestCase {
-  
-  let probeStrings = ["", "a", "ab", "abc", "abcd", "abcde"]
-  let probeLengths = 0...10
-  
-  func testProbeStringCodePointCounts() {
-    self.haltingOnFirstError {
-      for (expectedLength,probe) in self.probeStrings.enumerated() {
-        XCTAssertEqual(
-          expectedLength,
-          probe.codePointCount
-        )
-      }
-    }
-  }
-  
-  func testDegenerateCodePointCountConstraint() {
-    // check constraining empty string works:
-    self.haltingOnFirstError {
-      for length in self.probeLengths {
-        XCTAssertEqual(
-          "",
-          "".constrained(toCodePointCount: length)
-        )
-      }
-    }
-    
-    // check all strings => "" when constrained to length zero:
-    self.haltingOnFirstError {
-      for probe in self.probeStrings {
-        XCTAssertEqual(
-          "",
-          probe.constrained(toCodePointCount: 0)
-        )
-      }
-    }
-  }
-  
-  func testCannedConstraintExamples() {
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 0,
-      yields: ""
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 1,
-      yields: "a"
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 2,
-      yields: "ab"
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 3,
-      yields: "abc"
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 4,
-      yields: "abcd"
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 5,
-      yields: "abcde"
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 6,
-      yields: "abcdef"
-    )
-    self.check(
-      constraining: "abcdef",
-      toCodePointCount: 7,
-      yields: "abcdef"
-    )
-  }
-  
-  func testMutableImmutableCodePointCountConstraintEquivalence() {
-    self.haltingOnFirstError {
-      for (probe,length) in CartesianProduct(self.probeStrings,self.probeLengths).asTuples() {
-        XCTAssertEqual(
-          probe.constrained(toCodePointCount: length),
-          probe.mutated() {
-            $0.constrain(toCodePointCount: length)
-          }
-        )
-      }
-    }
-  }
-  
-  func testCodePointCountConstraintSanity() {
-    self.haltingOnFirstError {
-      for (probe,length) in CartesianProduct(self.probeStrings,0...10).asTuples() {
-        XCTAssertEqual(
-          min(probe.codePointCount, length),
-          probe.constrained(toCodePointCount: length).codePointCount
-        )
-      }
-    }
-  }
-  
+extension Tag {
+  @Tag
+  static var uriTemplateLengthManipulation: Self
 }
 
-fileprivate extension StringURITemplateLengthManipulationTests {
-  
-  func check(
-    constraining target: String,
-    toCodePointCount codePointCount: Int,
-    yields expectation: String) {
-    let result = target.constrained(toCodePointCount: codePointCount)
-    XCTAssertEqual(
-      expectation,
-      result,
+@Test(
+  "`String+URITemplateLengthManipulations` canned scenarios",
+  .tags(.stringManipulation, .uriTemplateLengthManipulation)
+)
+func checkCannedTemplateLengthManipulationScenarios() {
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 0,
+    yields: ""
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 1,
+    yields: "a"
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 2,
+    yields: "ab"
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 3,
+    yields: "abc"
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 4,
+    yields: "abcd"
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 5,
+    yields: "abcde"
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 6,
+    yields: "abcdef"
+  )
+  verify(
+    constraining: "abcdef",
+    toCodePointCount: 7,
+    yields: "abcdef"
+  )
+}
+
+@Test(
+  "`String.codePointCount` for fixtures",
+  .tags(.stringManipulation, .uriTemplateLengthManipulation),
+  arguments: probeStrings
+)
+private func checkProbeStringCodePointCounts(
+  probeString: String
+) {
+  #expect(
+    probeString.codePointCount == probeString.count
+  )
+}
+
+@Test(
+  "`String` constrained-to-code-point-count (degenerate cases)",
+  .tags(.stringManipulation, .uriTemplateLengthManipulation),
+  arguments: probeStrings
+)
+private func checkCodePointConstraintDegenerateCases(probeString: String) {
+  #expect(
+    probeString == probeString.constrained(toCodePointCount: probeString.codePointCount)
+  )
+  #expect(
+    "" == probeString.constrained(toCodePointCount: 0)
+  )
+}
+
+@Test(
+  "`String` constrained-to-code-point-count mutable/immutable equivalence",
+  .tags(.stringManipulation, .uriTemplateLengthManipulation),
+  arguments: probeStrings
+)
+private func checkCodePointConstraintMutableImmutableEquivalence(probeString: String) {
+  for codePointCount in probeLengths {
+    let immutableResult = probeString.constrained(toCodePointCount: codePointCount)
+    var mutableResult = probeString
+    mutableResult.constrain(toCodePointCount: codePointCount)
+    #expect(
+      immutableResult == mutableResult,
       """
-      Expected `"\(target)".constrained(toCodePointCount: \(codePointCount)) == "\(expectation)", but got "\(result)" instead!
+      Found mutable-vs-immutable mismatch for probeString `\(probeString)` when constrained to code-point-count \(codePointCount)! 
       """
     )
   }
-  
 }
+
+// MARK: Verifications
+
+private func verify(
+  constraining target: String,
+  toCodePointCount codePointCount: Int,
+  yields expectation: String,
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
+) {
+  let result = target.constrained(toCodePointCount: codePointCount)
+  #expect(
+    expectation == result,
+    """
+    Expected `"\(target)".constrained(toCodePointCount: \(codePointCount)) == "\(expectation)", but got "\(result)" instead!
+    """,
+    sourceLocation: sourceLocation
+  )
+}
+
+// MARK: Fixtures
+
+private let probeStrings = ["", "a", "ab", "abc", "abcd", "abcde"]
+private let probeLengths = 0...10

@@ -1,16 +1,16 @@
 import Foundation
 
-internal extension URITemplateVariableName {
+extension URITemplateVariableName {
   
   @usableFromInline
-  enum TextVariableNameEscapeResult {
+  internal enum TextVariableNameEscapeResult {
     case unnecessary
     case escaped(String)
     case failure
   }
 
   @inlinable
-  func escapedVariableName(
+  internal func escapedVariableName(
     forExpansionType expansionType: URIValueExpansionType,
     forced: Bool = false
   ) -> TextVariableNameEscapeResult {
@@ -27,26 +27,26 @@ internal extension URITemplateVariableName {
   }
   
   @inlinable
-  func shouldEscapeName(
+  internal func shouldEscapeName(
     forExpansionType expansionType: URIValueExpansionType
   ) -> Bool {
     switch expansionType {
     case .simple:
-      return false
+      false
     case .reserved:
-      return false
+      false
     case .fragment:
-      return false
+      false
     case .label:
-      return false
+      false
     case .pathSegment:
-      return false
+      false
     case .pathParameter:
-      return true
+      true
     case .query:
-      return true
+      true
     case .queryContinuation:
-      return true
+      true
     }
   }
   

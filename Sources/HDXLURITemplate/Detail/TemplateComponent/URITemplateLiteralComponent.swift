@@ -4,7 +4,6 @@ import Foundation
 // MARK: URITemplateLiteralComponent - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal struct URITemplateLiteralComponent {
   
@@ -189,15 +188,11 @@ extension URITemplateLiteralComponent {
   
   @inlinable
   internal var isValid: Bool {
-    guard
-      !storage.isEmpty,
-      URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(
-        of: storage
-      )
-    else {
-      return false
-    }
-    return true
+    !storage.isEmpty
+    &&
+    URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(
+      of: storage
+    )
   }
   
 }

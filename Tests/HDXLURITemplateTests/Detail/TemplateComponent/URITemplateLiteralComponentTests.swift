@@ -1,98 +1,61 @@
-//
-//  URITemplateLiteralComponentTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URITemplateLiteralComponentTests : XCTestCase {
-  
-  lazy var probeStrings: [String] = [
-    "a",
-    "ab",
-    "abc",
-    "abcde"
-  ]
-  
-  lazy var probes: [URITemplateLiteralComponent] = self.probeStrings.map() {
-    URITemplateLiteralComponent(storage: $0)
-  }
-  
-  func testAAARegularExpressionCompiles() {
-    XCTAssertNoThrow(
-      try URITemplateLiteralComponent.prepareValidationRegularExpression()
-    )
-  }
-  
-  func testFixtureSetup() {
-    XCTAssertTrue(self.probeStrings.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }
-  
-  func testProbesPassValidation() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertTrue(
-          probe.isValid,
-          "Unexpectedly got invalid `probe`: \(probe.debugDescription)"
-        )
-      }
-    }
-  }
-    
-  func testProbeDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentEquality(
-      forDistinctValues: self.probes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.probes
-    )
-  }
-  
-  func testDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.description
-        
-      }
-    )
-  }
-  
-  func testDebugDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.debugDescription
-      }
-    )
-  }
-  
-  func testDescriptionDebugDescriptionDifferent() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertNotEqual(
-          probe.description,
-          probe.debugDescription
-        )
-      }
-    }
-  }
-  
-  func testCodableRoundTrips() {
-    HDXLAssertCodableRoundTrip(
-      self.probes
-    )
-  }
-  
+extension Tag {
+  @Tag
+  static var uriTemplateLiteralComponent: Self
 }
+
+@Test(
+  "`URITemplateLiteralComponent` test-fixture validation",
+  .tags(.uriTemplateLiteralComponent)
+)
+private func textFixtureIsOk() {
+  verifyOrderedAscending(probeStrings)
+  verifyOrderedAscending(probes)
+  
+  verifyAllSatisfy(
+    probes,
+    explanation: "`URITemplateLiteralComponent.isValid` should be true for all test-fixture probes!",
+    predicate: \.isValid
+  )
+  verifyPairwiseDistinct(probes)
+}
+
+
+@Test(
+  "`URITemplateLiteralComponent` has unique descriptions",
+  .tags(.uriTemplateLiteralComponent)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URITemplateLiteralComponent` has unique debugDescriptions",
+  .tags(.uriTemplateLiteralComponent)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.debugDescription
+  )
+}
+
+// MARK: Fixtures
+
+private let probeStrings: [String] = [
+  "a",
+  "ab",
+  "abc",
+  "abcde"
+]
+
+private let probes: [URITemplateLiteralComponent] = probeStrings.map {
+  URITemplateLiteralComponent(storage: $0)
+}
+
+

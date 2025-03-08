@@ -1,7 +1,3 @@
-//
-//  URIVariableValueType.swift
-//
-
 import Foundation
 
 // -------------------------------------------------------------------------- //
@@ -15,7 +11,6 @@ import Foundation
 /// Made public and compatible with Objective-C so as to faciliate use of this
 /// package's functionality from Objective-C code.
 ///
-@frozen
 @objc(HDXLURIVariableValueType)
 public enum URIVariableValueType : UInt8 {
   
@@ -27,29 +22,17 @@ public enum URIVariableValueType : UInt8 {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - Equatable
+// MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType : Equatable {
-
-  @inlinable
-  public static func ==(
-    lhs: URIVariableValueType,
-    rhs: URIVariableValueType) -> Bool {
-    return lhs.rawValue == rhs.rawValue
-  }
-  
-  @inlinable
-  public static func !=(
-    lhs: URIVariableValueType,
-    rhs: URIVariableValueType) -> Bool {
-    return lhs.rawValue != rhs.rawValue
-  }
-}
-
+extension URIVariableValueType : Sendable { }
+extension URIVariableValueType : Equatable { }
+extension URIVariableValueType : Hashable { }
+extension URIVariableValueType : Codable { }
+extension URIVariableValueType : CaseIterable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : Comparable {
@@ -57,123 +40,53 @@ extension URIVariableValueType : Comparable {
   @inlinable
   public static func <(
     lhs: URIVariableValueType,
-    rhs: URIVariableValueType) -> Bool {
-    return lhs.rawValue < rhs.rawValue
-  }
-  
-  @inlinable
-  public static func >(
-    lhs: URIVariableValueType,
-    rhs: URIVariableValueType) -> Bool {
-    return lhs.rawValue > rhs.rawValue
-  }
-
-  @inlinable
-  public static func <=(
-    lhs: URIVariableValueType,
-    rhs: URIVariableValueType) -> Bool {
-    return lhs.rawValue <= rhs.rawValue
-  }
-  
-  @inlinable
-  public static func >=(
-    lhs: URIVariableValueType,
-    rhs: URIVariableValueType) -> Bool {
-    return lhs.rawValue >= rhs.rawValue
+    rhs: URIVariableValueType
+  ) -> Bool {
+    lhs.rawValue < rhs.rawValue
   }
 
 }
 
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueType : Hashable {
-  
-  @inlinable
-  public func hash(into hasher: inout Hasher) {
-    self.rawValue.hash(into: &hasher)
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : CustomStringConvertible {
   
   @inlinable
   public var description: String {
-    get {
-      switch self {
-      case .undefined:
-        return "undefined"
-      case .text:
-        return "text"
-      case .list:
-        return "list"
-      case .association:
-        return "association"
-      }
+    switch self {
+    case .undefined:
+      "undefined"
+    case .text:
+      "text"
+    case .list:
+      "list"
+    case .association:
+      "association"
     }
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : CustomDebugStringConvertible {
   
   @inlinable
   public var debugDescription: String {
-    get {
-      switch self {
-      case .undefined:
-        return "URIVariableValueType.undefined"
-      case .text:
-        return "URIVariableValueType.text"
-      case .list:
-        return "URIVariableValueType.list"
-      case .association:
-        return "URIVariableValueType.association"
-      }
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - Codable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueType : Codable {
-
-  // synthesized ok
-  
-}
-
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - CaseIterable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueType : CaseIterable {
-  
-  public typealias AllCases = [URIVariableValueType]
-  
-  @inlinable
-  public static var allCases: [URIVariableValueType] {
-    get {
-      return [
-        .undefined,
-        .text,
-        .list,
-        .association
-      ]
+    switch self {
+    case .undefined:
+      "URIVariableValueType.undefined"
+    case .text:
+      "URIVariableValueType.text"
+    case .list:
+      "URIVariableValueType.list"
+    case .association:
+      "URIVariableValueType.association"
     }
   }
   

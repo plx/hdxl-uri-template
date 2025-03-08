@@ -1,14 +1,7 @@
-//
-//  URITemplateComponentType.swift
-//
-
-import Foundation
-
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateComponentType - Definition
 // -------------------------------------------------------------------------- //
 
-@frozen
 @usableFromInline
 internal enum URITemplateComponentType : UInt8 {
   
@@ -17,30 +10,14 @@ internal enum URITemplateComponentType : UInt8 {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - Equatable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateComponentType : Equatable {
-
-  @inlinable
-  internal static func ==(
-    lhs: URITemplateComponentType,
-    rhs: URITemplateComponentType) -> Bool {
-    return lhs.rawValue == rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func !=(
-    lhs: URITemplateComponentType,
-    rhs: URITemplateComponentType) -> Bool {
-    return lhs.rawValue != rhs.rawValue
-  }
-
-}
+extension URITemplateComponentType : Sendable { }
+extension URITemplateComponentType : Equatable { }
+extension URITemplateComponentType : Hashable { }
+extension URITemplateComponentType : Codable { }
+extension URITemplateComponentType : CaseIterable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : Comparable {
@@ -48,114 +25,45 @@ extension URITemplateComponentType : Comparable {
   @inlinable
   internal static func <(
     lhs: URITemplateComponentType,
-    rhs: URITemplateComponentType) -> Bool {
-    return lhs.rawValue < rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func >(
-    lhs: URITemplateComponentType,
-    rhs: URITemplateComponentType) -> Bool {
-    return lhs.rawValue > rhs.rawValue
-  }
-  
-  @inlinable
-  internal static func <=(
-    lhs: URITemplateComponentType,
-    rhs: URITemplateComponentType) -> Bool {
-    return lhs.rawValue <= rhs.rawValue
-  }
-
-  @inlinable
-  internal static func >=(
-    lhs: URITemplateComponentType,
-    rhs: URITemplateComponentType) -> Bool {
-    return lhs.rawValue >= rhs.rawValue
+    rhs: URITemplateComponentType
+  ) -> Bool {
+    lhs.rawValue < rhs.rawValue
   }
 
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - Hashable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateComponentType : Hashable {
-  
-  @inlinable
-  func hash(into hasher: inout Hasher) {
-    self.rawValue.hash(into: &hasher)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : CustomStringConvertible {
 
-  @inlinable
+  @usableFromInline
   internal var description: String {
-    get {
-      switch self {
-      case .literal:
-        return ".literal"
-      case .expression:
-        return ".expression"
-      }
+    switch self {
+    case .literal:
+      ".literal"
+    case .expression:
+      ".expression"
     }
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : CustomDebugStringConvertible {
   
-  @inlinable
-  internal var debugDescription: String {
-    get {
-      switch self {
-      case .literal:
-        return "URITemplateComponentType.literal"
-      case .expression:
-        return "URITemplateComponentType.expression"
-      }
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - Codable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateComponentType : Codable {
-  
-  // synthesized ok
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - CaseIterable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateComponentType : CaseIterable {
-  
   @usableFromInline
-  internal typealias AllCases = [URITemplateComponentType]
-  
-  @inlinable
-  internal static var allCases: AllCases {
-    get {
-      return [
-        .literal,
-        .expression
-      ]
+  internal var debugDescription: String {
+    switch self {
+    case .literal:
+      "URITemplateComponentType.literal"
+    case .expression:
+      "URITemplateComponentType.expression"
     }
   }
   
 }
-

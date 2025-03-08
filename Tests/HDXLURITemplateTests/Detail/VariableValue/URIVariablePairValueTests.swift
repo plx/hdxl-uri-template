@@ -1,111 +1,78 @@
-//
-//  URIVariablePairValueTests.swift
-//
-
-import Foundation
-import XCTest
-import HDXLAlgebraicUtilities
-import HDXLTestingUtilities
+import Testing
 @testable import HDXLURITemplate
 
-class URIVariablePairValueTests : XCTestCase {
-  
-  let keys: [URIVariableTextValue] = [
-    "a",
-    "ab",
-    "abc",
-    "abcde",
-    "abcdefg"
-  ].map() {
-    URIVariableTextValue(text: $0)
-  }
-  
-  let values: [URIVariableTextValue] = [
-    "m",
-    "mn",
-    "mno",
-    "mnop",
-    "mnoq"
-  ].map() {
-    URIVariableTextValue(text: $0)
-  }
-  
-  lazy var probes: [URIVariablePairValue] = CartesianProduct(self.keys,self.values)
-    .asTuples()
-    .map() {
-      URIVariablePairValue(
-        key: $0,
-        value: $1
-      )
-  }
-  
-  func testFixtureSetup() {
-    XCTAssertTrue(self.keys.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.values.isOrderedStrictlyAscending)
-    XCTAssertTrue(self.probes.isOrderedStrictlyAscending)
-  }
-    
-  func testProbesPassValidation() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertTrue(
-          probe.isValid,
-          "Unexpectedly got invalid `probe`: \(probe.debugDescription)"
-        )
-      }
-    }
-  }
-
-  func testProbeDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes
-    )
-  }
-  
-  func testEqualityCoherence() {
-    HDXLAssertCoherentEquality(
-      forDistinctValues: self.probes
-    )
-  }
-  
-  func testOrderingCoherence() {
-    HDXLAssertCoherentOrdering(
-      forAscendingDistinctValues: self.probes
-    )
-  }
-  
-  func testDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.description
-        
-      }
-    )
-  }
-  
-  func testDebugDescriptionDistinctness() {
-    HDXLAssertPairwiseDistinctElements(
-      self.probes.map() {
-        $0.debugDescription
-      }
-    )
-  }
-  
-  func testDescriptionDebugDescriptionDifferent() {
-    self.haltingOnFirstError {
-      for probe in self.probes {
-        XCTAssertNotEqual(
-          probe.description,
-          probe.debugDescription
-        )
-      }
-    }
-  }
-  
-  func testCodableRoundTrips() {
-    HDXLAssertCodableRoundTrip(
-      self.probes
-    )
-  }
-  
+extension Tag {
+  @Tag
+  static var uriVariablePairValue: Self
 }
+
+@Test(
+  "`URIVariablePairValue` fixtures",
+  .tags(.uriVariableValueData)
+)
+private func validateFixtures() {
+  verifyOrderedAscending(keys)
+  verifyOrderedAscending(values)
+  verifyOrderedAscending(probes)
+  
+  verifyAllSatisfy(
+    probes,
+    explanation: "Expect all probes to be valid.",
+    predicate: \.isValid
+  )
+  
+  verifyPairwiseDistinct(probes)
+}
+
+
+@Test(
+  "`URIVariablePairValue` has unique descriptions",
+  .tags(.uriVariableValueData)
+)
+private func uniqueDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.description
+  )
+}
+
+@Test(
+  "`URIVariablePairValue` has unique debugDescriptions",
+  .tags(.uriVariableValueData)
+)
+private func uniqueDebugDescriptions() {
+  verifyUniqueStringification(
+    probes,
+    using: \.debugDescription
+  )
+}
+
+// MARK: Fixtures
+
+private let keys: [URIVariableTextValue] = [
+  "a",
+  "ab",
+  "abc",
+  "abcde",
+  "abcdefg"
+].map {
+  URIVariableTextValue(text: $0)
+}
+
+private let values: [URIVariableTextValue] = [
+  "m",
+  "mn",
+  "mno",
+  "mnop",
+  "mnoq"
+].map {
+  URIVariableTextValue(text: $0)
+}
+
+private let probes: [URIVariablePairValue] = cartesianProduct(keys,values)
+  .map {
+    URIVariablePairValue(
+      key: $0,
+      value: $1
+    )
+  }
