@@ -36,7 +36,7 @@ private func uniqueDescriptions() {
 }
 
 @Test(
-  "`URIVariablePairValue` has unique debugDescriptions",
+  "`URIVariableListValue` has unique debugDescriptions",
   .tags(.uriVariableListValue)
 )
 private func uniqueDebugDescriptions() {
@@ -47,12 +47,12 @@ private func uniqueDebugDescriptions() {
 }
 
 @Test(
-  "`URIVariablePairValue` isEmpty coherence",
+  "`URIVariableListValue` isEmpty coherence",
   .tags(.uriVariableListValue),
   arguments: probes
 )
-private func isEmptyCoherence(probe: URIVariableListValue) {
-  #expect(probe.isEmpty == probe.storage.isEmpty)
+private func isEmptyCoherence(probe: URIVariableListValue, sourceLocation: Testing.SourceLocation = #_sourceLocation) {
+  #expect(probe.isEmpty == probe.storage.isEmpty, sourceLocation: sourceLocation)
 }
 
 // MARK: Fixtures

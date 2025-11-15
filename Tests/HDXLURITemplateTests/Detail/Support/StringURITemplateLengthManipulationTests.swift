@@ -59,10 +59,12 @@ func checkCannedTemplateLengthManipulationScenarios() {
   arguments: probeStrings
 )
 private func checkProbeStringCodePointCounts(
-  probeString: String
+  probeString: String,
+  sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) {
   #expect(
-    probeString.codePointCount == probeString.count
+    probeString.codePointCount == probeString.count,
+    sourceLocation: sourceLocation
   )
 }
 
@@ -71,12 +73,14 @@ private func checkProbeStringCodePointCounts(
   .tags(.stringManipulation, .uriTemplateLengthManipulation),
   arguments: probeStrings
 )
-private func checkCodePointConstraintDegenerateCases(probeString: String) {
+private func checkCodePointConstraintDegenerateCases(probeString: String, sourceLocation: Testing.SourceLocation = #_sourceLocation) {
   #expect(
-    probeString == probeString.constrained(toCodePointCount: probeString.codePointCount)
+    probeString == probeString.constrained(toCodePointCount: probeString.codePointCount),
+    sourceLocation: sourceLocation
   )
   #expect(
-    "" == probeString.constrained(toCodePointCount: 0)
+    "" == probeString.constrained(toCodePointCount: 0),
+    sourceLocation: sourceLocation
   )
 }
 
@@ -85,7 +89,7 @@ private func checkCodePointConstraintDegenerateCases(probeString: String) {
   .tags(.stringManipulation, .uriTemplateLengthManipulation),
   arguments: probeStrings
 )
-private func checkCodePointConstraintMutableImmutableEquivalence(probeString: String) {
+private func checkCodePointConstraintMutableImmutableEquivalence(probeString: String, sourceLocation: Testing.SourceLocation = #_sourceLocation) {
   for codePointCount in probeLengths {
     let immutableResult = probeString.constrained(toCodePointCount: codePointCount)
     var mutableResult = probeString
@@ -93,8 +97,9 @@ private func checkCodePointConstraintMutableImmutableEquivalence(probeString: St
     #expect(
       immutableResult == mutableResult,
       """
-      Found mutable-vs-immutable mismatch for probeString `\(probeString)` when constrained to code-point-count \(codePointCount)! 
-      """
+      Found mutable-vs-immutable mismatch for probeString `\(probeString)` when constrained to code-point-count \(codePointCount)!
+      """,
+      sourceLocation: sourceLocation
     )
   }
 }

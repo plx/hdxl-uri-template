@@ -43,7 +43,7 @@ private func uniqueDebugDescriptions() {
 }
 
 @Test(
-  "`URITemplateVariableName` has unique debugDescriptions",
+  "`URITemplateVariableName` regular expression compiles",
   .tags(.uriTemplateVariableName)
 )
 private func regularExpressionCompiles() throws {

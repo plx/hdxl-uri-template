@@ -8,7 +8,7 @@ extension Tag {
 
 @Test(
   "`URIVariablePairValue` fixtures",
-  .tags(.uriVariableValueData)
+  .tags(.uriVariablePairValue)
 )
 private func validateFixtures() {
   verifyOrderedAscending(keys)
@@ -27,7 +27,7 @@ private func validateFixtures() {
 
 @Test(
   "`URIVariablePairValue` has unique descriptions",
-  .tags(.uriVariableValueData)
+  .tags(.uriVariablePairValue)
 )
 private func uniqueDescriptions() {
   verifyUniqueStringification(
@@ -38,7 +38,7 @@ private func uniqueDescriptions() {
 
 @Test(
   "`URIVariablePairValue` has unique debugDescriptions",
-  .tags(.uriVariableValueData)
+  .tags(.uriVariablePairValue)
 )
 private func uniqueDebugDescriptions() {
   verifyUniqueStringification(

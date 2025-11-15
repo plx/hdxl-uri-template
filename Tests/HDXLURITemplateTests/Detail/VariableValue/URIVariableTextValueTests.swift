@@ -50,8 +50,8 @@ private func uniqueDebugDescriptions() {
   .tags(.uriVariableTextValue),
   arguments: probes
 )
-private func isEmptyCoherence(probe: URIVariableTextValue) {
-  #expect(probe.isEmpty == probe.storage.isEmpty)
+private func isEmptyCoherence(probe: URIVariableTextValue, sourceLocation: Testing.SourceLocation = #_sourceLocation) {
+  #expect(probe.isEmpty == probe.storage.isEmpty, sourceLocation: sourceLocation)
 }
 
 // MARK: Fixtures

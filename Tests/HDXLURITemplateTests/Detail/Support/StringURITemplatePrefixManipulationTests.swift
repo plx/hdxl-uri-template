@@ -8,7 +8,7 @@ extension Tag {
 
 @Test(
   "`String+URITemplatePrefixManipulation` degenerate scenarios",
-  .tags(.stringManipulation, .uriTemplateLengthManipulation)
+  .tags(.stringManipulation, .uriTemplatePrefixManipulation)
 )
 private func degenerateScenarios() {
   // all empty
@@ -44,7 +44,7 @@ private func degenerateScenarios() {
   
 @Test(
   "`String+URITemplatePrefixManipulation` canned scenarios",
-  .tags(.stringManipulation, .uriTemplateLengthManipulation)
+  .tags(.stringManipulation, .uriTemplatePrefixManipulation)
 )
 private func cannedScenarios() {
   verifyRemoval(
@@ -76,7 +76,7 @@ private func cannedScenarios() {
 
 @Test(
   "`String+URITemplatePrefixManipulation` programmatic mixture",
-  .tags(.stringManipulation, .uriTemplateLengthManipulation)
+  .tags(.stringManipulation, .uriTemplatePrefixManipulation)
 )
 private func programmaticMixture() {
   let prefixes: [String] = ["a", "b", "c", "ab", "ac", "bc", "abc"]
@@ -122,7 +122,8 @@ private func verifyRemoval(
     result == expectation,
     """
     Expected `"\(target)".conditionallyRemoving(prefix: "\(prefix)") == "\(expectation)"`, but got "\(result)" instead!
-    """
+    """,
+    sourceLocation: sourceLocation
   )
   let mutableResult = target.mutated {
     $0.conditionallyRemove(prefix: prefix)
@@ -131,6 +132,7 @@ private func verifyRemoval(
     expectation == mutableResult,
     """
     Got unexpected mutable/immutable discrepancy when removing "\(prefix)" from "\(target)": immutable got "\(result)", mutable got "\(mutableResult)", and we expected "\(expectation)"!
-    """
+    """,
+    sourceLocation: sourceLocation
   )
 }

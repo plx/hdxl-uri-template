@@ -3,12 +3,12 @@ import Testing
 
 extension Tag {
   @Tag
-  static var standardEncodingCodingKeys: Self
+  static var standardEnumerationCodingKeys: Self
 }
 
 @Test(
-  "`StandardEncodingCodingKeys.intValues` is sensible",
-  .tags(.standardEncodingCodingKeys)
+  "`StandardEnumerationCodingKeys.intValues` is sensible",
+  .tags(.standardEnumerationCodingKeys)
 )
 private func intValuesExistAndUnique() throws {
   let typeIntValue = try #require(StandardEnumerationCodingKeys.type.intValue)
@@ -17,8 +17,8 @@ private func intValuesExistAndUnique() throws {
 }
 
 @Test(
-  "`StandardEncodingCodingKeys.intValues` round-trips",
-  .tags(.standardEncodingCodingKeys),
+  "`StandardEnumerationCodingKeys.intValues` round-trips",
+  .tags(.standardEnumerationCodingKeys),
   arguments: StandardEnumerationCodingKeys.allCases
 )
 private func intValuesRoundTrip(probe: StandardEnumerationCodingKeys) throws {
