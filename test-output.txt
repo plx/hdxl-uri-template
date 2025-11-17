@@ -1,0 +1,640 @@
+Test Suite 'All tests' started at 2025-11-17 09:03:13.547.
+Test Suite 'All tests' passed at 2025-11-17 09:03:13.548.
+	 Executed 0 tests, with 0 failures (0 unexpected) in 0.000 (0.001) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 1085
+􀄵  Target Platform: arm64e-apple-macos14.0
+simple @ (original: one -> one -> one)
+simple @ (original: two -> two -> two)
+simple @ (original: three -> three -> three)
+pathSegment @ (original: admin -> admin -> admin)
+simple @ (original: count -> count -> count)
+query @ (original: 12345 -> 12345 -> 12345)
+simple @ (original: one -> one -> one)
+pathSegment @ (original: id -> id -> id)
+simple @ (original: two -> two -> two)
+query @ (original: token -> token -> token)
+pathSegment @ (original: person -> person -> person)
+query @ (original: overview -> overview -> overview)
+simple @ (original: three -> three -> three)
+pathSegment @ (original: albums -> albums -> albums)
+query @ (original: tab -> tab -> tab)
+pathSegment @ (original: one -> one -> one)
+query @ (original: id -> id -> id)
+pathSegment @ (original: two -> two -> two)
+pathSegment @ (original: three -> three -> three)
+query @ (original: name -> name -> name)
+query @ (original: picture -> picture -> picture)
+queryContinuation @ (original: key1 -> key1 -> key1)
+queryContinuation @ (original: val1 -> val1 -> val1)
+queryContinuation @ (original: key2 -> key2 -> key2)
+query @ (original: fields -> fields -> fields)
+queryContinuation @ (original: val2 -> val2 -> val2)
+pathSegment @ (original: count -> count -> count)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+pathSegment @ (original: one -> one -> one)
+pathSegment @ (original: two -> two -> two)
+pathSegment @ (original: three -> three -> three)
+pathParameter @ (original: one -> one -> one)
+pathParameter @ (original: two -> two -> two)
+pathParameter @ (original: three -> three -> three)
+pathParameter @ (original: count -> count -> count)
+pathParameter @ (original: count -> count -> count)
+pathParameter @ (original: one -> one -> one)
+pathParameter @ (original: two -> two -> two)
+pathParameter @ (original: three -> three -> three)
+query @ (original: one -> one -> one)
+query @ (original: two -> two -> two)
+query @ (original: three -> three -> three)
+query @ (original: count -> count -> count)
+query @ (original: count -> count -> count)
+query @ (original: one -> one -> one)
+query @ (original: two -> two -> two)
+query @ (original: three -> three -> three)
+queryContinuation @ (original: count -> count -> count)
+queryContinuation @ (original: one -> one -> one)
+queryContinuation @ (original: two -> two -> two)
+queryContinuation @ (original: three -> three -> three)
+simple @ (original: 1024 -> 1024 -> 1024)
+simple @ (original: 768 -> 768 -> 768)
+simple @ (original: 1024 -> 1024 -> 1024)
+simple @ (original: Hello World! -> Hello World! -> Hello%20World%21)
+simple @ (original: 768 -> 768 -> 768)
+reserved @ (original: 1024 -> 1024 -> 1024)
+reserved @ (original: Hello World! -> Hello World! -> Hello%20World!)
+reserved @ (original: 768 -> 768 -> 768)
+􀢄  Test "`{+not_pct}` (from spec)" recorded an issue at HandCheckedSpecCaseTests.swift:79:2: Caught error: EvaluationError(template: URITemplate(storage: URITemplateStorage(components: [ URITemplateComponent.expresssion(URITemplateExpressionComponent(expansionType: URIValueExpansionType.reserved, variables: [ URITemplateVariable(variableName: URITemplateVariableName(rawValue: "not_pct"), expansionModifier: URIValueExpansionModifier.unmodified) ])) ])) ('{+not_pct}'), parameters: ["list": URIVariableValue(storage: URIVariableValueData.list(URIVariableListValue(values: [ URIVariableTextValue(rawValue: 'red%25'), URIVariableTextValue(rawValue: '%2Fgreen'), URIVariableTextValue(rawValue: 'blue') ]))), "id": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'admin%2F'))), "keys": URIVariableValue(storage: URIVariableValueData.association(URIVariableAssociationValue(values: [ URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key1'), value: URIVariableTextValue(rawValue: 'val1%2F')), URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key2'), value: URIVariableTextValue(rawValue: 'val2%2F')) ]))), "not_pct": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '%foo')))], underlyingError: Optional(HDXLURITemplate.URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("%foo", "not_pct", URIValueExpansionType.reserved, URIValueExpansionModifier.unmodified)))
+reserved @ (original: /foo/bar -> /foo/bar -> /foo/bar)
+reserved @ (original: 1024 -> 1024 -> 1024)
+fragment @ (original: 1024 -> 1024 -> 1024)
+fragment @ (original: Hello World! -> Hello World! -> Hello%20World!)
+fragment @ (original: 768 -> 768 -> 768)
+fragment @ (original: /foo/bar -> /foo/bar -> /foo/bar)
+fragment @ (original: 1024 -> 1024 -> 1024)
+pathSegment @ (original: id -> id -> id)
+pathSegment @ (original: person -> person -> person)
+pathSegment @ (original: albums -> albums -> albums)
+label @ (original: value -> value -> value)
+label @ (original: 1024 -> 1024 -> 1024)
+label @ (original: 768 -> 768 -> 768)
+pathSegment @ (original: value -> value -> value)
+pathSegment @ (original: value -> value -> value)
+pathSegment @ (original: 1024 -> 1024 -> 1024)
+pathParameter @ (original: 1024 -> 1024 -> 1024)
+pathParameter @ (original: x -> x -> x)
+pathParameter @ (original: 768 -> 768 -> 768)
+pathParameter @ (original: y -> y -> y)
+queryContinuation @ (original: 1024 -> 1024 -> 1024)
+queryContinuation @ (original: x -> x -> x)
+queryContinuation @ (original: 768 -> 768 -> 768)
+queryContinuation @ (original: y -> y -> y)
+queryContinuation @ (original: empty -> empty -> empty)
+pathParameter @ (original: 1024 -> 1024 -> 1024)
+pathParameter @ (original: x -> x -> x)
+pathParameter @ (original: 768 -> 768 -> 768)
+pathParameter @ (original: y -> y -> y)
+pathParameter @ (original: empty -> empty -> empty)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 3 Examples: `{;x,y,empty}` @ [ path: /foo/bar, var: value, empty: , y: 768, hello: Hello World!, x: 1024 ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → ";x=1024;y=768;empty=") == (expectation → ";x=1024;y=768;empty")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {;x, y, empty}
+   - parameters: [ path: /foo/bar, var: value, empty: , y: 768, hello: Hello World!, x: 1024 ]
+   - expected: ;x=1024;y=768;empty
+   - observed: ;x=1024;y=768;empty=
+   - source: spec-examples
+   - caption: Level 3 Examples
+query @ (original: 1024 -> 1024 -> 1024)
+query @ (original: x -> x -> x)
+query @ (original: 768 -> 768 -> 768)
+query @ (original: y -> y -> y)
+simple @ (original: one -> one -> one)
+simple @ (original: two -> two -> two)
+simple @ (original: three -> three -> three)
+simple @ (original: count -> count -> count)
+simple @ (original: one -> one -> one)
+simple @ (original: two -> two -> two)
+simple @ (original: three -> three -> three)
+pathSegment @ (original: one -> one -> one)
+pathSegment @ (original: two -> two -> two)
+pathSegment @ (original: three -> three -> three)
+pathSegment @ (original: count -> count -> count)
+pathSegment @ (original: one -> one -> one)
+pathSegment @ (original: two -> two -> two)
+pathSegment @ (original: three -> three -> three)
+pathParameter @ (original: one -> one -> one)
+pathParameter @ (original: two -> two -> two)
+pathParameter @ (original: three -> three -> three)
+pathParameter @ (original: count -> count -> count)
+pathParameter @ (original: count -> count -> count)
+pathParameter @ (original: one -> one -> one)
+pathParameter @ (original: two -> two -> two)
+pathParameter @ (original: three -> three -> three)
+query @ (original: one -> one -> one)
+query @ (original: two -> two -> two)
+query @ (original: three -> three -> three)
+query @ (original: count -> count -> count)
+query @ (original: count -> count -> count)
+query @ (original: one -> one -> one)
+query @ (original: two -> two -> two)
+query @ (original: three -> three -> three)
+queryContinuation @ (original: count -> count -> count)
+queryContinuation @ (original: one -> one -> one)
+queryContinuation @ (original: two -> two -> two)
+queryContinuation @ (original: three -> three -> three)
+query @ (original: 1024 -> 1024 -> 1024)
+query @ (original: x -> x -> x)
+query @ (original: 768 -> 768 -> 768)
+query @ (original: y -> y -> y)
+query @ (original: empty -> empty -> empty)
+queryContinuation @ (original: 1024 -> 1024 -> 1024)
+queryContinuation @ (original: x -> x -> x)
+queryContinuation @ (original: 1024 -> 1024 -> 1024)
+queryContinuation @ (original: x -> x -> x)
+queryContinuation @ (original: 768 -> 768 -> 768)
+queryContinuation @ (original: y -> y -> y)
+queryContinuation @ (original: empty -> empty -> empty)
+simple @ (original: value -> value -> value)
+simple @ (original: Hello World! -> Hello World! -> Hello%20World%21)
+reserved @ (original: value -> value -> value)
+reserved @ (original: Hello World! -> Hello World! -> Hello%20World!)
+reserved @ (original: /foo/bar -> /foo/bar -> /foo/bar)
+reserved @ (original: /foo/bar -> /foo/bar -> /foo/bar)
+simple @ (original: val -> val -> val)
+simple @ (original: value -> value -> value)
+simple @ (original: red -> red -> red)
+simple @ (original: green -> green -> green)
+simple @ (original: blue -> blue -> blue)
+simple @ (original: list -> list -> list)
+simple @ (original: red -> red -> red)
+simple @ (original: green -> green -> green)
+simple @ (original: blue -> blue -> blue)
+simple @ (original: comma -> comma -> comma)
+simple @ (original: , -> , -> %2C)
+simple @ (original: dot -> dot -> dot)
+simple @ (original: . -> . -> .)
+simple @ (original: semi -> semi -> semi)
+simple @ (original: ; -> ; -> %3B)
+simple @ (original: comma -> comma -> comma)
+simple @ (original: , -> , -> %2C)
+simple @ (original: dot -> dot -> dot)
+simple @ (original: . -> . -> .)
+simple @ (original: semi -> semi -> semi)
+simple @ (original: ; -> ; -> %3B)
+reserved @ (original: /foo/b -> /foo/b -> /foo/b)
+reserved @ (original: red -> red -> red)
+reserved @ (original: green -> green -> green)
+reserved @ (original: blue -> blue -> blue)
+reserved @ (original: list -> list -> list)
+reserved @ (original: red -> red -> red)
+reserved @ (original: green -> green -> green)
+reserved @ (original: blue -> blue -> blue)
+reserved @ (original: comma -> comma -> comma)
+reserved @ (original: , -> , -> ,)
+reserved @ (original: dot -> dot -> dot)
+reserved @ (original: . -> . -> .)
+reserved @ (original: semi -> semi -> semi)
+reserved @ (original: ; -> ; -> ;)
+reserved @ (original: comma -> comma -> comma)
+reserved @ (original: , -> , -> ,)
+reserved @ (original: dot -> dot -> dot)
+reserved @ (original: . -> . -> .)
+reserved @ (original: semi -> semi -> semi)
+reserved @ (original: ; -> ; -> ;)
+fragment @ (original: /foo/b -> /foo/b -> /foo/b)
+fragment @ (original: list -> list -> list)
+fragment @ (original: red -> red -> red)
+fragment @ (original: green -> green -> green)
+fragment @ (original: blue -> blue -> blue)
+fragment @ (original: red -> red -> red)
+fragment @ (original: green -> green -> green)
+fragment @ (original: blue -> blue -> blue)
+fragment @ (original: comma -> comma -> comma)
+fragment @ (original: , -> , -> ,)
+fragment @ (original: dot -> dot -> dot)
+fragment @ (original: . -> . -> .)
+fragment @ (original: semi -> semi -> semi)
+fragment @ (original: ; -> ; -> ;)
+fragment @ (original: comma -> comma -> comma)
+fragment @ (original: , -> , -> ,)
+fragment @ (original: dot -> dot -> dot)
+fragment @ (original: . -> . -> .)
+fragment @ (original: semi -> semi -> semi)
+fragment @ (original: ; -> ; -> ;)
+label @ (original: val -> val -> val)
+label @ (original: red -> red -> red)
+label @ (original: green -> green -> green)
+label @ (original: blue -> blue -> blue)
+label @ (original: list -> list -> list)
+label @ (original: red -> red -> red)
+label @ (original: green -> green -> green)
+label @ (original: blue -> blue -> blue)
+label @ (original: comma -> comma -> comma)
+label @ (original: , -> , -> %2C)
+label @ (original: dot -> dot -> dot)
+label @ (original: . -> . -> .)
+label @ (original: semi -> semi -> semi)
+label @ (original: ; -> ; -> %3B)
+pathSegment @ (original: v -> v -> v)
+pathSegment @ (original: value -> value -> value)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 4 Examples: `X{.keys}` @ [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ] at SpecificationTests.swift:21:30: Expectation failed: (acceptableExpansions → ["X.comma,%2C,dot,.,semi,%3B", "X.comma,%2C,semi,%3B,dot,.", "X.dot,.,comma,%2C,semi,%3B", "X.dot,.,semi,%3B,comma,%2C", "X.semi,%3B,comma,%2C,dot,.", "X.semi,%3B,dot,.,comma,%2C"]).contains(evaluation → "X.comma,%2C.dot,..semi,%3B")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: X{.keys}
+   - parameters: [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ]
+   - observed: X.comma,%2C.dot,..semi,%3B
+   - expected: 
+               X.comma,%2C,dot,.,semi,%3B
+               X.comma,%2C,semi,%3B,dot,.
+               X.dot,.,comma,%2C,semi,%3B
+               X.dot,.,semi,%3B,comma,%2C
+               X.semi,%3B,comma,%2C,dot,.
+               X.semi,%3B,dot,.,comma,%2C
+   - source: spec-examples
+   - caption: Level 4 Examples
+pathSegment @ (original: red -> red -> red)
+pathSegment @ (original: green -> green -> green)
+pathSegment @ (original: blue -> blue -> blue)
+pathSegment @ (original: list -> list -> list)
+pathSegment @ (original: red -> red -> red)
+pathSegment @ (original: green -> green -> green)
+pathSegment @ (original: blue -> blue -> blue)
+pathSegment @ (original: list -> list -> list)
+pathSegment @ (original: red -> red -> red)
+pathSegment @ (original: green -> green -> green)
+pathSegment @ (original: blue -> blue -> blue)
+pathSegment @ (original: /foo -> /foo -> /foo)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 4 Examples: `{/list*,path:4}` @ [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "/red/green/blue//foo") == (expectation → "/red/green/blue/%2Ffoo")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {/list*, path:4}
+   - parameters: [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ]
+   - expected: /red/green/blue/%2Ffoo
+   - observed: /red/green/blue//foo
+   - source: spec-examples
+   - caption: Level 4 Examples
+pathSegment @ (original: comma -> comma -> comma)
+pathSegment @ (original: , -> , -> %2C)
+pathSegment @ (original: dot -> dot -> dot)
+pathSegment @ (original: . -> . -> .)
+pathSegment @ (original: semi -> semi -> semi)
+pathSegment @ (original: ; -> ; -> %3B)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 4 Examples: `{/keys}` @ [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ] at SpecificationTests.swift:21:30: Expectation failed: (acceptableExpansions → ["/comma,%2C,dot,.,semi,%3B", "/comma,%2C,semi,%3B,dot,.", "/dot,.,comma,%2C,semi,%3B", "/dot,.,semi,%3B,comma,%2C", "/semi,%3B,comma,%2C,dot,.", "/semi,%3B,dot,.,comma,%2C"]).contains(evaluation → "/comma,%2C/dot,./semi,%3B")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {/keys}
+   - parameters: [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ]
+   - observed: /comma,%2C/dot,./semi,%3B
+   - expected: 
+               /comma,%2C,dot,.,semi,%3B
+               /comma,%2C,semi,%3B,dot,.
+               /dot,.,comma,%2C,semi,%3B
+               /dot,.,semi,%3B,comma,%2C
+               /semi,%3B,comma,%2C,dot,.
+               /semi,%3B,dot,.,comma,%2C
+   - source: spec-examples
+   - caption: Level 4 Examples
+pathSegment @ (original: comma -> comma -> comma)
+pathSegment @ (original: , -> , -> %2C)
+pathSegment @ (original: dot -> dot -> dot)
+pathSegment @ (original: . -> . -> .)
+pathSegment @ (original: semi -> semi -> semi)
+pathSegment @ (original: ; -> ; -> %3B)
+pathParameter @ (original: Hello -> Hello -> Hello)
+pathParameter @ (original: hello -> hello -> hello)
+pathParameter @ (original: red -> red -> red)
+pathParameter @ (original: green -> green -> green)
+pathParameter @ (original: blue -> blue -> blue)
+pathParameter @ (original: list -> list -> list)
+pathParameter @ (original: list -> list -> list)
+pathParameter @ (original: red -> red -> red)
+pathParameter @ (original: green -> green -> green)
+pathParameter @ (original: blue -> blue -> blue)
+pathParameter @ (original: comma -> comma -> comma)
+pathParameter @ (original: , -> , -> %2C)
+pathParameter @ (original: dot -> dot -> dot)
+pathParameter @ (original: . -> . -> .)
+pathParameter @ (original: semi -> semi -> semi)
+pathParameter @ (original: ; -> ; -> %3B)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 4 Examples: `{;keys}` @ [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ] at SpecificationTests.swift:21:30: Expectation failed: (acceptableExpansions → [";keys=comma,%2C,dot,.,semi,%3B", ";keys=comma,%2C,semi,%3B,dot,.", ";keys=dot,.,comma,%2C,semi,%3B", ";keys=dot,.,semi,%3B,comma,%2C", ";keys=semi,%3B,comma,%2C,dot,.", ";keys=semi,%3B,dot,.,comma,%2C"]).contains(evaluation → ";comma,%2C;dot,.;semi,%3B")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {;keys}
+   - parameters: [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ]
+   - observed: ;comma,%2C;dot,.;semi,%3B
+   - expected: 
+               ;keys=comma,%2C,dot,.,semi,%3B
+               ;keys=comma,%2C,semi,%3B,dot,.
+               ;keys=dot,.,comma,%2C,semi,%3B
+               ;keys=dot,.,semi,%3B,comma,%2C
+               ;keys=semi,%3B,comma,%2C,dot,.
+               ;keys=semi,%3B,dot,.,comma,%2C
+   - source: spec-examples
+   - caption: Level 4 Examples
+pathParameter @ (original: comma -> comma -> comma)
+pathParameter @ (original: , -> , -> %2C)
+pathParameter @ (original: dot -> dot -> dot)
+pathParameter @ (original: . -> . -> .)
+pathParameter @ (original: semi -> semi -> semi)
+pathParameter @ (original: ; -> ; -> %3B)
+query @ (original: val -> val -> val)
+query @ (original: var -> var -> var)
+query @ (original: red -> red -> red)
+query @ (original: green -> green -> green)
+query @ (original: blue -> blue -> blue)
+query @ (original: list -> list -> list)
+query @ (original: list -> list -> list)
+query @ (original: red -> red -> red)
+query @ (original: green -> green -> green)
+query @ (original: blue -> blue -> blue)
+query @ (original: comma -> comma -> comma)
+query @ (original: , -> , -> %2C)
+query @ (original: dot -> dot -> dot)
+query @ (original: . -> . -> .)
+query @ (original: semi -> semi -> semi)
+query @ (original: ; -> ; -> %3B)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 4 Examples: `{?keys}` @ [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ] at SpecificationTests.swift:21:30: Expectation failed: (acceptableExpansions → ["?keys=comma,%2C,dot,.,semi,%3B", "?keys=comma,%2C,semi,%3B,dot,.", "?keys=dot,.,comma,%2C,semi,%3B", "?keys=dot,.,semi,%3B,comma,%2C", "?keys=semi,%3B,comma,%2C,dot,.", "?keys=semi,%3B,dot,.,comma,%2C"]).contains(evaluation → "?comma,%2C&dot,.&semi,%3B")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {?keys}
+   - parameters: [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ]
+   - observed: ?comma,%2C&dot,.&semi,%3B
+   - expected: 
+               ?keys=comma,%2C,dot,.,semi,%3B
+               ?keys=comma,%2C,semi,%3B,dot,.
+               ?keys=dot,.,comma,%2C,semi,%3B
+               ?keys=dot,.,semi,%3B,comma,%2C
+               ?keys=semi,%3B,comma,%2C,dot,.
+               ?keys=semi,%3B,dot,.,comma,%2C
+   - source: spec-examples
+   - caption: Level 4 Examples
+query @ (original: comma -> comma -> comma)
+query @ (original: , -> , -> %2C)
+query @ (original: dot -> dot -> dot)
+query @ (original: . -> . -> .)
+query @ (original: semi -> semi -> semi)
+query @ (original: ; -> ; -> %3B)
+queryContinuation @ (original: val -> val -> val)
+queryContinuation @ (original: var -> var -> var)
+queryContinuation @ (original: red -> red -> red)
+queryContinuation @ (original: green -> green -> green)
+queryContinuation @ (original: blue -> blue -> blue)
+queryContinuation @ (original: list -> list -> list)
+queryContinuation @ (original: list -> list -> list)
+queryContinuation @ (original: red -> red -> red)
+queryContinuation @ (original: green -> green -> green)
+queryContinuation @ (original: blue -> blue -> blue)
+queryContinuation @ (original: comma -> comma -> comma)
+queryContinuation @ (original: , -> , -> %2C)
+queryContinuation @ (original: dot -> dot -> dot)
+queryContinuation @ (original: . -> . -> .)
+queryContinuation @ (original: semi -> semi -> semi)
+queryContinuation @ (original: ; -> ; -> %3B)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `spec-examples` Level 4 Examples: `{&keys}` @ [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ] at SpecificationTests.swift:21:30: Expectation failed: (acceptableExpansions → ["&keys=comma,%2C,dot,.,semi,%3B", "&keys=comma,%2C,semi,%3B,dot,.", "&keys=dot,.,comma,%2C,semi,%3B", "&keys=dot,.,semi,%3B,comma,%2C", "&keys=semi,%3B,comma,%2C,dot,.", "&keys=semi,%3B,dot,.,comma,%2C"]).contains(evaluation → "&comma,%2C&dot,.&semi,%3B")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {&keys}
+   - parameters: [ hello: Hello World!, path: /foo/bar, keys: [ comma: ,, dot: ., semi: ; ], var: value, list: [ red, green, blue ] ]
+   - observed: &comma,%2C&dot,.&semi,%3B
+   - expected: 
+               &keys=comma,%2C,dot,.,semi,%3B
+               &keys=comma,%2C,semi,%3B,dot,.
+               &keys=dot,.,comma,%2C,semi,%3B
+               &keys=dot,.,semi,%3B,comma,%2C
+               &keys=semi,%3B,comma,%2C,dot,.
+               &keys=semi,%3B,dot,.,comma,%2C
+   - source: spec-examples
+   - caption: Level 4 Examples
+queryContinuation @ (original: comma -> comma -> comma)
+queryContinuation @ (original: , -> , -> %2C)
+queryContinuation @ (original: dot -> dot -> dot)
+queryContinuation @ (original: . -> . -> .)
+queryContinuation @ (original: semi -> semi -> semi)
+queryContinuation @ (original: ; -> ; -> %3B)
+query @ (original: admin -> admin -> admin)
+query @ (original: id -> id -> id)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+query @ (original: key1 -> key1 -> key1)
+query @ (original: val1 -> val1 -> val1)
+query @ (original: key2 -> key2 -> key2)
+query @ (original: val2 -> val2 -> val2)
+pathSegment @ (original: admin -> admin -> admin)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+query @ (original: key1 -> key1 -> key1)
+query @ (original: val1 -> val1 -> val1)
+query @ (original: key2 -> key2 -> key2)
+query @ (original: val2 -> val2 -> val2)
+query @ (original: admin -> admin -> admin)
+query @ (original: id -> id -> id)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+queryContinuation @ (original: key1 -> key1 -> key1)
+queryContinuation @ (original: val1 -> val1 -> val1)
+queryContinuation @ (original: key2 -> key2 -> key2)
+queryContinuation @ (original: val2 -> val2 -> val2)
+pathSegment @ (original: admin -> admin -> admin)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+query @ (original: overview -> overview -> overview)
+query @ (original: tab -> tab -> tab)
+queryContinuation @ (original: key1 -> key1 -> key1)
+queryContinuation @ (original: val1 -> val1 -> val1)
+queryContinuation @ (original: key2 -> key2 -> key2)
+queryContinuation @ (original: val2 -> val2 -> val2)
+simple @ (original: The Answer to the Ultimate Question of Life, the Universe, and Everything -> The Answer to the Ultimate Question of Life, the Universe, and Everything -> The%20Answer%20to%20the%20Ultimate%20Question%20of%20Life%2C%20the%20Universe%2C%20and%20Everything)
+simple @ (original: leet -> leet -> leet)
+simple @ (original: as -> as -> as)
+simple @ (original: it -> it -> it)
+simple @ (original: can -> can -> can)
+simple @ (original: be -> be -> be)
+query @ (original: The Answer to the Ultimate Question of Life, the Universe, and Everything -> The Answer to the Ultimate Question of Life, the Universe, and Everything -> The%20Answer%20to%20the%20Ultimate%20Question%20of%20Life%2C%20the%20Universe%2C%20and%20Everything)
+query @ (original: 42 -> 42 -> 42)
+query @ (original: 1337 -> 1337 -> 1337)
+query @ (original: leet -> leet -> leet)
+query @ (original: as -> as -> as)
+query @ (original: it -> it -> it)
+query @ (original: can -> can -> can)
+query @ (original: be -> be -> be)
+query @ (original: 11 -> 11 -> 11)
+query @ (original: elf -> elf -> elf)
+query @ (original: 12 -> 12 -> 12)
+query @ (original: zwölf -> zwölf -> zw%C3%B6lf)
+reserved @ (original: admin%2F -> admin/ -> admin/)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{+id}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "admin/") == (expectation → "admin%2F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {+id}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: admin%2F
+   - observed: admin/
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+fragment @ (original: admin%2F -> admin/ -> admin/)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{#id}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "#admin/") == (expectation → "#admin%2F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {#id}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: #admin%2F
+   - observed: #admin/
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+simple @ (original: admin%2F -> admin/ -> admin%2F)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{id}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "admin%2F") == (expectation → "admin%252F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {id}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: admin%252F
+   - observed: admin%2F
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{+not_pct}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:16:2: Caught error: EvaluationError(template: URITemplate(storage: URITemplateStorage(components: [ URITemplateComponent.expresssion(URITemplateExpressionComponent(expansionType: URIValueExpansionType.reserved, variables: [ URITemplateVariable(variableName: URITemplateVariableName(rawValue: "not_pct"), expansionModifier: URIValueExpansionModifier.unmodified) ])) ])) ('{+not_pct}'), parameters: ["id": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'admin%2F'))), "keys": URIVariableValue(storage: URIVariableValueData.association(URIVariableAssociationValue(values: [ URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key1'), value: URIVariableTextValue(rawValue: 'val1%2F')), URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key2'), value: URIVariableTextValue(rawValue: 'val2%2F')) ]))), "not_pct": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '%foo'))), "list": URIVariableValue(storage: URIVariableValueData.list(URIVariableListValue(values: [ URIVariableTextValue(rawValue: 'red%25'), URIVariableTextValue(rawValue: '%2Fgreen'), URIVariableTextValue(rawValue: 'blue ') ])))], underlyingError: Optional(HDXLURITemplate.URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("%foo", "not_pct", URIValueExpansionType.reserved, URIValueExpansionModifier.unmodified)))
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{#not_pct}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:16:2: Caught error: EvaluationError(template: URITemplate(storage: URITemplateStorage(components: [ URITemplateComponent.expresssion(URITemplateExpressionComponent(expansionType: URIValueExpansionType.fragment, variables: [ URITemplateVariable(variableName: URITemplateVariableName(rawValue: "not_pct"), expansionModifier: URIValueExpansionModifier.unmodified) ])) ])) ('{#not_pct}'), parameters: ["id": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'admin%2F'))), "keys": URIVariableValue(storage: URIVariableValueData.association(URIVariableAssociationValue(values: [ URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key1'), value: URIVariableTextValue(rawValue: 'val1%2F')), URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key2'), value: URIVariableTextValue(rawValue: 'val2%2F')) ]))), "not_pct": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '%foo'))), "list": URIVariableValue(storage: URIVariableValueData.list(URIVariableListValue(values: [ URIVariableTextValue(rawValue: 'red%25'), URIVariableTextValue(rawValue: '%2Fgreen'), URIVariableTextValue(rawValue: 'blue ') ])))], underlyingError: Optional(HDXLURITemplate.URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("%foo", "not_pct", URIValueExpansionType.fragment, URIValueExpansionModifier.unmodified)))
+reserved @ (original: red%25 -> red% -> red%)
+reserved @ (original: %2Fgreen -> /green -> /green)
+reserved @ (original: blue  -> blue  -> blue%20)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{+list}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "red%,/green,blue%20") == (expectation → "red%25,%2Fgreen,blue%20")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {+list}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: red%25,%2Fgreen,blue%20
+   - observed: red%,/green,blue%20
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{not_pct}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:16:2: Caught error: EvaluationError(template: URITemplate(storage: URITemplateStorage(components: [ URITemplateComponent.expresssion(URITemplateExpressionComponent(expansionType: URIValueExpansionType.simple, variables: [ URITemplateVariable(variableName: URITemplateVariableName(rawValue: "not_pct"), expansionModifier: URIValueExpansionModifier.unmodified) ])) ])) ('{not_pct}'), parameters: ["id": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'admin%2F'))), "keys": URIVariableValue(storage: URIVariableValueData.association(URIVariableAssociationValue(values: [ URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key1'), value: URIVariableTextValue(rawValue: 'val1%2F')), URIVariablePairValue(key: URIVariableTextValue(rawValue: 'key2'), value: URIVariableTextValue(rawValue: 'val2%2F')) ]))), "not_pct": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '%foo'))), "list": URIVariableValue(storage: URIVariableValueData.list(URIVariableListValue(values: [ URIVariableTextValue(rawValue: 'red%25'), URIVariableTextValue(rawValue: '%2Fgreen'), URIVariableTextValue(rawValue: 'blue ') ])))], underlyingError: Optional(HDXLURITemplate.URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("%foo", "not_pct", URIValueExpansionType.simple, URIValueExpansionModifier.unmodified)))
+fragment @ (original: red%25 -> red% -> red%)
+fragment @ (original: %2Fgreen -> /green -> /green)
+fragment @ (original: blue  -> blue  -> blue%20)
+simple @ (original: red%25 -> red% -> red%25)
+simple @ (original: %2Fgreen -> /green -> %2Fgreen)
+simple @ (original: blue  -> blue  -> blue%20)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{list}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "red%25,%2Fgreen,blue%20") == (expectation → "red%2525,%252Fgreen,blue%20")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {list}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: red%2525,%252Fgreen,blue%20
+   - observed: red%25,%2Fgreen,blue%20
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+reserved @ (original: key1 -> key1 -> key1)
+reserved @ (original: val1%2F -> val1/ -> val1/)
+reserved @ (original: key2 -> key2 -> key2)
+reserved @ (original: val2%2F -> val2/ -> val2/)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{#list}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "#red%,/green,blue%20") == (expectation → "#red%25,%2Fgreen,blue%20")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {#list}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: #red%25,%2Fgreen,blue%20
+   - observed: #red%,/green,blue%20
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{+keys}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "key1,val1/,key2,val2/") == (expectation → "key1,val1%2F,key2,val2%2F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {+keys}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: key1,val1%2F,key2,val2%2F
+   - observed: key1,val1/,key2,val2/
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+fragment @ (original: key1 -> key1 -> key1)
+fragment @ (original: val1%2F -> val1/ -> val1/)
+fragment @ (original: key2 -> key2 -> key2)
+fragment @ (original: val2%2F -> val2/ -> val2/)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{#keys}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "#key1,val1/,key2,val2/") == (expectation → "#key1,val1%2F,key2,val2%2F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {#keys}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: #key1,val1%2F,key2,val2%2F
+   - observed: #key1,val1/,key2,val2/
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+simple @ (original: key1 -> key1 -> key1)
+simple @ (original: val1%2F -> val1/ -> val1%2F)
+simple @ (original: key2 -> key2 -> key2)
+simple @ (original: val2%2F -> val2/ -> val2%2F)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 6: Reserved Expansion: `{keys}` @ [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "key1,val1%2F,key2,val2%2F") == (expectation → "key1,val1%252F,key2,val2%252F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: {keys}
+   - parameters: [ id: admin%2F, keys: [ key1: val1%2F, key2: val2%2F ], not_pct: %foo, list: [ red%25, %2Fgreen, blue  ] ]
+   - expected: key1,val1%252F,key2,val2%252F
+   - observed: key1,val1%2F,key2,val2%2F
+   - source: extended-tests
+   - caption: Additional Examples 6: Reserved Expansion
+pathSegment @ (original: id -> id -> id)
+pathSegment @ (original: person -> person -> person)
+pathSegment @ (original: albums -> albums -> albums)
+pathSegment @ (original: id -> id -> id)
+pathSegment @ (original: person -> person -> person)
+pathSegment @ (original: albums -> albums -> albums)
+query @ (original: id -> id -> id)
+query @ (original: name -> name -> name)
+query @ (original: picture -> picture -> picture)
+query @ (original: fields -> fields -> fields)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+pathSegment @ (original: person -> person -> person)
+pathSegment @ (original: person -> person -> person)
+query @ (original: id -> id -> id)
+query @ (original: name -> name -> name)
+query @ (original: picture -> picture -> picture)
+query @ (original: fields -> fields -> fields)
+query @ (original: John -> John -> John)
+query @ (original: first_name -> first_name -> first_name)
+query @ (original: Doe -> Doe -> Doe)
+query @ (original: last.name -> last.name -> last.name)
+query @ (original: 12345 -> 12345 -> 12345)
+query @ (original: token -> token -> token)
+simple @ (original: json -> json -> json)
+query @ (original: URI Templates -> URI Templates -> URI%20Templates)
+query @ (original: q -> q -> q)
+query @ (original: 37.76 -> 37.76 -> 37.76)
+query @ (original: -122.427 -> -122.427 -> -122.427)
+query @ (original: geocode -> geocode -> geocode)
+query @ (original: en -> en -> en)
+query @ (original: lang -> lang -> lang)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 1: `/search.{format}{?q,geocode,lang,locale,page,result_type}` @ [ Stra%C3%9Fe: Grüner Weg, q: URI Templates, geocode: [ 37.76, -122.427 ], word: drücken, uri: http://example.org/?uri=http%3A%2F%2Fexample.org%2F, long: 37.76, lang: en, fields: [ id, name, picture ], lat: -122.427, format: json, query: PREFIX dc: <http://purl.org/dc/elements/1.1/> SELECT ?book ?who WHERE { ?book dc:creator ?who }, first_name: John, random: šöäŸœñê€£¥‡ÑÒÓÔÕÖ×ØÙÚàáâãäåæçÿ, group_id: 12345, token: 12345, assoc_special_chars: [ šöäŸœñê€£¥‡ÑÒÓÔÕ: Ö×ØÙÚàáâãäåæçÿ ], number: 6, page: 5, last.name: Doe, id: person, Some%20Thing: foo ] at SpecificationTests.swift:16:2: Caught error: EvaluationError(template: URITemplate(storage: URITemplateStorage(components: [ URITemplateComponent.literal(URITemplateLiteralComponent(storage: "/search."), URITemplateComponent.expresssion(URITemplateExpressionComponent(expansionType: URIValueExpansionType.simple, variables: [ URITemplateVariable(variableName: URITemplateVariableName(rawValue: "format"), expansionModifier: URIValueExpansionModifier.unmodified) ])), URITemplateComponent.expresssion(URITemplateExpressionComponent(expansionType: URIValueExpansionType.query, variables: [ URITemplateVariable(variableName: URITemplateVariableName(rawValue: "q"), expansionModifier: URIValueExpansionModifier.unmodified), URITemplateVariable(variableName: URITemplateVariableName(rawValue: "geocode"), expansionModifier: URIValueExpansionModifier.unmodified), URITemplateVariable(variableName: URITemplateVariableName(rawValue: "lang"), expansionModifier: URIValueExpansionModifier.unmodified), URITemplateVariable(variableName: URITemplateVariableName(rawValue: "locale"), expansionModifier: URIValueExpansionModifier.unmodified), URITemplateVariable(variableName: URITemplateVariableName(rawValue: "page"), expansionModifier: URIValueExpansionModifier.unmodified), URITemplateVariable(variableName: URITemplateVariableName(rawValue: "result_type"), expansionModifier: URIValueExpansionModifier.unmodified) ])) ])) ('/search.{format}{?q, geocode, lang, locale, page, result_type}'), parameters: ["Stra%C3%9Fe": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'Grüner Weg'))), "q": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'URI Templates'))), "geocode": URIVariableValue(storage: URIVariableValueData.list(URIVariableListValue(values: [ URIVariableTextValue(rawValue: '37.76'), URIVariableTextValue(rawValue: '-122.427') ]))), "word": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'drücken'))), "uri": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'http://example.org/?uri=http%3A%2F%2Fexample.org%2F'))), "long": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '37.76'))), "lang": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'en'))), "fields": URIVariableValue(storage: URIVariableValueData.list(URIVariableListValue(values: [ URIVariableTextValue(rawValue: 'id'), URIVariableTextValue(rawValue: 'name'), URIVariableTextValue(rawValue: 'picture') ]))), "lat": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '-122.427'))), "format": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'json'))), "query": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'PREFIX dc: <http://purl.org/dc/elements/1.1/> SELECT ?book ?who WHERE { ?book dc:creator ?who }'))), "first_name": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'John'))), "random": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'šöäŸœñê€£¥‡ÑÒÓÔÕÖ×ØÙÚàáâãäåæçÿ'))), "group_id": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '12345'))), "token": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '12345'))), "assoc_special_chars": URIVariableValue(storage: URIVariableValueData.association(URIVariableAssociationValue(values: [ URIVariablePairValue(key: URIVariableTextValue(rawValue: 'šöäŸœñê€£¥‡ÑÒÓÔÕ'), value: URIVariableTextValue(rawValue: 'Ö×ØÙÚàáâãäåæçÿ')) ]))), "number": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '6'))), "page": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: '5'))), "last.name": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'Doe'))), "id": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'person'))), "Some%20Thing": URIVariableValue(storage: URIVariableValueData.text(URIVariableTextValue(rawValue: 'foo')))], underlyingError: Optional(HDXLURITemplate.URITemplateVariable.ExpansionError.variableNotFound("locale")))
+pathSegment @ (original: foo -> foo -> foo)
+query @ (original: 6 -> 6 -> 6)
+query @ (original: number -> number -> number)
+query @ (original: 37.76 -> 37.76 -> 37.76)
+query @ (original: long -> long -> long)
+query @ (original: -122.427 -> -122.427 -> -122.427)
+query @ (original: lat -> lat -> lat)
+pathSegment @ (original: 12345 -> 12345 -> 12345)
+pathSegment @ (original: John -> John -> John)
+pathSegment @ (original: 5 -> 5 -> 5)
+pathSegment @ (original: en -> en -> en)
+query @ (original: json -> json -> json)
+query @ (original: format -> format -> format)
+query @ (original: URI Templates -> URI Templates -> URI%20Templates)
+query @ (original: q -> q -> q)
+query @ (original: PREFIX dc: <http://purl.org/dc/elements/1.1/> SELECT ?book ?who WHERE { ?book dc:creator ?who } -> PREFIX dc: <http://purl.org/dc/elements/1.1/> SELECT ?book ?who WHERE { ?book dc:creator ?who } -> PREFIX%20dc%3A%20%3Chttp%3A%2F%2Fpurl.org%2Fdc%2Felements%2F1.1%2F%3E%20SELECT%20%3Fbook%20%3Fwho%20WHERE%20%7B%20%3Fbook%20dc%3Acreator%20%3Fwho%20%7D)
+query @ (original: query -> query -> query)
+query @ (original: http://example.org/?uri=http%3A%2F%2Fexample.org%2F -> http://example.org/?uri=http://example.org/ -> http%3A%2F%2Fexample.org%2F%3Furi%3Dhttp%3A%2F%2Fexample.org%2F)
+query @ (original: uri -> uri -> uri)
+􀢄  Test "`URITemplate` evaluates as-expected per spec." recorded an issue with 1 argument example → `extended-tests` Additional Examples 1: `/go{?uri}` @ [ Stra%C3%9Fe: Grüner Weg, q: URI Templates, geocode: [ 37.76, -122.427 ], word: drücken, uri: http://example.org/?uri=http%3A%2F%2Fexample.org%2F, long: 37.76, lang: en, fields: [ id, name, picture ], lat: -122.427, format: json, query: PREFIX dc: <http://purl.org/dc/elements/1.1/> SELECT ?book ?who WHERE { ?book dc:creator ?who }, first_name: John, random: šöäŸœñê€£¥‡ÑÒÓÔÕÖ×ØÙÚàáâãäåæçÿ, group_id: 12345, token: 12345, assoc_special_chars: [ šöäŸœñê€£¥‡ÑÒÓÔÕ: Ö×ØÙÚàáâãäåæçÿ ], number: 6, page: 5, last.name: Doe, id: person, Some%20Thing: foo ] at SpecificationTests.swift:21:30: Expectation failed: (evaluation → "/go?uri=http%3A%2F%2Fexample.org%2F%3Furi%3Dhttp%3A%2F%2Fexample.org%2F") == (expectation → "/go?uri=http%3A%2F%2Fexample.org%2F%3Furi%3Dhttp%253A%252F%252Fexample.org%252F")
+􀄵  Template-expansion didn't match expectation.
+   
+   - template: /go{?uri}
+   - parameters: [ Stra%C3%9Fe: Grüner Weg, q: URI Templates, geocode: [ 37.76, -122.427 ], word: drücken, uri: http://example.org/?uri=http%3A%2F%2Fexample.org%2F, long: 37.76, lang: en, fields: [ id, name, picture ], lat: -122.427, format: json, query: PREFIX dc: <http://purl.org/dc/elements/1.1/> SELECT ?book ?who WHERE { ?book dc:creator ?who }, first_name: John, random: šöäŸœñê€£¥‡ÑÒÓÔÕÖ×ØÙÚàáâãäåæçÿ, group_id: 12345, token: 12345, assoc_special_chars: [ šöäŸœñê€£¥‡ÑÒÓÔÕ: Ö×ØÙÚàáâãäåæçÿ ], number: 6, page: 5, last.name: Doe, id: person, Some%20Thing: foo ]
+   - expected: /go?uri=http%3A%2F%2Fexample.org%2F%3Furi%3Dhttp%253A%252F%252Fexample.org%252F
+   - observed: /go?uri=http%3A%2F%2Fexample.org%2F%3Furi%3Dhttp%3A%2F%2Fexample.org%2F
+   - source: extended-tests
+   - caption: Additional Examples 1
+query @ (original: drücken -> drücken -> dr%C3%BCcken)
+query @ (original: word -> word -> word)
+query @ (original: Grüner Weg -> Grüner Weg -> Gr%C3%BCner%20Weg)
+query @ (original: Stra%C3%9Fe -> Straße -> Stra%C3%9Fe)
+simple @ (original: šöäŸœñê€£¥‡ÑÒÓÔÕÖ×ØÙÚàáâãäåæçÿ -> šöäŸœñê€£¥‡ÑÒÓÔÕÖ×ØÙÚàáâãäåæçÿ -> %C5%A1%C3%B6%C3%A4%C5%B8%C5%93%C3%B1%C3%AA%E2%82%AC%C2%A3%C2%A5%E2%80%A1%C3%91%C3%92%C3%93%C3%94%C3%95%C3%96%C3%97%C3%98%C3%99%C3%9A%C3%A0%C3%A1%C3%A2%C3%A3%C3%A4%C3%A5%C3%A6%C3%A7%C3%BF)
+query @ (original: šöäŸœñê€£¥‡ÑÒÓÔÕ -> šöäŸœñê€£¥‡ÑÒÓÔÕ -> %C5%A1%C3%B6%C3%A4%C5%B8%C5%93%C3%B1%C3%AA%E2%82%AC%C2%A3%C2%A5%E2%80%A1%C3%91%C3%92%C3%93%C3%94%C3%95)
+query @ (original: Ö×ØÙÚàáâãäåæçÿ -> Ö×ØÙÚàáâãäåæçÿ -> %C3%96%C3%97%C3%98%C3%99%C3%9A%C3%A0%C3%A1%C3%A2%C3%A3%C3%A4%C3%A5%C3%A6%C3%A7%C3%BF)
+􀢄  Test run with 78 tests in 0 suites failed after 1.891 seconds with 22 issues.
