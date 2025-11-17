@@ -35,7 +35,21 @@ internal struct URIVariableListValue {
 #endif
     self.storage = values
   }
-  
+
+  @inlinable
+  internal init(string: String) {
+    self.init(
+      value: URIVariableTextValue(rawValue: string)
+    )
+  }
+
+  @inlinable
+  internal init(strings: [String]) {
+    self.init(
+      values: strings.map { URIVariableTextValue(rawValue: $0)}
+    )
+  }
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -121,6 +135,31 @@ extension URIVariableListValue : Codable {
 }
 
 // -------------------------------------------------------------------------- //
+// MARK: - Expressible
+// -------------------------------------------------------------------------- //
+
+extension URIVariableListValue : ExpressibleByArrayLiteral {
+  
+  @inlinable
+  internal init(arrayLiteral elements: URIVariableTextValue...) {
+    self.init(values: elements)
+  }
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Validatable
+// -------------------------------------------------------------------------- //
+
+extension URIVariableListValue {
+  
+  @inlinable
+  internal var isValid: Bool {
+    storage.allSatisfy(\.isValid)
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
 // MARK: - Core API
 // -------------------------------------------------------------------------- //
 
@@ -141,17 +180,11 @@ extension URIVariableListValue {
     storage[index]
   }
   
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: - Validatable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableListValue {
-  
-  @inlinable
-  internal var isValid: Bool {
-    storage.allSatisfy(\.isValid)
+  @usableFromInline
+  internal var errorMessageRepresentation: String {
+    let memberErrorRepresentation = storage.lazy.map { $0.errorMessageRepresentation }.joined(separator: ", ")
+    return "[ \(memberErrorRepresentation) ]"
   }
   
 }
+

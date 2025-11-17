@@ -19,7 +19,7 @@ extension URITemplateVariableName {
     else {
       throw ParseError.invalidNameContents(string)
     }
-    self.init(storage: string)
+    self.init(rawValue: string)
   }
   
 }

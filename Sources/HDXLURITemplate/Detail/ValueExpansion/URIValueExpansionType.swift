@@ -16,90 +16,6 @@ internal enum URIValueExpansionType : UInt8 {
   case query = 64
   case queryContinuation = 128
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Format String Constants
-  // ------------------------------------------------------------------------ //
-  
-  @usableFromInline
-  internal static let simpleFormatString: String = ""
-
-  @usableFromInline
-  internal static let reservedFormatString: String = "+"
-
-  @usableFromInline
-  internal static let fragmentFormatString: String = "#"
-
-  @usableFromInline
-  internal static let labelFormatString: String = "."
-
-  @usableFromInline
-  internal static let pathSegmentFormatString: String = "/"
-
-  @usableFromInline
-  internal static let pathParameterFormatString: String = ";"
-
-  @usableFromInline
-  internal static let queryFormatString: String = "?"
-
-  @usableFromInline
-  internal static let queryContinuationFormatString: String = "&"
-
-  // ------------------------------------------------------------------------ //
-  // MARK: Prefixes For Expanded Variable Lists
-  // ------------------------------------------------------------------------ //
-  
-  @usableFromInline
-  internal static let simplePrefixForExpandedVariableList: String = ""
-  
-  @usableFromInline
-  internal static let reservedPrefixForExpandedVariableList: String = ""
-  
-  @usableFromInline
-  internal static let fragmentPrefixForExpandedVariableList: String = "#"
-  
-  @usableFromInline
-  internal static let labelPrefixForExpandedVariableList: String = "."
-  
-  @usableFromInline
-  internal static let pathSegmentPrefixForExpandedVariableList: String = "/"
-  
-  @usableFromInline
-  internal static let pathParameterPrefixForExpandedVariableList: String = ";"
-  
-  @usableFromInline
-  internal static let queryPrefixForExpandedVariableList: String = "?"
-  
-  @usableFromInline
-  internal static let queryContinuationPrefixForExpandedVariableList: String = "&"
-
-  // ------------------------------------------------------------------------ //
-  // MARK: Separators For Expanded Variable Lists
-  // ------------------------------------------------------------------------ //
-  
-  @usableFromInline
-  internal static let simpleSeparatorForExpandedVariableList: String = ","
-  
-  @usableFromInline
-  internal static let reservedSeparatorForExpandedVariableList: String = ","
-  
-  @usableFromInline
-  internal static let fragmentSeparatorForExpandedVariableList: String = ","
-  
-  @usableFromInline
-  internal static let labelSeparatorForExpandedVariableList: String = "."
-  
-  @usableFromInline
-  internal static let pathSegmentSeparatorForExpandedVariableList: String = "/"
-  
-  @usableFromInline
-  internal static let pathParameterSeparatorForExpandedVariableList: String = ";"
-  
-  @usableFromInline
-  internal static let querySeparatorForExpandedVariableList: String = "&"
-  
-  @usableFromInline
-  internal static let queryContinuationSeparatorForExpandedVariableList: String = "&"
-
 }
 
 // -------------------------------------------------------------------------- //
@@ -194,24 +110,34 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
 extension URIValueExpansionType {
   
   @inlinable
+  internal var isQueryExpansionType: Bool {
+    switch self {
+    case .query, .queryContinuation:
+      true
+    default:
+      false
+    }
+  }
+  
+  @inlinable
   internal var formatString: String {
     switch self {
     case .simple:
-      Self.simpleFormatString
+      .simpleFormatString
     case .reserved:
-      Self.reservedFormatString
+      .reservedFormatString
     case .fragment:
-      Self.fragmentFormatString
+      .fragmentFormatString
     case .label:
-      Self.labelFormatString
+      .labelFormatString
     case .pathSegment:
-      Self.pathSegmentFormatString
+      .pathSegmentFormatString
     case .pathParameter:
-      Self.pathParameterFormatString
+      .pathParameterFormatString
     case .query:
-      Self.queryFormatString
+      .queryFormatString
     case .queryContinuation:
-      Self.queryContinuationFormatString
+      .queryContinuationFormatString
     }
   }
   
@@ -219,21 +145,21 @@ extension URIValueExpansionType {
   internal var prefixForExpandedVariableList: String {
     switch self {
     case .simple:
-      Self.simplePrefixForExpandedVariableList
+      .simplePrefixForExpandedVariableList
     case .reserved:
-      Self.reservedPrefixForExpandedVariableList
+      .reservedPrefixForExpandedVariableList
     case .fragment:
-      Self.fragmentPrefixForExpandedVariableList
+      .fragmentPrefixForExpandedVariableList
     case .label:
-      Self.labelPrefixForExpandedVariableList
+      .labelPrefixForExpandedVariableList
     case .pathSegment:
-      Self.pathSegmentPrefixForExpandedVariableList
+      .pathSegmentPrefixForExpandedVariableList
     case .pathParameter:
-      Self.pathParameterPrefixForExpandedVariableList
+      .pathParameterPrefixForExpandedVariableList
     case .query:
-      Self.queryPrefixForExpandedVariableList
+      .queryPrefixForExpandedVariableList
     case .queryContinuation:
-      Self.queryContinuationPrefixForExpandedVariableList
+      .queryContinuationPrefixForExpandedVariableList
     }
   }
   
@@ -241,21 +167,21 @@ extension URIValueExpansionType {
   internal var separatorForExpandedVariableList: String {
     switch self {
     case .simple:
-      Self.simpleSeparatorForExpandedVariableList
+      .simpleSeparatorForExpandedVariableList
     case .reserved:
-      Self.reservedSeparatorForExpandedVariableList
+      .reservedSeparatorForExpandedVariableList
     case .fragment:
-      Self.fragmentSeparatorForExpandedVariableList
+      .fragmentSeparatorForExpandedVariableList
     case .label:
-      Self.labelSeparatorForExpandedVariableList
+      .labelSeparatorForExpandedVariableList
     case .pathSegment:
-      Self.pathSegmentSeparatorForExpandedVariableList
+      .pathSegmentSeparatorForExpandedVariableList
     case .pathParameter:
-      Self.pathParameterSeparatorForExpandedVariableList
+      .pathParameterSeparatorForExpandedVariableList
     case .query:
-      Self.querySeparatorForExpandedVariableList
+      .querySeparatorForExpandedVariableList
     case .queryContinuation:
-      Self.queryContinuationSeparatorForExpandedVariableList
+      .queryContinuationSeparatorForExpandedVariableList
     }
   }
   
@@ -263,21 +189,21 @@ extension URIValueExpansionType {
   @inlinable
   internal init?(formatString: String) {
     switch formatString {
-    case Self.simpleFormatString:
+    case .simpleFormatString:
       self = .simple
-    case Self.reservedFormatString:
+    case .reservedFormatString:
       self = .reserved
-    case Self.fragmentFormatString:
+    case .fragmentFormatString:
       self = .fragment
-    case Self.labelFormatString:
+    case .labelFormatString:
       self = .label
-    case Self.pathSegmentFormatString:
+    case .pathSegmentFormatString:
       self = .pathSegment
-    case Self.pathParameterFormatString:
+    case .pathParameterFormatString:
       self = .pathParameter
-    case Self.queryFormatString:
+    case .queryFormatString:
       self = .query
-    case Self.queryContinuationFormatString:
+    case .queryContinuationFormatString:
       self = .queryContinuation
     default:
       // TODO: consider logging values?

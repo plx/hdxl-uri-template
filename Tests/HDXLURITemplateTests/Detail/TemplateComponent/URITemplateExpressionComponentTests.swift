@@ -58,7 +58,7 @@ private let probeStrings: [String] = [
 
 private let variableNames: [URITemplateVariableName] = probeStrings
   .map {
-    URITemplateVariableName(storage: $0)
+    URITemplateVariableName(rawValue: $0)
   }
 
 private let variableNameSubsets: [[URITemplateVariableName]] = {

@@ -31,7 +31,7 @@ internal enum URIVariableValueData {
     defer { pedanticAssert(isValid) }
 #endif
     self = .text(
-      URIVariableTextValue(text: text)
+      URIVariableTextValue(rawValue: text)
     )
   }
 
@@ -43,7 +43,7 @@ internal enum URIVariableValueData {
     self = .list(
       URIVariableListValue(
         values: texts.map() {
-          URIVariableTextValue(text: $0)
+          URIVariableTextValue(rawValue: $0)
         }
       )
     )
@@ -56,7 +56,7 @@ internal enum URIVariableValueData {
 #endif
     self = .list(
       URIVariableListValue(
-        value: URIVariableTextValue(text: text)
+        value: URIVariableTextValue(rawValue: text)
       )
     )
   }
@@ -69,8 +69,8 @@ internal enum URIVariableValueData {
     self = .association(
       URIVariableAssociationValue(
         value: URIVariablePairValue(
-          key: URIVariableTextValue(text: pair.0),
-          value: URIVariableTextValue(text: pair.1)
+          key: URIVariableTextValue(rawValue: pair.0),
+          value: URIVariableTextValue(rawValue: pair.1)
         )
       )
     )
@@ -85,8 +85,8 @@ internal enum URIVariableValueData {
       URIVariableAssociationValue(
         values: pairs.map() {
           URIVariablePairValue(
-            key: URIVariableTextValue(text: $0),
-            value: URIVariableTextValue(text: $1)
+            key: URIVariableTextValue(rawValue: $0),
+            value: URIVariableTextValue(rawValue: $1)
           )
         }
       )
@@ -146,7 +146,7 @@ extension URIVariableValueData : CustomStringConvertible {
     case .undefined:
       ".undefined"
     case .text(let text):
-      ".text(\"\(text.storage)\")"
+      ".text(\"\(text.rawValue)\")"
     case .list(let list):
       ".list(\(list.description))"
     case .association(let association):
@@ -370,6 +370,21 @@ extension URIVariableValueData {
       false
     }
   }
+  
+  @usableFromInline
+  internal var errorMessageRepresentation: String {
+    switch self {
+    case .undefined:
+      ".undefined"
+    case .text(let text):
+      text.errorMessageRepresentation
+    case .list(let list):
+      list.errorMessageRepresentation
+    case .association(let association):
+      association.errorMessageRepresentation
+    }
+  }
+
 
 }
 

@@ -51,7 +51,7 @@ private func uniqueDebugDescriptions() {
   arguments: probes
 )
 private func isEmptyCoherence(probe: URIVariableTextValue) {
-  #expect(probe.isEmpty == probe.storage.isEmpty)
+  #expect(probe.isEmpty == probe.rawValue.isEmpty)
 }
 
 // MARK: Fixtures
@@ -65,6 +65,6 @@ private let probeStrings: [String] = [
 ]
 
 private let probes: [URIVariableTextValue] = probeStrings.map {
-  URIVariableTextValue(text: $0)
+  URIVariableTextValue(rawValue: $0)
 }
 

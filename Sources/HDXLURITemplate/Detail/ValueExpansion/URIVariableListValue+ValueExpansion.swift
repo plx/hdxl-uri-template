@@ -58,6 +58,34 @@ extension URIVariableListValue {
   }
   
   @inlinable
+  internal func explodedRepresentation(
+    of text: URIVariableTextValue,
+    expansionType: URIValueExpansionType,
+    escapedVariableName: String
+  ) throws -> String {
+    let escapedText = try text.escapedContents(expansionType: expansionType)
+    
+    return switch expansionType {
+    case .simple:
+      escapedText
+    case .reserved:
+      escapedText
+    case .fragment:
+      escapedText
+    case .label:
+      escapedText
+    case .pathSegment:
+      escapedText
+    case .pathParameter:
+      "\(escapedVariableName)=\(escapedText)"
+    case .query:
+      "\(escapedVariableName)=\(escapedText)"
+    case .queryContinuation:
+      "\(escapedVariableName)=\(escapedText)"
+    }
+  }
+  
+  @inlinable
   internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
@@ -68,26 +96,20 @@ extension URIVariableListValue {
 #endif
     // we inline this logic instead of using `variableName.escapedVariableName`
     // because the code flow is a bit weird (despite originally intending to do it like that...)
-    guard let escapedName = variableName.storage.escaped(forValueExpansionType: expansionType) else {
+    guard let escapedName = variableName.rawValue.escaped(forValueExpansionType: expansionType) else {
       throw ExpansionError.unableToEscapeVariableName(
-        variableName.storage,
+        variableName.rawValue,
         expansionType
       )
     }
     return try storage
       .lazy
-      .map {
-        (text)
-        in
-        guard let escapedValue = text.storage.escaped(forValueExpansionType: expansionType) else {
-          throw ExpansionError.internalValueFailedToEscape(
-            storage.map({$0.storage}),
-            text.storage,
-            variableName.storage,
-            expansionType
-          )
-        }
-        return "\(escapedName)=\(escapedValue)"
+      .map { text in
+        try explodedRepresentation(
+          of: text,
+          expansionType: expansionType,
+          escapedVariableName: escapedName
+        )
     }.joined(
       separator: expansionType.separatorForExpandedVariableList
     )
@@ -104,20 +126,18 @@ extension URIVariableListValue {
 #endif
     let joinedValues = try storage
       .lazy
-      .map {
-        (text)
-        in
-        guard let escaped = text.storage.escaped(forValueExpansionType: expansionType) else {
+      .map { text in
+        guard let escaped = text.rawValue.escaped(forValueExpansionType: expansionType) else {
           throw ExpansionError.internalValueFailedToEscape(
-            storage.map({$0.storage}),
-            text.storage,
-            variableName.storage,
+            storage.map({$0.rawValue}),
+            text.rawValue,
+            variableName.rawValue,
             expansionType
           )
         }
         return escaped
     }.joined(
-      separator: expansionType.separatorForExpandedVariableList
+      separator: ","
     )
     switch variableName.escapedVariableName(forExpansionType: expansionType) {
     case .unnecessary:
@@ -126,7 +146,7 @@ extension URIVariableListValue {
       return "\(escapedName)=\(joinedValues)"
     case .failure:
       throw ExpansionError.unableToEscapeVariableName(
-        variableName.storage,
+        variableName.rawValue,
         expansionType
       )
     }

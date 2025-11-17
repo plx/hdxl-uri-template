@@ -83,7 +83,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   public var textValue: String? {
     switch variableValue.storage {
     case .text(let text):
-      text.storage
+      text.rawValue
     default:
       nil
     }
@@ -98,7 +98,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     }
     
     return list.storage.map {
-      $0.storage
+      $0.rawValue
     }
   }
 
@@ -113,7 +113,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     // safe to assume truly-unique b/c we're just stripping a newtype
     // wrapper from an underlying, already-existing dictionary
     return [String:String](uniqueKeysWithValues: association.storage.map {
-      ($0.key.storage, $0.value.storage)
+      ($0.key.rawValue, $0.value.rawValue)
     })
   }
   
@@ -128,8 +128,8 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     var stop: ObjCBool = false
     for (index,pair) in association.storage.enumerated() {
       block(
-        pair.key.storage,
-        pair.value.storage,
+        pair.key.rawValue,
+        pair.value.rawValue,
         index,
         &stop
       )
@@ -156,22 +156,23 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   @objc(initWithString:)
   public convenience init(string: String) {
     self.init(
-      variableValue: URIVariableValue(from: string)
+      variableValue: .text(string)
     )
   }
   
   @objc(initWithStrings:)
   public convenience init(strings: [String]) {
     self.init(
-      variableValue: URIVariableValue(from: strings)
+      variableValue: .list(strings)
     )
   }
 
   @objc(initWithKey:value:)
   public convenience init(key: String, value: String) {
     self.init(
-      variableValue: URIVariableValue(
-        from: (key,value)
+      variableValue: .association(
+        key: key,
+        value: value
       )
     )
   }
@@ -180,8 +181,8 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   public convenience init(keys: [String], values: [String]) {
     precondition(keys.count == values.count)
     self.init(
-      variableValue: URIVariableValue(
-        from: zip(keys,values)
+      variableValue: .association(
+        zip(keys,values)
       )
     )
   }
@@ -191,8 +192,8 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     dictionary: [String:String],
     comparator: (String, String) -> ComparisonResult) {
     self.init(
-      variableValue: URIVariableValue(
-        from: dictionary.sorted() {
+      variableValue: .association(
+        dictionary.sorted {
           (l,r) -> Bool
           in
           comparator(l.0,r.0) == .orderedAscending

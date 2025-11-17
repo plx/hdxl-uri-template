@@ -55,7 +55,7 @@ private let probes: [URITemplateVariable] = cartesianProduct(
   URIValueExpansionModifier.allCases[0...10]
 ).map {
   URITemplateVariable(
-    variableName: URITemplateVariableName(storage: $0),
+    variableName: URITemplateVariableName(rawValue: $0),
     expansionModifier: $1
   )
 }

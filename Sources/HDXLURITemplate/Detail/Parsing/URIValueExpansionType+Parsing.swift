@@ -12,40 +12,40 @@ extension URIValueExpansionType {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString
     }
-    if string.hasPrefix(Self.reservedFormatString) {
+    if string.hasPrefix(.reservedFormatString) {
       self = .reserved
       string.conditionallyRemove(
-        prefix: Self.reservedFormatString
+        prefix: .reservedFormatString
       )
-    } else if string.hasPrefix(Self.fragmentFormatString) {
+    } else if string.hasPrefix(.fragmentFormatString) {
       self = .fragment
       string.conditionallyRemove(
-        prefix: Self.fragmentFormatString
+        prefix: .fragmentFormatString
       )
-    } else if string.hasPrefix(Self.labelFormatString) {
+    } else if string.hasPrefix(.labelFormatString) {
       self = .label
       string.conditionallyRemove(
-        prefix: Self.labelFormatString
+        prefix: .labelFormatString
       )
-    } else if string.hasPrefix(Self.pathSegmentFormatString) {
+    } else if string.hasPrefix(.pathSegmentFormatString) {
       self = .pathSegment
       string.conditionallyRemove(
-        prefix: Self.pathSegmentFormatString
+        prefix: .pathSegmentFormatString
       )
-    } else if string.hasPrefix(Self.pathParameterFormatString) {
+    } else if string.hasPrefix(.pathParameterFormatString) {
       self = .pathParameter
       string.conditionallyRemove(
-        prefix: Self.pathParameterFormatString
+        prefix: .pathParameterFormatString
       )
-    } else if string.hasPrefix(Self.queryFormatString) {
+    } else if string.hasPrefix(.queryFormatString) {
       self = .query
       string.conditionallyRemove(
-        prefix: Self.queryFormatString
+        prefix: .queryFormatString
       )
-    } else if string.hasPrefix(Self.queryContinuationFormatString) {
+    } else if string.hasPrefix(.queryContinuationFormatString) {
       self = .queryContinuation
       string.conditionallyRemove(
-        prefix: Self.queryContinuationFormatString
+        prefix: .queryContinuationFormatString
       )
     } else {
       self = .simple

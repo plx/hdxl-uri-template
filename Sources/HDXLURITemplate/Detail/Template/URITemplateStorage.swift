@@ -107,17 +107,15 @@ internal final class URITemplateStorage {
   @inlinable
   internal var _withLockTemplateRepresentation: String {
     cachedFieldLock.precondition(.owner)
-    return cachedFieldLock.withLock {
-      _templateRepresentation.obtainAssuredValue(
-        guaranteedBy: components
-          .lazy
-          .map {
-            (component: URITemplateComponent) -> String
-            in
-            component.templateRepresentation
-          }.joined(separator: "")
-      )
-    }
+    return _templateRepresentation.obtainAssuredValue(
+      guaranteedBy: components
+        .lazy
+        .map {
+          (component: URITemplateComponent) -> String
+          in
+          component.templateRepresentation
+        }.joined(separator: "")
+    )
   }
 
   // ------------------------------------------------------------------------ //
@@ -193,7 +191,7 @@ internal final class URITemplateStorage {
       guaranteedBy: Set(
         templateVariables
           .lazy
-          .map(\.variableName.storage)
+          .map(\.variableName.rawValue)
       )
     )
   }

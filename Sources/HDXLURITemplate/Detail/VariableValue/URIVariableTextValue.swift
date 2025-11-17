@@ -13,17 +13,17 @@ import Foundation
 /// string, but I'll need to re-read the spec to verify that there are, in fact,
 /// no actual invariants/constraints/etc. that we need to satisfy here.
 @usableFromInline
-internal struct URIVariableTextValue {
+internal struct URIVariableTextValue: RawRepresentable {
 
   @usableFromInline
-  internal var storage: String
+  internal var rawValue: String
   
   @inlinable
-  internal init(text: String) {
+  internal init(rawValue: String) {
 #if HEAVY_DEBUG
     defer { pedanticAssert(isValid) }
 #endif
-    self.storage = text
+    self.rawValue = rawValue
   }
 
 }
@@ -51,7 +51,7 @@ extension URIVariableTextValue : Comparable {
     pedanticAssert(lhs.isValid)
     pedanticAssert(rhs.isValid)
 #endif
-    return lhs.storage < rhs.storage
+    return lhs.rawValue < rhs.rawValue
   }
 
 }
@@ -64,7 +64,7 @@ extension URIVariableTextValue : Comparable {
 extension URIVariableTextValue : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String { storage }
+  internal var description: String { rawValue }
   
 }
 
@@ -76,7 +76,7 @@ extension URIVariableTextValue : CustomDebugStringConvertible {
   
   @usableFromInline
   internal var debugDescription: String {
-    "URIVariableTextValue(text: '\(storage)')"
+    "URIVariableTextValue(rawValue: '\(rawValue)')"
   }
   
 }
@@ -90,15 +90,45 @@ extension URIVariableTextValue : Codable {
   @usableFromInline
   internal func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(storage)
+    try container.encode(rawValue)
   }
   
   @usableFromInline
   internal init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
-    self.init(text: try container.decode(String.self))
+    self.init(rawValue: try container.decode(String.self))
   }
   
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Expressible
+// -------------------------------------------------------------------------- //
+
+extension URIVariableTextValue : ExpressibleByStringLiteral {
+  @usableFromInline
+  typealias ExtendedGraphemeClusterLiteralType = String.ExtendedGraphemeClusterLiteralType
+  
+  @usableFromInline
+  typealias StringLiteralType = String.StringLiteralType
+  
+  @inlinable
+  internal init(unicodeScalarLiteral value: ExtendedGraphemeClusterLiteralType) {
+    self.init(rawValue: String(value))
+    precondition(isValid)
+  }
+  
+  @inlinable
+  internal init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+    self.init(rawValue: String(value))
+    precondition(isValid)
+  }
+  
+  @inlinable
+  internal init(stringLiteral value: StringLiteralType) {
+    self.init(rawValue: String(value))
+    precondition(isValid)
+  }
 }
 
 // -------------------------------------------------------------------------- //
@@ -118,17 +148,13 @@ extension URIVariableTextValue {
 
 extension URIVariableTextValue {
   
-  /// Extracts `self.storage` as a `String`.
-  /// May get eliminated now that `URIVariableTextValue` is package-internal.
-  @inlinable
-  internal var asString: String {
-    storage
-  }
-  
   /// `true` iff we're wrapping an empty string.
   @inlinable
-  internal var isEmpty: Bool {
-    storage.isEmpty
+  internal var isEmpty: Bool { rawValue.isEmpty }
+  
+  @usableFromInline
+  internal var errorMessageRepresentation: String {
+    rawValue
   }
   
 }

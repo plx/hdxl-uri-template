@@ -39,7 +39,7 @@ extension URIVariablePairValue : Hashable { }
 extension URIVariablePairValue : Codable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariablePairValue - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : Comparable {
@@ -63,7 +63,7 @@ extension URIVariablePairValue : Comparable {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariablePairValue - CustomStringConvertible
+// MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : CustomStringConvertible {
@@ -76,7 +76,7 @@ extension URIVariablePairValue : CustomStringConvertible {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URIVariablePairValue - CustomDebugStringConvertible
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : CustomDebugStringConvertible {
@@ -84,6 +84,23 @@ extension URIVariablePairValue : CustomDebugStringConvertible {
   @usableFromInline
   internal var debugDescription: String {
     "URIVariablePairValue(key: \(String(reflecting: key)), value: \(String(reflecting: value)))"
+  }
+  
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - ExpressibleByArrayLiteral
+// -------------------------------------------------------------------------- //
+
+extension URIVariablePairValue : ExpressibleByArrayLiteral {
+  
+  @inlinable
+  internal init(arrayLiteral elements: URIVariableTextValue...) {
+    precondition(elements.count == 2)
+    self.init(
+      key: elements[0],
+      value: elements[1]
+    )
   }
   
 }
@@ -102,4 +119,15 @@ extension URIVariablePairValue {
   
 }
 
+// -------------------------------------------------------------------------- //
+// MARK: - Core API
+// -------------------------------------------------------------------------- //
 
+extension URIVariablePairValue {
+  
+  @usableFromInline
+  internal var errorMessageRepresentation: String {
+    "\(key.errorMessageRepresentation): \(value.errorMessageRepresentation)"
+  }
+
+}

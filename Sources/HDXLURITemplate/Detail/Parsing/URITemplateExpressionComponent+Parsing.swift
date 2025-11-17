@@ -19,7 +19,11 @@ extension URITemplateExpressionComponent {
     )
     let variables = try variableListString
       .split(separator: ",")
-      .map { try URITemplateVariable(parsing: String($0)) }
+      .map { segment in
+        let trimmed = segment.trimmingCharacters(in: .whitespaces)
+        
+        return try URITemplateVariable(parsing: String(trimmed))
+      }
     guard !variables.isEmpty else {
       throw ParseError.noVariablesFound(string)
     }

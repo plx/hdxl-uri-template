@@ -17,7 +17,7 @@ extension URITemplateLiteralComponent {
       throw ParseError.invalidContent(string)
     }
     self.init(
-      storage: string
+      rawValue: string
     )
   }
   

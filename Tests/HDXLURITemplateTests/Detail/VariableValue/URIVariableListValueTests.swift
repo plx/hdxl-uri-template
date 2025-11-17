@@ -73,7 +73,7 @@ private let probes: [URIVariableListValue] = probeStrings
   .map { strings in
     URIVariableListValue(
       values: strings.map {
-        URIVariableTextValue(text: $0)
+        URIVariableTextValue(rawValue: $0)
       }
     )
   }

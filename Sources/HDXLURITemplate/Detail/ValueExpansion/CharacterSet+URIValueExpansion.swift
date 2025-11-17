@@ -3,24 +3,24 @@ import Foundation
 extension CharacterSet {
   
   @inlinable
-  internal init(allowedCharactersForValueExpansionType valueExpansionType: URIValueExpansionType) {
+  internal static func allowedCharacters(forValueExpansionType valueExpansionType: URIValueExpansionType) -> Self {
     switch valueExpansionType {
     case .simple:
-      self = simpleExpansionAllowedCharacterSet
+      simpleExpansionAllowedCharacterSet
     case .reserved:
-      self = reservedExpansionAllowedCharacterSet
+      reservedExpansionAllowedCharacterSet
     case .fragment:
-      self = fragmentAllowedCharacterSet
+      fragmentAllowedCharacterSet
     case .label:
-      self = labelAllowedCharacterSet
+      labelAllowedCharacterSet
     case .pathSegment:
-      self = pathSegmentAllowedCharacterSet
+      pathSegmentAllowedCharacterSet
     case .pathParameter:
-      self = pathParameterAllowedCharacterSet
+      pathParameterAllowedCharacterSet
     case .query:
-      self = queryAllowedCharacterSet
+      queryAllowedCharacterSet
     case .queryContinuation:
-      self = queryContinuationAllowedCharacterSet
+      queryContinuationAllowedCharacterSet
     }
   }
   
@@ -52,7 +52,7 @@ internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
     rfc_reserved,
     rfc_pct_encode
     // ^ technically a misnomer b/c the RFC uses "pct-encode" to refer to a
-    // BNF-grammar-spec ilke % DIGIT DIGIT, but what I did here works for our purposes
+    // BNF-grammar-spec like % DIGIT DIGIT, but what I did here works for our purposes
   ]
 )
 

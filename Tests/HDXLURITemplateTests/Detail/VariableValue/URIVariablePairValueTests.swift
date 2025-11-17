@@ -56,7 +56,7 @@ private let keys: [URIVariableTextValue] = [
   "abcde",
   "abcdefg"
 ].map {
-  URIVariableTextValue(text: $0)
+  URIVariableTextValue(rawValue: $0)
 }
 
 private let values: [URIVariableTextValue] = [
@@ -66,7 +66,7 @@ private let values: [URIVariableTextValue] = [
   "mnop",
   "mnoq"
 ].map {
-  URIVariableTextValue(text: $0)
+  URIVariableTextValue(rawValue: $0)
 }
 
 private let probes: [URIVariablePairValue] = cartesianProduct(keys,values)

@@ -20,7 +20,7 @@ extension URITemplateVariableName {
     guard forced || shouldEscapeName(forExpansionType: expansionType) else {
       return .unnecessary
     }
-    guard let escapedName = storage.escaped(forValueExpansionType: expansionType) else {
+    guard let escapedName = rawValue.escaped(forValueExpansionType: expansionType) else {
       return .failure
     }
     return .escaped(escapedName)

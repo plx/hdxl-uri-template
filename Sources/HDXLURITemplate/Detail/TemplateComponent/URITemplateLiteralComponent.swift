@@ -5,25 +5,25 @@ import Foundation
 // -------------------------------------------------------------------------- //
 
 @usableFromInline
-internal struct URITemplateLiteralComponent {
+internal struct URITemplateLiteralComponent: RawRepresentable {
   
   @usableFromInline
   internal typealias Storage = String
   
   @usableFromInline
-  internal var storage: Storage
+  internal var rawValue: Storage
   
   @usableFromInline
   internal static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
   
   @inlinable
-  internal init(storage: Storage) {
+  internal init(rawValue: Storage) {
 #if HEAVY_DEBUG
     pedanticAssert(!storage.isEmpty)
     pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
     defer { pedanticAssert(isValid) }
 #endif
-    self.storage = storage
+    self.rawValue = rawValue
   }
   
 }
@@ -37,7 +37,7 @@ extension URITemplateLiteralComponent : Equatable { }
 extension URITemplateLiteralComponent : Hashable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Comparable
+// MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Comparable {
@@ -51,7 +51,7 @@ extension URITemplateLiteralComponent : Comparable {
     pedanticAssert(lhs.isValid)
     pedanticAssert(rhs.isValid)
 #endif
-    return lhs.storage < rhs.storage
+    return lhs.rawValue < rhs.rawValue
   }
   
 }
@@ -63,7 +63,7 @@ extension URITemplateLiteralComponent : Comparable {
 extension URITemplateLiteralComponent : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String { storage }
+  internal var description: String { rawValue }
   
 }
 
@@ -75,7 +75,7 @@ extension URITemplateLiteralComponent : CustomDebugStringConvertible {
   
   @usableFromInline
   internal var debugDescription: String {
-    "URITemplateLiteralComponent(storage: \"\(storage)\")"
+    "URITemplateLiteralComponent(storage: \"\(rawValue)\")"
   }
   
 }
@@ -89,20 +89,20 @@ extension URITemplateLiteralComponent : Codable {
   @inlinable
   func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(storage)
+    try container.encode(rawValue)
   }
   
   @inlinable
   init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
-    let storage = try container.decode(String.self)
-    guard Self.validationRegularExpression.matchesEntirety(of: storage) else {
+    let rawValue = try container.decode(String.self)
+    guard Self.validationRegularExpression.matchesEntirety(of: rawValue) else {
       throw DataValidationError(
         forType: Self.self,
-        problemDescription: "Decoded invalid underlying string \"\(storage)\"!"
+        problemDescription: "Decoded invalid underlying string \"\(rawValue)\"!"
       )
     }
-    self.init(storage: storage)
+    self.init(rawValue: rawValue)
   }
 
 }
@@ -188,10 +188,10 @@ extension URITemplateLiteralComponent {
   
   @inlinable
   internal var isValid: Bool {
-    !storage.isEmpty
+    !rawValue.isEmpty
     &&
     URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(
-      of: storage
+      of: rawValue
     )
   }
   

@@ -96,7 +96,7 @@ extension URITemplateVariable {
   
   @inlinable
   internal var templateRepresentation: String {
-    "\(variableName.storage)\(expansionModifier.templateRepresentation)"
+    "\(variableName.rawValue)\(expansionModifier.templateRepresentation)"
   }
   
 }

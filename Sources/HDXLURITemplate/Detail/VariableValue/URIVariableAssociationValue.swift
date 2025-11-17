@@ -32,7 +32,29 @@ internal struct URIVariableAssociationValue {
 #endif
     self.storage = values
   }
-    
+
+  @inlinable
+  internal init(key: String, value: String) {
+    self.init(
+      value: URIVariablePairValue(
+        key: URIVariableTextValue(rawValue: key),
+        value: URIVariableTextValue(rawValue: value)
+      )
+    )
+  }
+
+  @inlinable
+  internal init(strings: [(String,String)]) {
+    self.init(
+      values: strings.map {
+        URIVariablePairValue(
+          key: URIVariableTextValue(rawValue: $0),
+          value: URIVariableTextValue(rawValue: $1)
+        )
+      }
+    )
+  }
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -97,36 +119,15 @@ extension URIVariableAssociationValue : CustomDebugStringConvertible {
   }
 }
 
-
 // -------------------------------------------------------------------------- //
-// MARK: - Core API
+// MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableAssociationValue {
+extension URIVariableAssociationValue: ExpressibleByArrayLiteral {
   
   @inlinable
-  internal var isEmpty: Bool {
-    storage.isEmpty
-  }
-  
-  @inlinable
-  internal var count: Int {
-    storage.count
-  }
-  
-  @inlinable
-  internal subscript(index: Int) -> URIVariablePairValue {
-    storage[index]
-  }
-  
-  @inlinable
-  internal subscript(key: String) -> URIVariableTextValue? {
-    self[URIVariableTextValue(text: key)]
-  }
-  
-  @inlinable
-  internal subscript(key: URIVariableTextValue) -> URIVariableTextValue? {
-    storage.first(where: { key == $0.key })?.value
+  public init(arrayLiteral elements: URIVariablePairValue...) {
+    self.init(values: elements)
   }
   
 }
@@ -151,5 +152,44 @@ extension URIVariableAssociationValue {
     ).count
   }
   
+}
+
+// -------------------------------------------------------------------------- //
+// MARK: - Core API
+// -------------------------------------------------------------------------- //
+
+extension URIVariableAssociationValue {
+  
+  @inlinable
+  internal var isEmpty: Bool {
+    storage.isEmpty
+  }
+  
+  @inlinable
+  internal var count: Int {
+    storage.count
+  }
+  
+  @inlinable
+  internal subscript(index: Int) -> URIVariablePairValue {
+    storage[index]
+  }
+  
+  @inlinable
+  internal subscript(key: String) -> URIVariableTextValue? {
+    self[URIVariableTextValue(rawValue: key)]
+  }
+  
+  @inlinable
+  internal subscript(key: URIVariableTextValue) -> URIVariableTextValue? {
+    storage.first(where: { key == $0.key })?.value
+  }
+  
+  @usableFromInline
+  internal var errorMessageRepresentation: String {
+    let memberErrorRepresentation = storage.lazy.map { $0.errorMessageRepresentation }.joined(separator: ", ")
+    return "[ \(memberErrorRepresentation) ]"
+  }
+
 }
 

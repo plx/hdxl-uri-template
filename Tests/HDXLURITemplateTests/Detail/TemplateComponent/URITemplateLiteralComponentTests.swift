@@ -55,7 +55,7 @@ private let probeStrings: [String] = [
 ]
 
 private let probes: [URITemplateLiteralComponent] = probeStrings.map {
-  URITemplateLiteralComponent(storage: $0)
+  URITemplateLiteralComponent(rawValue: $0)
 }
 
 

@@ -5,25 +5,25 @@ import Foundation
 // -------------------------------------------------------------------------- //
 
 @usableFromInline
-internal struct URITemplateVariableName {
+internal struct URITemplateVariableName: RawRepresentable {
   
   @usableFromInline
-  internal typealias Storage = String
+  internal typealias RawValue = String
   
   @usableFromInline
-  internal var storage: Storage
+  internal var rawValue: RawValue
   
   @usableFromInline
   internal static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
   
   @inlinable
-  internal init(storage: Storage) {
+  internal init(rawValue: RawValue) {
 #if HEAVY_DEBUG
-    pedanticAssert(!storage.isEmpty)
+    pedanticAssert(!rawValue.isEmpty)
     pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
     defer { pedanticAssert(isValid) }
 #endif
-    self.storage = storage
+    self.rawValue = rawValue
   }
   
 }
@@ -52,7 +52,7 @@ extension URITemplateVariableName : Comparable {
     pedanticAssert(rhs.isValid)
 #endif
     // /////////////////////////////////////////////////////////////////////////
-    return lhs.storage < rhs.storage
+    return lhs.rawValue < rhs.rawValue
   }
   
 }
@@ -65,7 +65,7 @@ extension URITemplateVariableName : CustomStringConvertible {
   
   @inlinable
   internal var description: String {
-    storage
+    rawValue
   }
   
 }
@@ -78,7 +78,7 @@ extension URITemplateVariableName : CustomDebugStringConvertible {
   
   @inlinable
   internal var debugDescription: String {
-    "URITemplateVariableName(storage: \"\(storage)\")"
+    "URITemplateVariableName(rawValue: \"\(rawValue)\")"
   }
   
 }
@@ -92,7 +92,7 @@ extension URITemplateVariableName : Codable {
   @inlinable
   func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
-    try container.encode(storage)
+    try container.encode(rawValue)
   }
   
   @inlinable
@@ -105,17 +105,17 @@ extension URITemplateVariableName : Codable {
         problemDescription: "Decoded invalid underlying string \"\(storage)\"!"
       )
     }
-    self.init(storage: storage)
+    self.init(rawValue: storage)
   }
   
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Validation Support
+// MARK: - Validation Support
 // -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName {
-  
+    
   @inlinable
   static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     // NOTE: `varname       =  varchar *( ["."] varchar )`
@@ -143,23 +143,51 @@ extension URITemplateVariableName {
      expected to be consistent in their use of pct-encoding within
      variable names.
      */
+    
+//    let singleVariableMention: String =
+//      """
+//      (?:
+//        %[[0-9][a-f][A-F]][[0-9][a-f][A-F]]
+//        |
+//        [_[a-z][A-Z][0-9]]
+//      )+
+//      (?:
+//        \\.
+//        (?:
+//          %[[0-9][a-f][A-F]][[0-9][a-f][A-F]]
+//          |
+//          [_[a-z][A-Z][0-9]]
+//        )+
+//      )*
+//      """
+//    
+//    let completePattern: String =
+//      """
+//      \(singleVariableMention)
+//      (?:
+//        ,
+//        \(singleVariableMention)
+//      )*
+//      """
+//
     return try NSRegularExpression(
+//      pattern: completePattern,
       pattern:
-      """
-      (?:
-        %[[0-9][a-f][A-F]][[0-9][a-f][A-F]]
-        |
-        [_[a-z][A-Z][0-9]]
-      )+
-      (?:
-        \\.
+        """
         (?:
           %[[0-9][a-f][A-F]][[0-9][a-f][A-F]]
           |
           [_[a-z][A-Z][0-9]]
         )+
-      )*
-      """,
+        (?:
+          \\.
+          (?:
+            %[[0-9][a-f][A-F]][[0-9][a-f][A-F]]
+            |
+            [_[a-z][A-Z][0-9]]
+          )+
+        )*
+        """,
       options: .allowCommentsAndWhitespace
     )
   }
@@ -175,9 +203,9 @@ extension URITemplateVariableName {
   @inlinable
   internal var isValid: Bool {
     guard
-      !storage.isEmpty,
+      !rawValue.isEmpty,
       URITemplateVariableName.validationRegularExpression.matchesEntirety(
-        of: storage
+        of: rawValue
       )
     else {
       return false

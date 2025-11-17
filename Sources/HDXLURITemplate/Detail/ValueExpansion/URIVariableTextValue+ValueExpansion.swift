@@ -7,6 +7,7 @@ extension URIVariableTextValue {
     
     case unableToEscapeVariableValue(String, String, URIValueExpansionType, URIValueExpansionModifier)
     case unableToEscapeVariableName(String, URIValueExpansionType)
+    case unableToEscapeTextValue(String, URIValueExpansionType)
     
     @usableFromInline
     internal var localizedDescription: String {
@@ -19,8 +20,23 @@ extension URIVariableTextValue {
         """
         Unable to escape variable-name "\(variableName)" with expansion-type \(expansionType.debugDescription).
         """
+      case .unableToEscapeTextValue(let textContent, let expansionType):
+        """
+        Unable to escape text "\(textContent)" with expansion-type \(expansionType.debugDescription).
+        """
       }
     }
+  }
+  
+  @inlinable
+  internal func escapedContents(
+    expansionType: URIValueExpansionType
+  ) throws -> String {
+    guard let result = rawValue.escaped(forValueExpansionType: expansionType) else {
+      throw ExpansionError.unableToEscapeTextValue(rawValue, expansionType)
+    }
+    
+    return result
   }
   
   @inlinable
@@ -57,8 +73,8 @@ extension URIVariableTextValue {
       )
     else {
       throw ExpansionError.unableToEscapeVariableValue(
-        storage,
-        variableName.storage,
+        rawValue,
+        variableName.rawValue,
         expansionType,
         expansionModifier
       )
@@ -69,13 +85,13 @@ extension URIVariableTextValue {
     case .escaped(let variableName):
       return switch escapedVariableValue.isEmpty {
       case true:
-        variableName
+        "\(variableName)="
       case false:
         "\(variableName)=\(escapedVariableValue)"
       }
     case .failure:
       throw ExpansionError.unableToEscapeVariableName(
-        variableName.storage,
+        variableName.rawValue,
         expansionType
       )
     }
@@ -105,13 +121,13 @@ extension URIVariableTextValue {
     pedanticAssert(expansionModifier.isValid)
     pedanticAssert(isValid)
 #endif
-    switch expansionModifier {
+    return switch expansionModifier {
     case .unmodified:
-      return storage
+      rawValue
     case .explode:
-      return storage
+      rawValue
     case .prefix(let codePointCount):
-      return storage.constrained(
+      rawValue.constrained(
         toCodePointCount: codePointCount
       )
     }

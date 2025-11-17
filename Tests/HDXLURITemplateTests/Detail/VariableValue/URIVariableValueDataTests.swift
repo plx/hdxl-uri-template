@@ -111,7 +111,7 @@ private let texts: [URIVariableValueData] = [
   "abc",
   "abcde",
   "abcdef"
-].map { .text(URIVariableTextValue(text: $0)) }
+].map { .text(URIVariableTextValue(rawValue: $0)) }
 
 private let lists: [URIVariableValueData] = [
   "a",
@@ -119,7 +119,7 @@ private let lists: [URIVariableValueData] = [
   "abc",
   "abcde",
   "abcdef"
-].map { URIVariableTextValue(text: $0) }
+].map { URIVariableTextValue(rawValue: $0) }
   .smallPowerSet
   .map { .list(URIVariableListValue(values: $0)) }
   .sorted()
@@ -128,13 +128,13 @@ private let keys: [URIVariableTextValue] = [
   "a",
   "ab",
   "abc"
-].map { URIVariableTextValue(text: $0) }
+].map { URIVariableTextValue(rawValue: $0) }
 
 private let values: [URIVariableTextValue] = [
   "m",
   "mn",
   "mno"
-].map { URIVariableTextValue(text: $0) }
+].map { URIVariableTextValue(rawValue: $0) }
 
 private let pairs: [URIVariablePairValue] = cartesianProduct(keys,values)
   .map {

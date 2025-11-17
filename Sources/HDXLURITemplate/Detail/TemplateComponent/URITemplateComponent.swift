@@ -57,7 +57,7 @@ extension URITemplateComponent : CustomStringConvertible {
   internal var description: String {
     switch self {
     case .literal(let literal):
-      ".literal(\"\(literal.storage)\")"
+      ".literal(\"\(literal.rawValue)\")"
     case .expression(let expression):
       ".expression(\"\(expression.description)\")"
     }
@@ -113,7 +113,7 @@ extension URITemplateComponent {
   internal var templateRepresentation: String {
     switch self {
     case .literal(let literal):
-      literal.storage
+      literal.rawValue
     case .expression(let expression):
       "{\(expression.templateRepresentation)}"
     }

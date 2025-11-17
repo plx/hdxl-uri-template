@@ -58,7 +58,7 @@ public struct URIVariableValue {
   public static let undefined: URIVariableValue = URIVariableValue(storage: .undefined)
   
   /// Convenience for the empty-string `URIVariableValue`.
-  public static let emptyString: URIVariableValue = URIVariableValue(storage: .text(URIVariableTextValue(text: "")))
+  public static let emptyString: URIVariableValue = URIVariableValue(storage: .text(URIVariableTextValue(rawValue: "")))
   
   /// Convenience for the empty-list `URIVariableValue`.
   public static let emptyList: URIVariableValue = URIVariableValue(storage: .emptyList)
@@ -67,46 +67,47 @@ public struct URIVariableValue {
   public static let emptyAssociation: URIVariableValue = URIVariableValue(storage: .emptyAssociation)
 
   // ------------------------------------------------------------------------ //
-  // MARK: Public Initializers
+  // MARK: Public Constructors
   // ------------------------------------------------------------------------ //
+    
 
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `text`.
   @inlinable
-  public init(from text: String) {
-    self.init(
+  public static func text(_ text: String) -> Self {
+    Self(
       storage: Storage(from: text)
     )
   }
 
   /// Constructs a `.list`-flavored `URIVariableValue` wrapping `texts`.
   @inlinable
-  public init(from texts: some Sequence<String>) {
-    self.init(
+  public static func list(_ texts: some Sequence<String>) -> Self {
+    Self(
       storage: Storage(from: texts)
     )
   }
 
   /// Constructs a single-element `.list`-flavored `URIVariableValue` wrapping `text`.
   @inlinable
-  public init(singleElementListFrom text: String) {
-    self.init(
+  public static func list(_ text: String) -> Self {
+    Self(
       storage: Storage(singleElementListFrom: text)
     )
   }
 
   /// Constructs an `.association`-flavored `URIVariableValue` wrapping `pairs`.
   @inlinable
-  public init(from pairs: some Sequence<(String, String)>) {
-    self.init(
+  public static func association(_ pairs: some Sequence<(String, String)>) -> Self {
+    Self(
       storage: Storage(from: pairs)
     )
   }
 
   /// Constructs a single-element `.association`-flavored `URIVariableValue` wrapping `pair`.
   @inlinable
-  public init(from pair: (String,String)) {
-    self.init(
-      storage: Storage(from: pair)
+  public static func association(key: String, value: String) -> Self {
+    Self(
+      storage: Storage(from: (key, value))
     )
   }
 
@@ -198,7 +199,7 @@ extension URIVariableValue : Codable {
           problemDescription: "Unexpectedly discovered an invalid `.text` payload \(text.debugDescription)",
           repairDescription: "Supplying an empty-string .text as a repair suggestion",
           repairSuggestion: URIVariableValue(
-            storage: .text(URIVariableTextValue(text: ""))
+            storage: .text(URIVariableTextValue(rawValue: ""))
           )
         )
       case .list(let list):
@@ -299,6 +300,11 @@ extension URIVariableValue {
   @inlinable
   public var isAssociationValue: Bool {
     storage.isAssociationValue
+  }
+  
+  @usableFromInline
+  internal var errorMessageRepresentation: String {
+    storage.errorMessageRepresentation
   }
   
 }

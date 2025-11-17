@@ -55,8 +55,8 @@ extension String {
     var state: URITemplateChunkingState = .literal
     var currentLowerBound: String.Index = startIndex
     var ranges: [URITemplateChunkRange] = []
-    for (_index,character) in enumerated() {
-      let index = index(startIndex, offsetBy: _index)
+    for index in indices {
+      let character = self[index]
       #if HEAVY_DEBUG
       // rare, valid usage: we need to be able to advance `index` at least once,
       // and thus it's critical `index` never be `endIndex`. This should be true
@@ -94,6 +94,7 @@ extension String {
           .expression(currentLowerBound..<index)
         )
         currentLowerBound = self.index(after: index)
+        state = .literal
         // ^ once again we move our `currentLowerBound` past the "}" we just found,
       //   because that's where our next chunk begins.
       default:
