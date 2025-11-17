@@ -44,15 +44,17 @@ internal let simpleExpansionAllowedCharacterSet: CharacterSet = rfc_unreserved
  2 and above templates, is identical to simple string expansion except
  that the substituted values may also contain pct-encoded triplets and
  characters in the reserved set.
+
+ Note: We do NOT include '%' in the allowed character set here. Valid
+ percent-encoded triplets (%XX) are handled specially in the expansion
+ logic - they are preserved as-is. But a lone '%' character should be
+ encoded as '%25'.
  */
 @usableFromInline
 internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
   unionOf: [
     rfc_unreserved,
-    rfc_reserved,
-    rfc_pct_encode
-    // ^ technically a misnomer b/c the RFC uses "pct-encode" to refer to a
-    // BNF-grammar-spec like % DIGIT DIGIT, but what I did here works for our purposes
+    rfc_reserved
   ]
 )
 
