@@ -83,11 +83,14 @@ extension URIVariableTextValue {
     case .unnecessary:
       return escapedVariableValue
     case .escaped(let variableName):
-      return switch escapedVariableValue.isEmpty {
-      case true:
-        "\(variableName)="
-      case false:
-        "\(variableName)=\(escapedVariableValue)"
+      return switch (escapedVariableValue.isEmpty, expansionType) {
+        // RFC 6570 Section 3.2.7: Path-style parameters omit the "=" for empty values
+        case (true, .pathParameter):
+          variableName
+        case (true, _):
+          "\(variableName)="
+        case (false, _):
+          "\(variableName)=\(escapedVariableValue)"
       }
     case .failure:
       throw ExpansionError.unableToEscapeVariableName(
