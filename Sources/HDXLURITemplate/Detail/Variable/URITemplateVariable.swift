@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateVariable
 
 @usableFromInline
 internal struct URITemplateVariable {
@@ -29,18 +27,15 @@ internal struct URITemplateVariable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariable : Sendable { }
+extension URITemplateVariable : SendableMetatype { }
 extension URITemplateVariable : Equatable { }
 extension URITemplateVariable : Hashable { }
 extension URITemplateVariable : Codable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariable : Comparable {
   
@@ -62,9 +57,7 @@ extension URITemplateVariable : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariable : CustomStringConvertible {
   
@@ -75,9 +68,7 @@ extension URITemplateVariable : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariable - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
+// MARK: - CustomDebugStringConvertible
 
 extension URITemplateVariable : CustomDebugStringConvertible {
   
@@ -88,9 +79,7 @@ extension URITemplateVariable : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariable {
   
@@ -101,9 +90,7 @@ extension URITemplateVariable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariable {
   

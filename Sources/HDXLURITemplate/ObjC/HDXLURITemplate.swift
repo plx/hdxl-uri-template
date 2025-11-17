@@ -1,9 +1,7 @@
 import Foundation
 import os.log
 
-// ------------------------------------------------------------------------ //
-// MARK: HDXLURITemplate - Definition
-// ------------------------------------------------------------------------ //
+// MARK: HDXLURITemplate
 
 /// Objective-C compatible wrapper around the Swift-native `URITemplate`.
 ///
@@ -13,10 +11,8 @@ import os.log
 @objc(HDXLURITemplate)
 public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding {
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSObject Overrides
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - NSObject Overrides
+    
   @objc
   override public func isEqual(_ object: Any?) -> Bool {
     guard let other = object as? URITemplateWrapper else {
@@ -40,16 +36,12 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
     "HDXLURITemplate<\(ObjectIdentifier(self).debugDescription)>(template: \"\(template.debugDescription)\")"
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Stored Properties
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Stored Properties
+    
   internal let template: URITemplate
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Derived Properties
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Derived Properties
+    
   @objc
   public var templateRepresentation: String {
     template.templateRepresentation
@@ -61,20 +53,16 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
     template.variableNames
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Designated Initializer
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Designated Initializer
+    
   @nonobjc
   required internal init(template: URITemplate) {
     self.template = template
     super.init()
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Objective-C Initializers
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Objective-C Initializers
+    
   @objc(initWithURITemplate:)
   public convenience init?(templateString: String) {
     // TODO: parse-failure hook? not sure objective-c support super-high priority in 2025
@@ -85,17 +73,13 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
     self.init(template: parsedTemplate)
   }
     
-  // ------------------------------------------------------------------------ //
-  // MARK: NSCopying Protocol Methods
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - NSCopying
+    
   @objc
   public func copy(with zone: NSZone? = nil) -> Any { self }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSCoding Protocol Methods
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - NSCoding
+    
   @objc
   public required init?(coder: NSCoder) {
     guard
@@ -127,10 +111,8 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
     }
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSSecureCoding Protocol Methods
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - NSSecureCoding
+    
   @objc
   public class var supportsSecureCoding: Bool { true }
 

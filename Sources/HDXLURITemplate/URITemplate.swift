@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplate
 
 /// Type representing an already-parsed, known-*valid* URI template.
 ///
@@ -34,9 +32,7 @@ public struct URITemplate {
     self.storage = storage
   }
 
-  // ------------------------------------------------------------------------ //
   // MARK: Initialization
-  // ------------------------------------------------------------------------ //
   
   /// Public initializer, constructs a template by parsing a template string.
   ///
@@ -62,18 +58,15 @@ public struct URITemplate {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Equatable
-// -------------------------------------------------------------------------- //
+// MARK: - Synthesized Conformances
 
 extension URITemplate : Sendable { }
+extension URITemplate : SendableMetatype { }
 extension URITemplate : Equatable { }
 extension URITemplate : Hashable { }
 extension URITemplate : Codable { }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Comparable
-// -------------------------------------------------------------------------- //
+// MARK: - Comparable
 
 extension URITemplate : Comparable {
   
@@ -87,9 +80,7 @@ extension URITemplate : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplate : CustomStringConvertible {
   
@@ -100,10 +91,7 @@ extension URITemplate : CustomStringConvertible {
   
 }
 
-
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplate : CustomDebugStringConvertible {
   
@@ -114,9 +102,7 @@ extension URITemplate : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplate {
   
@@ -127,9 +113,7 @@ extension URITemplate {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplate {
   

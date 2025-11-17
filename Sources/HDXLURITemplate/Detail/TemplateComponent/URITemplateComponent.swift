@@ -1,6 +1,5 @@
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponent - Definition
-// -------------------------------------------------------------------------- //
+
+// MARK: URITemplateComponent
 
 @usableFromInline
 internal enum URITemplateComponent {
@@ -10,18 +9,15 @@ internal enum URITemplateComponent {
     
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Properties
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : Sendable {}
+extension URITemplateComponent : SendableMetatype {}
 extension URITemplateComponent : Equatable {}
 extension URITemplateComponent : Hashable {}
 extension URITemplateComponent : Codable {}
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : Comparable {
 
@@ -47,9 +43,7 @@ extension URITemplateComponent : Comparable {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : CustomStringConvertible {
   
@@ -65,9 +59,7 @@ extension URITemplateComponent : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : CustomDebugStringConvertible {
 
@@ -83,9 +75,7 @@ extension URITemplateComponent : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
   
@@ -143,9 +133,7 @@ extension URITemplateComponent {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
   

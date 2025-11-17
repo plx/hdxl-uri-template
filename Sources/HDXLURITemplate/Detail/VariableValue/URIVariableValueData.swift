@@ -1,7 +1,5 @@
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableValueData
 
 /// Enumeration holding the actual data for a `URIVariableValue`. It's a bit
 /// silly to make this enumeration `internal` and hide it inside a `public struct`,
@@ -95,17 +93,14 @@ internal enum URIVariableValueData {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueData : Sendable { }
+extension URIVariableValueData : SendableMetatype { }
 extension URIVariableValueData : Equatable { }
 extension URIVariableValueData : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueData : Comparable {
   
@@ -134,9 +129,7 @@ extension URIVariableValueData : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - CustomStringConvertible
-// -------------------------------------------------------------------------- //
+// MARK: - CustomStringConvertible
 
 extension URIVariableValueData : CustomStringConvertible {
   
@@ -156,9 +149,7 @@ extension URIVariableValueData : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
+// MARK: - CustomDebugStringConvertible
 
 extension URIVariableValueData : CustomDebugStringConvertible {
   
@@ -178,9 +169,7 @@ extension URIVariableValueData : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueData : Codable {
   
@@ -255,9 +244,7 @@ extension URIVariableValueData : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueData - Core API
-// -------------------------------------------------------------------------- //
+// MARK: - Core API
 
 extension URIVariableValueData {
   
@@ -388,9 +375,7 @@ extension URIVariableValueData {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueData {
   

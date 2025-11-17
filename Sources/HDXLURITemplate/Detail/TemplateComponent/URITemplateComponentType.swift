@@ -1,6 +1,4 @@
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateComponentType
 
 @usableFromInline
 internal enum URITemplateComponentType : UInt8 {
@@ -10,15 +8,16 @@ internal enum URITemplateComponentType : UInt8 {
   
 }
 
+// MARK: - Synthesized Conformances
+
 extension URITemplateComponentType : Sendable { }
+extension URITemplateComponentType : SendableMetatype { }
 extension URITemplateComponentType : Equatable { }
 extension URITemplateComponentType : Hashable { }
 extension URITemplateComponentType : Codable { }
 extension URITemplateComponentType : CaseIterable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : Comparable {
 
@@ -32,9 +31,7 @@ extension URITemplateComponentType : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : CustomStringConvertible {
 
@@ -50,9 +47,7 @@ extension URITemplateComponentType : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : CustomDebugStringConvertible {
   

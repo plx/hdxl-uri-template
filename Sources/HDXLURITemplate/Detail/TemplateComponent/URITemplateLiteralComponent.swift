@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateLiteralComponent
 
 @usableFromInline
 internal struct URITemplateLiteralComponent: RawRepresentable {
@@ -28,17 +26,14 @@ internal struct URITemplateLiteralComponent: RawRepresentable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Sendable { }
+extension URITemplateLiteralComponent : SendableMetatype { }
 extension URITemplateLiteralComponent : Equatable { }
 extension URITemplateLiteralComponent : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Comparable {
   
@@ -56,9 +51,7 @@ extension URITemplateLiteralComponent : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : CustomStringConvertible {
   
@@ -67,9 +60,7 @@ extension URITemplateLiteralComponent : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
   
@@ -80,9 +71,7 @@ extension URITemplateLiteralComponent : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Codable {
   
@@ -107,9 +96,7 @@ extension URITemplateLiteralComponent : Codable {
 
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Validation Support
-// -------------------------------------------------------------------------- //
+// MARK: - Validation Support
 
 extension URITemplateLiteralComponent {
   
@@ -180,9 +167,7 @@ extension URITemplateLiteralComponent {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent {
   

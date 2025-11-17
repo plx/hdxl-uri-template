@@ -1,8 +1,6 @@
 import Foundation
 
-// ------------------------------------------------------------------------ //
-// MARK: URITemplate.ParseError - Definition
-// ------------------------------------------------------------------------ //
+// MARK: URITemplate.ParseError
 
 extension URITemplate {
   
@@ -12,7 +10,10 @@ extension URITemplate {
     public let underlyingError: Error
     
     @inlinable
-    internal init(template: String, underlyingError: Error) {
+    internal init(
+      template: String, 
+      underlyingError: Error
+    ) {
       self.template = template
       self.underlyingError = underlyingError
     }

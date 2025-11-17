@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableValue
 
 /// Represents a value intended to be substituted into a URI template variable.
 ///
@@ -24,10 +22,8 @@ import Foundation
 ///
 public struct URIVariableValue {
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Primary Properties
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Primary Properties
+  
   /// Shorthand for the wrapped data-storage type.
   @usableFromInline
   internal typealias Storage = URIVariableValueData
@@ -36,10 +32,8 @@ public struct URIVariableValue {
   @usableFromInline
   internal var storage: URIVariableValueData
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Designated Initializer
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Designated Initializer
+  
   /// Designated internal-use-only initializer.
   @inlinable
   internal init(storage: URIVariableValueData) {
@@ -50,10 +44,8 @@ public struct URIVariableValue {
     self.storage = storage
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Well-Known Values
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Well-Known Values
+    
   /// Convenience for the undefined `URIVariableValue`.
   public static let undefined: URIVariableValue = URIVariableValue(storage: .undefined)
   
@@ -66,10 +58,7 @@ public struct URIVariableValue {
   /// Convenience for the empty-assocication `URIVariableValue`.
   public static let emptyAssociation: URIVariableValue = URIVariableValue(storage: .emptyAssociation)
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Public Constructors
-  // ------------------------------------------------------------------------ //
-    
+  // MARK: - Public Constructors      
 
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `text`.
   @inlinable
@@ -113,17 +102,14 @@ public struct URIVariableValue {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValue : Sendable { }
+extension URIVariableValue : SendableMetatype { }
 extension URIVariableValue : Equatable { }
 extension URIVariableValue : Hashable { }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Comparable
-// -------------------------------------------------------------------------- //
+// MARK: - Comparable
 
 extension URIVariableValue : Comparable {
   
@@ -141,9 +127,7 @@ extension URIVariableValue : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValue : CustomStringConvertible {
   
@@ -154,9 +138,7 @@ extension URIVariableValue : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
+// MARK: - CustomDebugStringConvertible
 
 extension URIVariableValue : CustomDebugStringConvertible {
   
@@ -167,9 +149,7 @@ extension URIVariableValue : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Codable
-// -------------------------------------------------------------------------- //
+// MARK: - Codable
 
 extension URIVariableValue : Codable {
   
@@ -227,10 +207,7 @@ extension URIVariableValue : Codable {
   
 }
 
-
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValue {
   
@@ -309,9 +286,7 @@ extension URIVariableValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValue {
   

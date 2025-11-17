@@ -1,7 +1,5 @@
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateExpressionComponent - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateExpressionComponent
 
 @usableFromInline
 internal struct URITemplateExpressionComponent {
@@ -41,18 +39,15 @@ internal struct URITemplateExpressionComponent {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent: Sendable { }
+extension URITemplateExpressionComponent: SendableMetatype { }
 extension URITemplateExpressionComponent: Equatable { }
 extension URITemplateExpressionComponent: Hashable { }
 extension URITemplateExpressionComponent: Codable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent : Comparable {
 
@@ -73,9 +68,7 @@ extension URITemplateExpressionComponent : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent : CustomStringConvertible {
   
@@ -90,9 +83,7 @@ extension URITemplateExpressionComponent : CustomStringConvertible {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent : CustomDebugStringConvertible {
   
@@ -108,9 +99,7 @@ extension URITemplateExpressionComponent : CustomDebugStringConvertible {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent {
   
@@ -140,9 +129,7 @@ extension URITemplateExpressionComponent {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent {
   

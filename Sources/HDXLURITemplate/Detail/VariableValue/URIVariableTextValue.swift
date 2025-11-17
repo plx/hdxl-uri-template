@@ -1,9 +1,6 @@
 import Foundation
-// TODO: RawRepresentable
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableTextValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableTextValue
 
 /// Represents a flat-string, `.text` variable's value.
 /// Implemented (by hand) as a minimal `newtype`-style string wrapper, with the
@@ -28,17 +25,14 @@ internal struct URIVariableTextValue: RawRepresentable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue : Sendable { }
+extension URIVariableTextValue : SendableMetatype { }
 extension URIVariableTextValue : Equatable { }
 extension URIVariableTextValue : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue : Comparable {
   
@@ -57,9 +51,7 @@ extension URIVariableTextValue : Comparable {
 }
 
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue : CustomStringConvertible {
   
@@ -68,9 +60,7 @@ extension URIVariableTextValue : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue : CustomDebugStringConvertible {
   
@@ -81,9 +71,7 @@ extension URIVariableTextValue : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue : Codable {
   
@@ -101,9 +89,7 @@ extension URIVariableTextValue : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Expressible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue : ExpressibleByStringLiteral {
   @usableFromInline
@@ -131,9 +117,7 @@ extension URIVariableTextValue : ExpressibleByStringLiteral {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue {
   
@@ -142,9 +126,7 @@ extension URIVariableTextValue {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableTextValue - Core API
-// -------------------------------------------------------------------------- //
+// MARK: - Core API
 
 extension URIVariableTextValue {
   

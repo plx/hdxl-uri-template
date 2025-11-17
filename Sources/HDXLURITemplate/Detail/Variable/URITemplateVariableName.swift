@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateVariableName
 
 @usableFromInline
 internal struct URITemplateVariableName: RawRepresentable {
@@ -28,17 +26,14 @@ internal struct URITemplateVariableName: RawRepresentable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : Sendable { }
+extension URITemplateVariableName : SendableMetatype { }
 extension URITemplateVariableName : Equatable { }
 extension URITemplateVariableName : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: URITemplateVariableName - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : Comparable {
   
@@ -51,15 +46,12 @@ extension URITemplateVariableName : Comparable {
     pedanticAssert(lhs.isValid)
     pedanticAssert(rhs.isValid)
 #endif
-    // /////////////////////////////////////////////////////////////////////////
     return lhs.rawValue < rhs.rawValue
   }
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : CustomStringConvertible {
   
@@ -70,9 +62,7 @@ extension URITemplateVariableName : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : CustomDebugStringConvertible {
   
@@ -83,9 +73,7 @@ extension URITemplateVariableName : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Codable
-// -------------------------------------------------------------------------- //
+// MARK: - Codable
 
 extension URITemplateVariableName : Codable {
   
@@ -110,9 +98,7 @@ extension URITemplateVariableName : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validation Support
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName {
     
@@ -194,9 +180,7 @@ extension URITemplateVariableName {
     
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName {
   

@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableListValue
 
 @usableFromInline
 internal struct URIVariableListValue {
@@ -52,17 +50,14 @@ internal struct URIVariableListValue {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue: Sendable { }
+extension URIVariableListValue: SendableMetatype { }
 extension URIVariableListValue: Equatable { }
 extension URIVariableListValue: Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : Comparable {
   
@@ -80,9 +75,7 @@ extension URIVariableListValue : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : CustomStringConvertible {
   
@@ -98,9 +91,7 @@ extension URIVariableListValue : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : CustomDebugStringConvertible {
   
@@ -114,9 +105,7 @@ extension URIVariableListValue : CustomDebugStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : Codable {
 
@@ -134,9 +123,7 @@ extension URIVariableListValue : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Expressible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : ExpressibleByArrayLiteral {
   
@@ -146,9 +133,7 @@ extension URIVariableListValue : ExpressibleByArrayLiteral {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue {
   
@@ -159,9 +144,7 @@ extension URIVariableListValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue {
   

@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: Character Sets 
+
 extension CharacterSet {
   
   @inlinable
@@ -27,9 +29,7 @@ extension CharacterSet {
 }
 
 
-// -------------------------------------------------------------------------- //
-// MARK: Character Sets - Allowed By Expansion Type
-// -------------------------------------------------------------------------- //
+// MARK: - Allowed By Expansion Type
 
 /*
  For each defined variable in the variable-list, perform variable
@@ -107,9 +107,7 @@ internal let queryAllowedCharacterSet: CharacterSet = rfc_unreserved
 internal let queryContinuationAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 
-// -------------------------------------------------------------------------- //
-// MARK: Character Sets - From RFC
-// -------------------------------------------------------------------------- //
+// MARK: - From RFC
 
 @usableFromInline
 internal let rfcALPHA:CharacterSet = CharacterSet(

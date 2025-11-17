@@ -1,7 +1,5 @@
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariablePairValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariablePairValue
 
 /// Represents a single key:value pair of strings--for use within `URIVariableAssociationValue`.
 @usableFromInline
@@ -29,18 +27,15 @@ internal struct URIVariablePairValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : Sendable { }
+extension URIVariablePairValue : SendableMetatype { }
 extension URIVariablePairValue : Equatable { }
 extension URIVariablePairValue : Hashable { }
 extension URIVariablePairValue : Codable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : Comparable {
   
@@ -62,9 +57,7 @@ extension URIVariablePairValue : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : CustomStringConvertible {
   
@@ -75,9 +68,7 @@ extension URIVariablePairValue : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : CustomDebugStringConvertible {
   
@@ -88,9 +79,7 @@ extension URIVariablePairValue : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - ExpressibleByArrayLiteral
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue : ExpressibleByArrayLiteral {
   
@@ -106,9 +95,7 @@ extension URIVariablePairValue : ExpressibleByArrayLiteral {
 }
 
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue {
   
@@ -119,9 +106,7 @@ extension URIVariablePairValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIVariablePairValue {
   

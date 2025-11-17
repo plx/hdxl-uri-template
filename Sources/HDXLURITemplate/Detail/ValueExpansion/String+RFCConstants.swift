@@ -1,11 +1,11 @@
 import Foundation
 
+// MARK: RFC Constants
+
 extension String {
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Format String Constants
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Format String Constants
+    
   @usableFromInline
   internal static let simpleFormatString: String = ""
   
@@ -30,10 +30,8 @@ extension String {
   @usableFromInline
   internal static let queryContinuationFormatString: String = "&"
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Prefixes For Expanded Variable Lists
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Prefixes For Expanded Variable Lists
+    
   @usableFromInline
   internal static let simplePrefixForExpandedVariableList: String = ""
   
@@ -58,10 +56,8 @@ extension String {
   @usableFromInline
   internal static let queryContinuationPrefixForExpandedVariableList: String = "&"
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Separators For Expanded Variable Lists
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Separators For Expanded Variable Lists
+    
   @usableFromInline
   internal static let simpleSeparatorForExpandedVariableList: String = ","
   

@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
 // MARK: URIValueExpansionModifier - Definition
-// -------------------------------------------------------------------------- //
 
 @usableFromInline
 internal enum URIValueExpansionModifier {
@@ -17,17 +15,14 @@ internal enum URIValueExpansionModifier {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : Sendable { }
+extension URIValueExpansionModifier : SendableMetatype { }
 extension URIValueExpansionModifier : Equatable { }
 extension URIValueExpansionModifier : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : Comparable {
   
@@ -60,9 +55,7 @@ extension URIValueExpansionModifier : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : CustomStringConvertible {
 
@@ -79,9 +72,7 @@ extension URIValueExpansionModifier : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
+// MARK: - CustomDebugStringConvertible
 
 extension URIValueExpansionModifier : CustomDebugStringConvertible {
 
@@ -98,9 +89,7 @@ extension URIValueExpansionModifier : CustomDebugStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Codable
-// -------------------------------------------------------------------------- //
+// MARK: - Codable
 
 extension URIValueExpansionModifier : Codable {
 
@@ -174,9 +163,7 @@ extension URIValueExpansionModifier : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - CaseIterable
-// -------------------------------------------------------------------------- //
+// MARK: - CaseIterable
 
 extension URIValueExpansionModifier : CaseIterable {
   
@@ -196,9 +183,7 @@ extension URIValueExpansionModifier : CaseIterable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK:  - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier {
   
@@ -216,9 +201,7 @@ extension URIValueExpansionModifier {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Core API
-// -------------------------------------------------------------------------- //
+// MARK: - Core API
 
 extension URIValueExpansionModifier {
   

@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIValueExpansionType -
 
 @usableFromInline
 internal enum URIValueExpansionType : UInt8 {
@@ -18,19 +16,16 @@ internal enum URIValueExpansionType : UInt8 {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : Sendable { }
+extension URIValueExpansionType : SendableMetatype { }
 extension URIValueExpansionType : Equatable { }
 extension URIValueExpansionType : Hashable { }
 extension URIValueExpansionType : Codable { }
 extension URIValueExpansionType : CaseIterable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : Comparable {
   
@@ -44,9 +39,7 @@ extension URIValueExpansionType : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : CustomStringConvertible {
   
@@ -73,9 +66,7 @@ extension URIValueExpansionType : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : CustomDebugStringConvertible {
   
@@ -103,9 +94,7 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType {
   

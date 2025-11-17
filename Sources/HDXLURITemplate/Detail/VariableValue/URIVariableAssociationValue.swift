@@ -1,7 +1,5 @@
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableAssociationValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableAssociationValue
 
 @usableFromInline
 internal struct URIVariableAssociationValue {
@@ -57,18 +55,15 @@ internal struct URIVariableAssociationValue {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue: Sendable { }
+extension URIVariableAssociationValue: SendableMetatype { }
 extension URIVariableAssociationValue: Equatable { }
 extension URIVariableAssociationValue: Hashable { }
 extension URIVariableAssociationValue: Codable { }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableAssociationValue - Comparable
-// -------------------------------------------------------------------------- //
+// MARK: - Comparable
 
 extension URIVariableAssociationValue : Comparable {
   
@@ -86,9 +81,7 @@ extension URIVariableAssociationValue : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue : CustomStringConvertible {
   
@@ -103,9 +96,7 @@ extension URIVariableAssociationValue : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue : CustomDebugStringConvertible {
   
@@ -119,9 +110,7 @@ extension URIVariableAssociationValue : CustomDebugStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue: ExpressibleByArrayLiteral {
   
@@ -132,9 +121,7 @@ extension URIVariableAssociationValue: ExpressibleByArrayLiteral {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue {
   
@@ -154,9 +141,7 @@ extension URIVariableAssociationValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue {
   

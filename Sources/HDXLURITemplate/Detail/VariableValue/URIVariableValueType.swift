@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValueType - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableValueType
 
 /// Case-enumeration for variable *values*, which can be either undefined (`nil`-like),
 /// `text` (simple string), `list` (of simple strings), or `association` (*ordered* list
@@ -21,19 +19,16 @@ public enum URIVariableValueType : UInt8 {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : Sendable { }
+extension URIVariableValueType : SendableMetatype { }
 extension URIVariableValueType : Equatable { }
 extension URIVariableValueType : Hashable { }
 extension URIVariableValueType : Codable { }
 extension URIVariableValueType : CaseIterable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : Comparable {
   
@@ -47,10 +42,7 @@ extension URIVariableValueType : Comparable {
 
 }
 
-
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : CustomStringConvertible {
   
@@ -70,9 +62,7 @@ extension URIVariableValueType : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableValueType : CustomDebugStringConvertible {
   

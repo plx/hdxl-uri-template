@@ -1,17 +1,13 @@
 import Foundation
 import os.lock
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateStorage
 
 @usableFromInline
 internal final class URITemplateStorage {
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Fields
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Fields
+    
   @usableFromInline
   internal var components: [URITemplateComponent] {
     didSet {
@@ -36,10 +32,8 @@ internal final class URITemplateStorage {
   @usableFromInline
   internal var cachedFieldLock: OSAllocatedUnfairLock<Void>
   
-  // ------------------------------------------------------------------------ //
-  // MARK: `init`
-  // ------------------------------------------------------------------------ //
-  
+    // MARK: `init`
+    
   @inlinable
   internal convenience init() {
     self.init(
@@ -89,10 +83,8 @@ internal final class URITemplateStorage {
     }
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: `templateRepresentation`
-  // ------------------------------------------------------------------------ //
-  
+    // MARK: `templateRepresentation`
+    
   @usableFromInline
   internal var _templateRepresentation: String? = nil
   
@@ -118,10 +110,8 @@ internal final class URITemplateStorage {
     )
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: `templateVariables`
-  // ------------------------------------------------------------------------ //
-  
+    // MARK: `templateVariables`
+    
   @usableFromInline
   internal var _templateVariables: Set<URITemplateVariable>? = nil
   
@@ -151,10 +141,8 @@ internal final class URITemplateStorage {
     return result
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: `templateVariableNames`
-  // ------------------------------------------------------------------------ //
-  
+    // MARK: `templateVariableNames`
+    
   @usableFromInline
   internal var _templateVariableNames: Set<URITemplateVariableName>? = nil
   
@@ -169,10 +157,8 @@ internal final class URITemplateStorage {
     )
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: `variableNames`
-  // ------------------------------------------------------------------------ //
-  
+    // MARK: `variableNames`
+    
   @usableFromInline
   internal var _variableNames: Set<String>? = nil
   
@@ -197,16 +183,12 @@ internal final class URITemplateStorage {
   }
 
 }
-
-// -------------------------------------------------------------------------- //
-// MARK: - Sendable
-// -------------------------------------------------------------------------- //
+// MARK: - Synthesized Conformances
 
 extension URITemplateStorage: @unchecked Sendable { }
+extension URITemplateStorage: @unchecked SendableMetatype { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Equatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Equatable {
   
@@ -227,9 +209,7 @@ extension URITemplateStorage : Equatable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Comparable {
   
@@ -250,9 +230,7 @@ extension URITemplateStorage : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Hashable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Hashable {
   
@@ -263,9 +241,7 @@ extension URITemplateStorage : Hashable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : CustomStringConvertible {
   
@@ -277,9 +253,7 @@ extension URITemplateStorage : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : CustomDebugStringConvertible {
   
@@ -294,9 +268,7 @@ extension URITemplateStorage : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Codable {
   
@@ -323,9 +295,7 @@ extension URITemplateStorage : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage {
   

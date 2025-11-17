@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: HDXLURIVariableValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: HDXLURIVariableValue
 
 /// Objective-C compatible wrapper around the native-Swift `URIVariableValue`.
 ///
@@ -12,10 +10,8 @@ import Foundation
 @objc(HDXLURIVariableValue)
 public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding  {
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSObject Overrides
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - NSObject Overrides
+    
   @objc
   override public func isEqual(_ object: Any?) -> Bool {
     guard let other = object as? URIVariableValueWrapper else {
@@ -39,16 +35,12 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     "HDXLURIVariableValue<\(ObjectIdentifier(self).debugDescription)>(variableValue: \"\(variableValue.debugDescription)\")"
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Stored Properties
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Stored Properties
+  
   internal let variableValue: URIVariableValue
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Derived Properties
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Derived Properties
+    
   @objc
   public var variableValueType: URIVariableValueType {
     variableValue.valueType
@@ -139,20 +131,16 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     }
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Designated Initializer
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Designated Initializer
+  
   @nonobjc
   required internal init(variableValue: URIVariableValue) {
     self.variableValue = variableValue
     super.init()
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Objective-C Initializers
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Objective-C Initializers
+  
   @objc(initWithString:)
   public convenience init(string: String) {
     self.init(
@@ -202,10 +190,8 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     )
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Objective-C Well-Known Values
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Objective-C Well-Known Values
+  
   @objc(undefinedVariableValue)
   public class var undefined: URIVariableValueWrapper {
     _undefined
@@ -226,19 +212,15 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     _emptyAssociation
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: NSCopying Protocol Methods
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - NSCopying
+  
   @objc
   public func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSCoding Protocol Methods
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - NSCoding
+  
   @objc
   public required init?(coder: NSCoder) {
     guard
@@ -271,17 +253,13 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     }
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: NSSecureCoding Protocol Methods
-  // ------------------------------------------------------------------------ //
-
+    // MARK: - NSSecureCoding Protocol Methods
+  
   @objc
   public class var supportsSecureCoding: Bool { true }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Storage For Well-Known Values
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Storage For Well-Known Values
+    
   @nonobjc
   internal static let _undefined: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .undefined)
   
