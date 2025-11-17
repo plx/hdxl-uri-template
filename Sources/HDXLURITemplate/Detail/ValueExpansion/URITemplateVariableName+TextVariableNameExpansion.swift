@@ -20,10 +20,12 @@ extension URITemplateVariableName {
     guard forced || shouldEscapeName(forExpansionType: expansionType) else {
       return .unnecessary
     }
-    guard let escapedName = rawValue.escaped(forValueExpansionType: expansionType) else {
-      return .failure
-    }
-    return .escaped(escapedName)
+    // Per RFC 6570 Section 2.3:
+    // Variable names can only contain ALPHA, DIGIT, "_", and pct-encoded triplets.
+    // All these characters are safe in URIs. Percent-encoded triplets in variable
+    // names are considered essential and must not be re-encoded (per RFC 6570 Section 2.3).
+    // Therefore, variable names should be used as-is without additional encoding.
+    return .escaped(rawValue)
   }
   
   @inlinable

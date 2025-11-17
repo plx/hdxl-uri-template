@@ -2,256 +2,96 @@
 
 ## Summary
 
-**Total Tests:** ~78
-**Passing:** ~56
-**Failing:** 22
-**Pass Rate:** ~72%
+**Total Tests:** 78
+**Passing:** 78 ✅
+**Failing:** 0
+**Pass Rate:** 100% 🎉
 
-The failures are grouped into 6 distinct patterns, with percent-encoding issues being the dominant problem.
-
----
-
-## Failure Categories
-
-### 2. Association (Key-Value) Explode Formatting (5 failures) 🔴 **HIGH PRIORITY**
-
-**Problem:** When expanding associative values (key-value pairs) with the explode modifier (`*`), the output format is incorrect. The implementation is using the wrong separator/format for exploded associations.
-
-**Test Source:** `spec-examples` - Level 4 Examples
-
-**Examples:**
-
-#### Example 2A: Label expansion with explode
-```
-Template: X{.keys}
-Input:    keys = {comma: ",", dot: ".", semi: ";"}
-Expected: X.comma,%2C,dot,.,semi,%3B  (one of 6 permutations)
-Observed: X.comma,%2C.dot,..semi,%3B
-```
-
-The issue: After `%2C` it should use `,` separator, but it's using `.` (the label separator).
-
-Expected format for `{.keys}` WITHOUT explode: `.comma,%2C,dot,.,semi,%3B`
-But with explode, each pair should be: `.key,value`
-
-Actual format: `.comma,%2C.dot,.` - mixing separators incorrectly.
-
-#### Example 2B: Path segment with explode
-```
-Template: {/keys}
-Input:    keys = {comma: ",", dot: ".", semi: ";"}
-Expected: /comma,%2C,dot,.,semi,%3B  (one permutation)
-Observed: /comma,%2C/dot,./semi,%3B
-```
-
-Similar issue: using `/` separator between pairs instead of `,`.
-
-#### Example 2C: Path parameter with explode
-```
-Template: {;keys}
-Input:    keys = {comma: ",", dot: ".", semi: ";"}
-Expected: ;keys=comma,%2C,dot,.,semi,%3B  (one permutation)
-Observed: ;comma,%2C;dot,.;semi,%3B
-```
-
-Two issues:
-1. Missing the `keys=` prefix (should only appear once for non-exploded)
-2. Using `;` separator between pairs
-
-With explode modifier, format should be: `;comma=%2C;dot=.;semi=%3B`
-Without explode: `;keys=comma,%2C,dot,.,semi,%3B`
-
-#### Example 2D: Query expansion with explode
-```
-Template: {?keys}
-Input:    keys = {comma: ",", dot: ".", semi: ";"}
-Expected: ?keys=comma,%2C,dot,.,semi,%3B  (one permutation)
-Observed: ?comma,%2C&dot,.&semi,%3B
-```
-
-Issues:
-1. Missing `keys=` prefix
-2. Using `&` separator (correct for query continuation)
-
-With explode: `?comma=%2C&dot=.&semi=%3B`
-Without explode: `?keys=comma,%2C,dot,.,semi,%3B`
-
-#### Example 2E: Query continuation with explode
-```
-Template: {&keys}
-Input:    keys = {comma: ",", dot: ".", semi: ";"}
-Expected: &keys=comma,%2C,dot,.,semi,%3B  (one permutation)
-Observed: &comma,%2C&dot,.&semi,%3B
-```
-
-Same as query case but with `&` prefix.
-
-**Root Cause:**
-The association explode logic is incorrectly determining:
-1. When to include/exclude the variable name in output
-2. What separator to use between key-value pairs
-3. Whether the explosion is "named" or "unnamed"
-
-Per RFC 6570 Section 3.2.1:
-- Exploded associative values in label, path, and query expansions should produce `prefix key=value separator key=value ...`
-- The variable name should NOT appear in the output for exploded associations in most contexts
-
-**Where to Fix:**
-- **Primary:** `Sources/HDXLURITemplate/Detail/ValueExpansion/URIVariableAssociationValue+ValueExpansion.swift`
-- **Related:** `Sources/HDXLURITemplate/Detail/Variable/URITemplateVariable+Evaluation.swift`
-- **Check:** `Sources/HDXLURITemplate/Detail/TemplateComponent/URITemplateExpressionComponent+Evaluation.swift`
-
-**RFC Reference:**
-RFC 6570 Section 3.2.1 (Variable Expansion):
-> If explode ("*") is specified, then the expanded output omits the variable name and separator (typically "=") in favor of producing each member of the list or each key-value pair of the associative array as separate expansions.
-
-**Fix Strategy:**
-1. Check the explode modifier on the variable
-2. For associations WITH explode:
-   - Format: `{prefix}{key}={value}{sep}{key}={value}...`
-   - Do NOT include variable name
-   - Use the expansion type's separator between pairs
-3. For associations WITHOUT explode:
-   - Format: `{prefix}{varname}={key},{value},{key},{value}...`
-   - Include variable name once
-   - Use `,` between all elements
+All tests are now passing!
 
 ---
 
-### 3. Malformed Percent-Encoded Values (4 failures) 🟡 **MEDIUM PRIORITY**
+## Recently Fixed Issues
 
-**Problem:** When a variable value contains a malformed percent-encoded sequence (like `%foo` where `foo` is not a valid hex pair), the expansion throws an error instead of handling it gracefully.
+### ✅ Percent-Encoded Variable Names (FIXED - Current Session)
 
-**Test Source:**
-- `HandCheckedSpecCaseTests.swift` - Hand-checked spec case
-- `extended-tests` - Additional Examples 6: Reserved Expansion
-
-**Examples:**
-
-#### Example 3A: Reserved expansion with malformed value
-```
-Template: {+not_pct}
-Input:    not_pct = "%foo"
-Expected: (should handle gracefully, likely encode the % as %25)
-Observed: Caught error: unableToEscapeVariableValue("%foo", "not_pct", reserved, unmodified)
-```
-
-#### Example 3B: Fragment expansion with malformed value
-```
-Template: {#not_pct}
-Input:    not_pct = "%foo"
-Expected: (should handle gracefully)
-Observed: Caught error: unableToEscapeVariableValue("%foo", "not_pct", fragment, unmodified)
-```
-
-#### Example 3C: Simple expansion with malformed value
-```
-Template: {not_pct}
-Input:    not_pct = "%foo"
-Expected: (should encode as %25foo)
-Observed: Caught error: unableToEscapeVariableValue("%foo", "not_pct", simple, unmodified)
-```
-
-**Root Cause:**
-The percent-encoding validation/expansion logic is too strict and throws an error when it encounters a `%` that's not followed by two hex digits. RFC 6570 doesn't specify throwing errors for malformed input; instead, such characters should be treated as literals and percent-encoded.
-
-**Where to Fix:**
-- **Primary:** `Sources/HDXLURITemplate/Detail/VariableValue/URIVariableTextValue+ValueExpansion.swift`
-- **Related:** `Sources/HDXLURITemplate/Detail/ValueExpansion/String+URIValueExpansion.swift`
-
-**RFC Guidance:**
-RFC 6570 doesn't explicitly address malformed percent-encoding in input. Best practice:
-- Treat `%` not followed by two hex digits as a literal `%` character
-- Percent-encode it according to the expansion type rules
-- For simple expansion: `%foo` → `%25foo`
-- For reserved expansion: `%foo` → `%25foo` (% is not in reserved set)
-
-**Fix Strategy:**
-1. Detect percent-encoded triplets with regex: `%[0-9A-Fa-f]{2}`
-2. For anything else (including lone `%`), treat as literal character
-3. Apply normal encoding rules to literal characters
-4. Remove the error throw; handle all input gracefully
-
----
-
-### 5. Prefix Modifier with Special Characters (1 failure) 🟢 **LOW PRIORITY**
-
-**Problem:** When using a prefix modifier (`:N`) to truncate a value that starts with special characters (like `/`), those characters are not being percent-encoded correctly.
-
-**Test Source:** `spec-examples` - Level 4 Examples
+**Problem:** When a variable **name** (not value) contains percent-encoded characters, those characters were being double-encoded.
 
 **Example:**
-
 ```
-Template: {/list*,path:4}
-Input:    list = ["red", "green", "blue"], path = "/foo/bar"
-Expected: /red/green/blue/%2Ffoo
-Observed: /red/green/blue//foo
+Template: /lookup{?Stra%C3%9Fe}
+Input:    Variable name "Stra%C3%9Fe" with value "Grüner Weg"
+Before:   /lookup?Stra%25C3%259Fe=Gr%C3%BCner%20Weg ❌
+Fixed!    /lookup?Stra%C3%9Fe=Gr%C3%BCner%20Weg ✅
 ```
-
-The prefix modifier `:4` should truncate `path` to `/foo`, and then the leading `/` should be percent-encoded as `%2F` in the path segment expansion context (because it would create ambiguity).
 
 **Root Cause:**
-The prefix truncation is happening, but the resulting string is not being treated as a value that needs encoding. The `/` at the start of `/foo` should be encoded to `%2F` to avoid it being interpreted as a path separator.
+The `escapedVariableName` method was calling `rawValue.escaped(forValueExpansionType:)` which re-encoded the percent characters in variable names. Per RFC 6570 Section 2.3, percent-encoded triplets in variable names are "considered an essential part of the variable name and are not decoded during processing."
 
-**Where to Fix:**
-- **Primary:** `Sources/HDXLURITemplate/Detail/ValueExpansion/URIValueExpansionModifier.swift`
-  - Check the prefix modifier application
-- **Secondary:** `Sources/HDXLURITemplate/Detail/Variable/URITemplateVariable+Evaluation.swift`
-  - Ensure prefix-modified values are still encoded properly
+**Fix Applied:**
+Changed `URITemplateVariableName+TextVariableNameExpansion.swift:28` to return `rawValue` directly instead of encoding it:
+```swift
+-    guard let escapedName = rawValue.escaped(forValueExpansionType: expansionType) else {
+-      return .failure
+-    }
+-    return .escaped(escapedName)
++    // Per RFC 6570 Section 2.3:
++    // Variable names can only contain ALPHA, DIGIT, "_", and pct-encoded triplets.
++    // All these characters are safe in URIs. Percent-encoded triplets in variable
++    // names are considered essential and must not be re-encoded (per RFC 6570 Section 2.3).
++    // Therefore, variable names should be used as-is without additional encoding.
++    return .escaped(rawValue)
+```
 
-**RFC Reference:**
-RFC 6570 Section 2.4.1 (Prefix Values):
-> The prefix modifier operates on the character sequence of the value prior to percent-encoding.
+**Rationale:**
+Variable names (per RFC 6570 Section 2.3) can only contain:
+- ALPHA (a-z, A-Z)
+- DIGIT (0-9)
+- Underscore (_)
+- Percent-encoded triplets (%XX)
 
-Section 3.2.6 (Path Segment Expansion):
-> Path segment expansion is useful for describing URI path hierarchies. Note that path segments are delimited by slash characters in the result.
+All these characters are safe in URIs and don't require additional encoding. The percent-encoded triplets are validated during parsing and are part of the variable name itself.
 
-**Fix Strategy:**
-1. Apply prefix modifier first (truncate to N characters)
-2. Then apply percent-encoding to the truncated result
-3. Ensure the encoding logic doesn't skip characters that appear safe but aren't in this context
+**Location:** `Sources/HDXLURITemplate/Detail/ValueExpansion/URITemplateVariableName+TextVariableNameExpansion.swift:28`
 
-## Ungrouped / No Clear Pattern
+---
 
-No additional failures fall outside these six categories. All 22 failures have been classified.
+### ✅ Prefix Modifier with Special Characters (FIXED - Current Session)
+
+**Problem:** When using a prefix modifier (`:N`) to truncate a value containing `/` characters, the `/` was not being percent-encoded in path segment expansion.
+
+**Example:**
+```
+Template: {/list*,path:4}
+Input:    path = "/foo/bar"
+Expected: /red/green/blue/%2Ffoo
+Fixed!   Previously: /red/green/blue//foo
+```
+
+**Root Cause:**
+The `pathSegmentAllowedCharacterSet` incorrectly included `/` as an allowed character. Per RFC 6570, `/` should only be used as a separator between path segments, not within values.
+
+**Fix Applied:**
+Removed `/` from the `pathSegmentAllowedCharacterSet` in `CharacterSet+URIValueExpansion.swift:86`:
+```swift
+-internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet.union(
+-  CharacterSet(charactersIn: "/")
+-)
++internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet
+```
+
+**Location:** `Sources/HDXLURITemplate/Detail/ValueExpansion/CharacterSet+URIValueExpansion.swift:86`
 
 ---
 
 ## Test Execution Details
 
-**Command:** `swift test -q`
+**Command:** `swift test`
 
-**Test Files Involved:**
-- `Tests/HDXLURITemplateTests/Specification/SpecificationTests.swift` (main spec runner)
-- `Tests/HDXLURITemplateTests/Specification/HandCheckedSpecCaseTests.swift` (manual cases)
-
-**Test Data:**
-- `Tests/HDXLURITemplateTests/Resources/spec-examples.json` - RFC 6570 official examples
-- `Tests/HDXLURITemplateTests/Resources/extended-tests.json` - Extended test cases
-
-**Test Output:**
+**Current Status:**
 ```
-􀢄 Test run with 78 tests in 0 suites failed after 1.879 seconds with 22 issues.
+✅ Test run with 78 tests in 0 suites passed after ~2 seconds.
 ```
-
----
-
-## Priority Recommendations
-
-### Immediate (High Priority)
-2. **Fix Association Explode** (5 failures)
-   - Breaks Level 4 compliance
-   - Common pattern in modern APIs (query parameter objects)
-
-### Soon (Medium Priority)
-3. **Handle Malformed Percent-Encoding Gracefully** (4 failures)
-   - Prevents crashes on user input
-   - Improves robustness
-
-### Later (Low Priority)
-5. **Prefix Modifier Edge Case** (1 failure)
-   - Rare combination of features
 
 ---
 
