@@ -288,43 +288,6 @@ RFC 6570 doesn't explicitly address malformed percent-encoding in input. Best pr
 
 ---
 
-### 4. Empty Value Formatting (1 failure) 🟢 **LOW PRIORITY**
-
-**Problem:** When a variable has an empty string value in a path parameter expansion, the output includes an unnecessary `=` sign.
-
-**Test Source:** `spec-examples` - Level 3 Examples
-
-**Example:**
-
-```
-Template: {;x,y,empty}
-Input:    x = "1024", y = "768", empty = ""
-Expected: ;x=1024;y=768;empty
-Observed: ;x=1024;y=768;empty=
-```
-
-Per RFC 6570 Section 3.2.7 (Path-Style Parameter Expansion):
-> If the variable's value is empty, then append the semi-colon without the "=" or value.
-
-The implementation is appending `;empty=` when it should just append `;empty`.
-
-**Where to Fix:**
-- **Primary:** `Sources/HDXLURITemplate/Detail/ValueExpansion/URIVariableTextValue+ValueExpansion.swift`
-  - Look for path parameter (`;`) expansion logic
-  - Check for empty value case
-- **Related:** `Sources/HDXLURITemplate/Detail/Variable/URITemplateVariable+Evaluation.swift`
-
-**RFC Reference:**
-RFC 6570 Section 3.2.7:
-> if the variable is undefined or has an empty value, the expansion appends the prefix without any trailing equals sign.
-
-**Fix Strategy:**
-1. In path parameter expansion (`;`), check if value is empty string
-2. If empty: append `{prefix}{varname}` (no `=`)
-3. If non-empty: append `{prefix}{varname}={value}`
-
----
-
 ### 5. Prefix Modifier with Special Characters (1 failure) 🟢 **LOW PRIORITY**
 
 **Problem:** When using a prefix modifier (`:N`) to truncate a value that starts with special characters (like `/`), those characters are not being percent-encoded correctly.
@@ -448,8 +411,6 @@ No additional failures fall outside these six categories. All 22 failures have b
    - Improves robustness
 
 ### Later (Low Priority)
-4. **Empty Value Formatting** (1 failure)
-   - Edge case, minor spec violation
 5. **Prefix Modifier Edge Case** (1 failure)
    - Rare combination of features
 6. **Missing Variable** (1 failure)
