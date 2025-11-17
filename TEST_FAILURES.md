@@ -326,48 +326,6 @@ Section 3.2.6 (Path Segment Expansion):
 2. Then apply percent-encoding to the truncated result
 3. Ensure the encoding logic doesn't skip characters that appear safe but aren't in this context
 
----
-
-### 6. Missing Variable Handling (1 failure) 🟢 **LOW PRIORITY**
-
-**Problem:** A template references a variable (`locale`) that is not provided in the parameters dictionary, causing an error.
-
-**Test Source:** `extended-tests` - Additional Examples 1
-
-**Example:**
-
-```
-Template: /search.{format}{?q,geocode,lang,locale,page,result_type}
-Parameters: { format: "json", q: "URI Templates", geocode: [...], lang: "en", page: "5", ... }
-Missing: locale
-Error: variableNotFound("locale")
-```
-
-**Root Cause:**
-The template includes the variable `locale` in the query expansion, but the test parameters don't include it. Per RFC 6570, undefined variables should be skipped in expansions, not cause errors.
-
-**Where to Fix:**
-- **Primary:** `Sources/HDXLURITemplate/Detail/Variable/URITemplateVariable+Evaluation.swift`
-  - The variable lookup/evaluation logic
-- **Check:** `Sources/HDXLURITemplate/Detail/TemplateComponent/URITemplateExpressionComponent+Evaluation.swift`
-
-**RFC Reference:**
-RFC 6570 Section 3.2.1:
-> If a variable is undefined (not found in the template's variable dictionary), it is omitted from the expansion.
-
-Section 3.2.8 (Query Expansion):
-> Undefined variables are skipped.
-
-**Fix Strategy:**
-1. When looking up a variable, check if it exists in parameters
-2. If undefined: skip it entirely (contribute nothing to the output)
-3. Don't throw an error; just omit from expansion
-4. Ensure separators are adjusted correctly (don't leave trailing `&` or `?`)
-
-**Note:** This might be a test issue rather than code issue. Verify the test data includes `locale` or if the code should handle missing variables.
-
----
-
 ## Ungrouped / No Clear Pattern
 
 No additional failures fall outside these six categories. All 22 failures have been classified.
@@ -413,8 +371,6 @@ No additional failures fall outside these six categories. All 22 failures have b
 ### Later (Low Priority)
 5. **Prefix Modifier Edge Case** (1 failure)
    - Rare combination of features
-6. **Missing Variable** (1 failure)
-   - May be test data issue, not code issue
 
 ---
 
