@@ -11,10 +11,11 @@ extension URITemplateVariable {
     parameters: [String: URIVariableValue],
     expansionType: URIValueExpansionType
   ) throws -> String {
+    // Per RFC 6570 Section 3.2.1: undefined variables should be omitted from expansion
     guard let value = parameters[variableName.rawValue] else {
-      throw ExpansionError.variableNotFound(variableName.rawValue)
+      return ""
     }
-    
+
     return try value.evaluate(
       expansionType: expansionType,
       templateVariable: self
