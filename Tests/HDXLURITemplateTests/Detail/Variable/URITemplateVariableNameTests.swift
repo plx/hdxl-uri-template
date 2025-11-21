@@ -6,53 +6,45 @@ extension Tag {
   static var uriTemplateVariableName: Self
 }
 
-@Test(
-  "`URITemplateVariableName` fixtures are sensible",
-  .tags(.uriTemplateVariableName)
-)
-private func allCasesOrderedAscending() {
-  verifyOrderedAscending(probes)
-  verifyAllSatisfy(
-    probes,
-    explanation: "All probes should be valid.",
-    predicate: \.isValid
-  )
-  verifyPairwiseDistinct(probes)
+@Suite(.tags(.uriTemplateVariableName))
+struct URITemplateVariableNameTests {
+
+  @Test
+  private func `fixtures are sensible`() {
+    verifyOrderedAscending(probes)
+    verifyAllSatisfy(
+      probes,
+      explanation: "All probes should be valid.",
+      predicate: \.isValid
+    )
+    verifyPairwiseDistinct(probes)
+  }
+  
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.debugDescription
+    )
+  }
+  
+  @Test
+  private func `validation regex compiles`() throws {
+    let _ = try URITemplateVariableName.prepareValidationRegularExpression()
+    // ^ test is this doesn't throw
+  }
+
 }
 
-@Test(
-  "`URITemplateVariableName` has unique descriptions",
-  .tags(.uriTemplateVariableName)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URITemplateVariableName` has unique debugDescriptions",
-  .tags(.uriTemplateVariableName)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.debugDescription
-  )
-}
-
-@Test(
-  "`URITemplateVariableName` has unique debugDescriptions",
-  .tags(.uriTemplateVariableName)
-)
-private func regularExpressionCompiles() throws {
-  let _ = try URITemplateVariableName.prepareValidationRegularExpression()
-  // ^ test is this doesn't throw
-}
-
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let probeStrings: [String] = [
   "a",

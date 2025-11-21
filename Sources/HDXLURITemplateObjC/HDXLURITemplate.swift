@@ -1,5 +1,5 @@
 import Foundation
-import os.log
+import HDXLURITemplate
 
 // MARK: HDXLURITemplate
 
@@ -9,7 +9,7 @@ import os.log
 /// is entirely-unnecessary when used only from Swift.
 ///
 @objc(HDXLURITemplate)
-public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding {
+public final class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding {
   
   // MARK: - NSObject Overrides
     
@@ -38,7 +38,7 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   
   // MARK: - Stored Properties
     
-  internal let template: URITemplate
+  package let template: URITemplate
   
   // MARK: - Derived Properties
     
@@ -56,7 +56,7 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   // MARK: - Designated Initializer
     
   @nonobjc
-  required internal init(template: URITemplate) {
+  required package init(template: URITemplate) {
     self.template = template
     super.init()
   }

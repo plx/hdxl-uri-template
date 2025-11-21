@@ -43,9 +43,6 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal convenience init(component: URITemplateComponent) {
-#if HEAVY_DEBUG
-    pedanticAssert(component.isValid)
-#endif
     self.init(
       components: [component]
     )
@@ -53,10 +50,6 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal required init(components: [URITemplateComponent]) {
-#if HEAVY_DEBUG
-    pedanticAssert(components.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid) }
-#endif
     self.components = components
     self.cachedFieldLock = OSAllocatedUnfairLock()
   }
@@ -186,7 +179,6 @@ internal final class URITemplateStorage {
 // MARK: - Synthesized Conformances
 
 extension URITemplateStorage: @unchecked Sendable { }
-extension URITemplateStorage: @unchecked SendableMetatype { }
 
 // MARK: - Equatable
 
@@ -197,10 +189,6 @@ extension URITemplateStorage : Equatable {
     lhs: URITemplateStorage,
     rhs: URITemplateStorage
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
     guard lhs !== rhs else {
       return true
     }
@@ -218,10 +206,6 @@ extension URITemplateStorage : Comparable {
     lhs: URITemplateStorage,
     rhs: URITemplateStorage
   ) -> Bool {
-    #if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-    #endif
     guard lhs !== rhs else {
       return false
     }

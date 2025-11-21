@@ -10,7 +10,7 @@
 /// Keeping it internal is also the only way to hide the newtype-style wrappers
 /// from the public API--which *is* another goal, here, too!
 @usableFromInline
-internal enum URIVariableValueData {
+package enum URIVariableValueData {
   
   case undefined
   case text(URIVariableTextValue)
@@ -18,16 +18,13 @@ internal enum URIVariableValueData {
   case association(URIVariableAssociationValue)
 
   @usableFromInline
-  internal static let emptyList: URIVariableValueData = .list(URIVariableListValue())
+  package static let emptyList: URIVariableValueData = .list(URIVariableListValue())
   
   @usableFromInline
-  internal static let emptyAssociation: URIVariableValueData = .association(URIVariableAssociationValue())
+  package static let emptyAssociation: URIVariableValueData = .association(URIVariableAssociationValue())
 
   @inlinable
-  internal init(from text: String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(from text: String) {
     self = .text(
       URIVariableTextValue(rawValue: text)
     )
@@ -35,9 +32,6 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init<S:Sequence>(from texts: S) where S.Element == String {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
     self = .list(
       URIVariableListValue(
         values: texts.map() {
@@ -49,9 +43,6 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init(singleElementListFrom text: String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
     self = .list(
       URIVariableListValue(
         value: URIVariableTextValue(rawValue: text)
@@ -61,9 +52,6 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init(from pair: (String,String)) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
     self = .association(
       URIVariableAssociationValue(
         value: URIVariablePairValue(
@@ -76,9 +64,6 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init<S:Sequence>(from pairs: S) where S.Element == (String,String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
     self = .association(
       URIVariableAssociationValue(
         values: pairs.map() {
@@ -96,7 +81,6 @@ internal enum URIVariableValueData {
 // MARK: - Synthesized Conformances
 
 extension URIVariableValueData : Sendable { }
-extension URIVariableValueData : SendableMetatype { }
 extension URIVariableValueData : Equatable { }
 extension URIVariableValueData : Hashable { }
 
@@ -105,14 +89,10 @@ extension URIVariableValueData : Hashable { }
 extension URIVariableValueData : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URIVariableValueData,
     rhs: URIVariableValueData
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
     return switch (lhs,rhs) {
     case (.undefined, .undefined):
       false
@@ -134,7 +114,7 @@ extension URIVariableValueData : Comparable {
 extension URIVariableValueData : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     switch self {
     case .undefined:
       ".undefined"
@@ -154,7 +134,7 @@ extension URIVariableValueData : CustomStringConvertible {
 extension URIVariableValueData : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .undefined:
       "URIVariableValueData.undefined"
@@ -177,7 +157,7 @@ extension URIVariableValueData : Codable {
   internal typealias CodingKeys = StandardEnumerationCodingKeys
   
   @usableFromInline
-  internal func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.container(
       keyedBy: CodingKeys.self
     )
@@ -207,7 +187,7 @@ extension URIVariableValueData : Codable {
   }
   
   @usableFromInline
-  internal init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.container(
       keyedBy: CodingKeys.self
     )

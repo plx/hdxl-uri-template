@@ -3,24 +3,19 @@ import Foundation
 // MARK: URITemplateVariableName
 
 @usableFromInline
-internal struct URITemplateVariableName: RawRepresentable {
+package struct URITemplateVariableName: RawRepresentable {
   
   @usableFromInline
-  internal typealias RawValue = String
+  package typealias RawValue = String
   
   @usableFromInline
-  internal var rawValue: RawValue
+  package var rawValue: RawValue
   
   @usableFromInline
-  internal static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
+  package static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
   
   @inlinable
-  internal init(rawValue: RawValue) {
-#if HEAVY_DEBUG
-    pedanticAssert(!rawValue.isEmpty)
-    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(rawValue: RawValue) {
     self.rawValue = rawValue
   }
   
@@ -29,7 +24,6 @@ internal struct URITemplateVariableName: RawRepresentable {
 // MARK: - Synthesized Conformances
 
 extension URITemplateVariableName : Sendable { }
-extension URITemplateVariableName : SendableMetatype { }
 extension URITemplateVariableName : Equatable { }
 extension URITemplateVariableName : Hashable { }
 
@@ -38,15 +32,11 @@ extension URITemplateVariableName : Hashable { }
 extension URITemplateVariableName : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateVariableName,
     rhs: URITemplateVariableName
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.rawValue < rhs.rawValue
+    lhs.rawValue < rhs.rawValue
   }
   
 }
@@ -56,7 +46,7 @@ extension URITemplateVariableName : Comparable {
 extension URITemplateVariableName : CustomStringConvertible {
   
   @inlinable
-  internal var description: String {
+  package var description: String {
     rawValue
   }
   
@@ -67,7 +57,7 @@ extension URITemplateVariableName : CustomStringConvertible {
 extension URITemplateVariableName : CustomDebugStringConvertible {
   
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     "URITemplateVariableName(rawValue: \"\(rawValue)\")"
   }
   
@@ -78,13 +68,13 @@ extension URITemplateVariableName : CustomDebugStringConvertible {
 extension URITemplateVariableName : Codable {
   
   @inlinable
-  func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
   
   @inlinable
-  init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let storage = try container.decode(String.self)
     guard Self.validationRegularExpression.matchesEntirety(of: storage) else {
@@ -103,7 +93,7 @@ extension URITemplateVariableName : Codable {
 extension URITemplateVariableName {
     
   @inlinable
-  static func prepareValidationRegularExpression() throws -> NSRegularExpression {
+  package static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     // NOTE: `varname       =  varchar *( ["."] varchar )`
     // *appears* nonsensical and is *probably* a mistake...
     // ...IMHO it *should* be `varname = varchar *( ["."] varname )`.
@@ -185,7 +175,7 @@ extension URITemplateVariableName {
 extension URITemplateVariableName {
   
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     guard
       !rawValue.isEmpty,
       URITemplateVariableName.validationRegularExpression.matchesEntirety(

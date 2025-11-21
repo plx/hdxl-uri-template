@@ -7,32 +7,28 @@ extension Tag {
   static var uriVariableValueType: Self
 }
 
-@Test(
-  "`URIVariableValueType.allCases` is ordered ascending",
-  .tags(.uriVariableValueType)
-)
-private func allCasesOrderedAscending() {
-  verifyOrderedAscending(URIVariableValueType.allCases)
-}
+@Suite(.tags(.uriVariableValueType))
+struct URIVariableValueTypeTests {
 
-@Test(
-  "`URIVariableValueType` has unique descriptions",
-  .tags(.uriVariableValueType)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    URIVariableValueType.allCases,
-    using: \.description
-  )
-}
+  @Test
+  private func `allCases ordered ascending`() {
+    verifyOrderedAscending(URIVariableValueType.allCases)
+  }
+  
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      URIVariableValueType.allCases,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      URIVariableValueType.allCases,
+      using: \.debugDescription
+    )
+  }
 
-@Test(
-  "`URIVariableValueType` has unique debugDescriptions",
-  .tags(.uriVariableValueType)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    URIVariableValueType.allCases,
-    using: \.debugDescription
-  )
 }

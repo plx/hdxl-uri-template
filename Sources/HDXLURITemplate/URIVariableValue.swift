@@ -26,21 +26,17 @@ public struct URIVariableValue {
   
   /// Shorthand for the wrapped data-storage type.
   @usableFromInline
-  internal typealias Storage = URIVariableValueData
+  package typealias Storage = URIVariableValueData
   
   /// Holds the actual variable value.
   @usableFromInline
-  internal var storage: URIVariableValueData
+  package var storage: URIVariableValueData
 
   // MARK: - Designated Initializer
   
   /// Designated internal-use-only initializer.
   @inlinable
-  internal init(storage: URIVariableValueData) {
-#if HEAVY_DEBUG
-    pedanticAssert(storage.isValid)
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(storage: URIVariableValueData) {
     self.storage = storage
   }
   
@@ -65,6 +61,136 @@ public struct URIVariableValue {
   public static func text(_ text: String) -> Self {
     Self(
       storage: Storage(from: text)
+    )
+  }
+
+  @objc(URIVariableValueBooleanCapitalization)
+  public enum BooleanCapitalization: Int {
+    case lowercase
+    case capitalized
+    case allCaps
+  }
+  
+  /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `trueRepresentation` or `falseRepresentation`.
+  @inlinable
+  public static func boolean(
+    _ boolValue: Bool,
+    capitalization: BooleanCapitalization = .lowercase,
+    ifTrue trueRepresentation: @autoclosure () -> String,
+    ifFalse falseRepresentation: @autoclosure () -> String
+  ) -> Self {
+    let textRepresentation = switch boolValue {
+    case false:
+      trueRepresentation()
+    case true:
+      falseRepresentation()
+    }
+    
+    let adjustedTextRepresentation = switch capitalization {
+    case .lowercase:
+      textRepresentation
+    case .capitalized:
+      textRepresentation.capitalized
+    case .allCaps:
+      textRepresentation.uppercased()
+    }
+    
+    return text(adjustedTextRepresentation)
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `true` or `false`.
+  @inlinable
+  public static func trueOrFalse(
+    boolValue: Bool,
+    capitalization: BooleanCapitalization
+  ) -> Self {
+    boolean(
+      boolValue,
+      capitalization: capitalization,
+      ifTrue: "true",
+      ifFalse: "false"
+    )
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `yes` or `no`.
+  @inlinable
+  public static func yesOrNo(
+    boolValue: Bool,
+    capitalization: BooleanCapitalization
+  ) -> Self {
+    boolean(
+      boolValue,
+      capitalization: capitalization,
+      ifTrue: "yes",
+      ifFalse: "no"
+    )
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `y` or `n`.
+  @inlinable
+  public static func yOrN(
+    boolValue: Bool,
+    capitalization: BooleanCapitalization = .allCaps
+  ) -> Self {
+    boolean(
+      boolValue,
+      capitalization: capitalization,
+      ifTrue: "y",
+      ifFalse: "n"
+    )
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `1` or `0`.
+  @inlinable
+  public static func zeroOrOne(boolValue: Bool) -> Self {
+    boolean(
+      boolValue,
+      capitalization: .lowercase,
+      ifTrue: "1",
+      ifFalse: "0"
+    )
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` by converting `integer` to a `String`.
+  @inlinable
+  public static func integer<T>(
+    _ integer: T
+  ) -> Self where T: BinaryInteger {
+    Self(
+      storage: Storage(from: String(integer))
+    )
+  }
+  
+  /// Constructs a `.text`-flavored `URIVariableValue` wrapping `number` as formatted-by `style`.
+  @inlinable
+  public static func formattedNumber<T>(
+    _ number: T,
+    style: IntegerFormatStyle<T>
+  ) -> Self where T: BinaryInteger {
+    Self(
+      storage: Storage(from: style.format(number))
+    )
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` wrapping `number` as formatted-by `style`.
+  @inlinable
+  public static func formattedNumber<T>(
+    _ number: T,
+    style: FloatingPointFormatStyle<T>
+  ) -> Self where T: BinaryFloatingPoint {
+    Self(
+      storage: Storage(from: style.format(number))
+    )
+  }
+
+  /// Constructs a `.text`-flavored `URIVariableValue` wrapping `number` as formatted-by `style`.
+  @inlinable
+  public static func formattedNumber(
+    _ number: Decimal,
+    style: Decimal.FormatStyle
+  ) -> Self {
+    Self(
+      storage: Storage(from: style.format(number))
     )
   }
 
@@ -105,7 +231,6 @@ public struct URIVariableValue {
 // MARK: - Synthesized Conformances
 
 extension URIVariableValue : Sendable { }
-extension URIVariableValue : SendableMetatype { }
 extension URIVariableValue : Equatable { }
 extension URIVariableValue : Hashable { }
 
@@ -118,11 +243,7 @@ extension URIVariableValue : Comparable {
     lhs: URIVariableValue,
     rhs: URIVariableValue
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.storage < rhs.storage
+    lhs.storage < rhs.storage
   }
 
 }
@@ -206,6 +327,139 @@ extension URIVariableValue : Codable {
   }
   
 }
+
+extension URIVariableValue: ExpressibleByNilLiteral {
+  
+  public init(nilLiteral: ()) {
+    self = .undefined
+  }
+}
+
+extension URIVariableValue: ExpressibleByArrayLiteral {
+  
+  public typealias ArrayLiteralElement = URIScalarVariableValue
+  
+  public init(arrayLiteral elements: ArrayLiteralElement...) {
+    self.init(
+      storage: .list(
+        URIVariableListValue(strings: elements.map(\.storage.rawValue))
+      )
+    )
+  }
+  
+}
+
+extension URIVariableValue: ExpressibleByDictionaryLiteral {
+  
+  public typealias Key = String
+  public typealias Value = URIScalarVariableValue
+  
+  public init(dictionaryLiteral elements: (Key, Value)...) {
+    self.init(
+      storage: .association(
+        URIVariableAssociationValue(
+          values: elements.map { key, value in
+            URIVariablePairValue(
+              key: URIVariableTextValue(rawValue: key),
+              value: value.storage
+            )
+          }
+        )
+      )
+    )
+  }
+  
+}
+
+extension URIVariableValue: ExpressibleByIntegerLiteral {
+  
+  public typealias IntegerLiteralType = Int
+  
+  public init(integerLiteral value: IntegerLiteralType) {
+    self.init(
+      storage: .text(
+        URIVariableTextValue(rawValue: "\(value)")
+      )
+    )
+  }
+}
+
+extension URIVariableValue: ExpressibleByFloatLiteral {
+  
+  public typealias FloatLiteralType = Double
+  
+  public init(floatLiteral value: FloatLiteralType) {
+    self.init(
+      storage: .text(
+        URIVariableTextValue(rawValue: "\(value)")
+      )
+    )
+  }
+}
+
+extension URIVariableValue: ExpressibleByUnicodeScalarLiteral {
+  
+  /// A type that represents a Unicode scalar literal.
+  ///
+  /// Valid types for `UnicodeScalarLiteralType` are `Unicode.Scalar`,
+  /// `Character`, `String`, and `StaticString`.
+  public typealias UnicodeScalarLiteralType = Unicode.Scalar
+  
+  /// Creates an instance initialized to the given value.
+  ///
+  /// - Parameter value: The value of the new instance.
+  public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
+    self.init(
+      storage: .text(
+        URIVariableTextValue(rawValue: String(value))
+      )
+    )
+  }
+
+}
+
+extension URIVariableValue: ExpressibleByExtendedGraphemeClusterLiteral {
+  
+  /// A type that represents a Unicode scalar literal.
+  ///
+  /// Valid types for `UnicodeScalarLiteralType` are `Unicode.Scalar`,
+  /// `Character`, `String`, and `StaticString`.
+  public typealias ExtendedGraphemeClusterLiteralType = Character
+  
+  /// Creates an instance initialized to the given value.
+  ///
+  /// - Parameter value: The value of the new instance.
+  public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+    self.init(
+      storage: .text(
+        URIVariableTextValue(rawValue: String(value))
+      )
+    )
+  }
+  
+}
+
+extension URIVariableValue: ExpressibleByStringLiteral {
+  
+  /// A type that represents a Unicode scalar literal.
+  ///
+  /// Valid types for `UnicodeScalarLiteralType` are `Unicode.Scalar`,
+  /// `Character`, `String`, and `StaticString`.
+  public typealias StringLiteralType = String
+  
+  /// Creates an instance initialized to the given value.
+  ///
+  /// - Parameter value: The value of the new instance.
+  public init(stringLiteral value: String) {
+    self.init(
+      storage: .text(
+        URIVariableTextValue(rawValue: String(value))
+      )
+    )
+  }
+  
+}
+
 
 // MARK: - Core API
 

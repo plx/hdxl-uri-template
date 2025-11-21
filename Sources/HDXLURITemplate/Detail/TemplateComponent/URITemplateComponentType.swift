@@ -1,7 +1,7 @@
 // MARK: URITemplateComponentType
 
 @usableFromInline
-internal enum URITemplateComponentType : UInt8 {
+package enum URITemplateComponentType : UInt8 {
   
   case literal = 1
   case expression = 2
@@ -11,7 +11,6 @@ internal enum URITemplateComponentType : UInt8 {
 // MARK: - Synthesized Conformances
 
 extension URITemplateComponentType : Sendable { }
-extension URITemplateComponentType : SendableMetatype { }
 extension URITemplateComponentType : Equatable { }
 extension URITemplateComponentType : Hashable { }
 extension URITemplateComponentType : Codable { }
@@ -22,7 +21,7 @@ extension URITemplateComponentType : CaseIterable { }
 extension URITemplateComponentType : Comparable {
 
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateComponentType,
     rhs: URITemplateComponentType
   ) -> Bool {
@@ -36,7 +35,7 @@ extension URITemplateComponentType : Comparable {
 extension URITemplateComponentType : CustomStringConvertible {
 
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     switch self {
     case .literal:
       ".literal"
@@ -52,7 +51,7 @@ extension URITemplateComponentType : CustomStringConvertible {
 extension URITemplateComponentType : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .literal:
       "URITemplateComponentType.literal"

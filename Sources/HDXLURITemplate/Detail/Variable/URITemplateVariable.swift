@@ -3,24 +3,19 @@ import Foundation
 // MARK: URITemplateVariable
 
 @usableFromInline
-internal struct URITemplateVariable {
+package struct URITemplateVariable {
   
   @usableFromInline
-  internal var variableName: URITemplateVariableName
+  package var variableName: URITemplateVariableName
   
   @usableFromInline
-  internal var expansionModifier: URIValueExpansionModifier
+  package var expansionModifier: URIValueExpansionModifier
   
   @inlinable
-  internal init(
+  package init(
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    defer { pedanticAssert(isValid) }
-#endif
     self.variableName = variableName
     self.expansionModifier = expansionModifier
   }
@@ -30,7 +25,6 @@ internal struct URITemplateVariable {
 // MARK: - Synthesized Conformances
 
 extension URITemplateVariable : Sendable { }
-extension URITemplateVariable : SendableMetatype { }
 extension URITemplateVariable : Equatable { }
 extension URITemplateVariable : Hashable { }
 extension URITemplateVariable : Codable { }
@@ -40,14 +34,10 @@ extension URITemplateVariable : Codable { }
 extension URITemplateVariable : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateVariable,
     rhs: URITemplateVariable
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
     guard lhs.variableName == rhs.variableName else {
       return lhs.variableName < rhs.variableName
     }
@@ -62,7 +52,7 @@ extension URITemplateVariable : Comparable {
 extension URITemplateVariable : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     "\"\(variableName)\", \(expansionModifier.description)"
   }
   
@@ -73,7 +63,7 @@ extension URITemplateVariable : CustomStringConvertible {
 extension URITemplateVariable : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     "URITemplateVariable(variableName: \(String(reflecting: variableName)), expansionModifier: \(String(reflecting: expansionModifier)))"
   }
   
@@ -84,7 +74,7 @@ extension URITemplateVariable : CustomDebugStringConvertible {
 extension URITemplateVariable {
   
   @inlinable
-  internal var templateRepresentation: String {
+  package var templateRepresentation: String {
     "\(variableName.rawValue)\(expansionModifier.templateRepresentation)"
   }
   
@@ -95,7 +85,7 @@ extension URITemplateVariable {
 extension URITemplateVariable {
   
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     variableName.isValid && expansionModifier.isValid
   }
   

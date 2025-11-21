@@ -6,48 +6,44 @@ extension Tag {
   static var uriVariablePairValue: Self
 }
 
-@Test(
-  "`URIVariablePairValue` fixtures",
-  .tags(.uriVariableValueData)
-)
-private func validateFixtures() {
-  verifyOrderedAscending(keys)
-  verifyOrderedAscending(values)
-  verifyOrderedAscending(probes)
+@Suite(.tags(.uriVariablePairValue))
+struct URIVariablePairValueTests {
+
+  @Test
+  private func `fixtures are sensible`() {
+    verifyOrderedAscending(keys)
+    verifyOrderedAscending(values)
+    verifyOrderedAscending(probes)
+    
+    verifyAllSatisfy(
+      probes,
+      explanation: "Expect all probes to be valid.",
+      predicate: \.isValid
+    )
+    
+    verifyPairwiseDistinct(probes)
+  }
   
-  verifyAllSatisfy(
-    probes,
-    explanation: "Expect all probes to be valid.",
-    predicate: \.isValid
-  )
   
-  verifyPairwiseDistinct(probes)
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.debugDescription
+    )
+  }
+
 }
 
-
-@Test(
-  "`URIVariablePairValue` has unique descriptions",
-  .tags(.uriVariableValueData)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URIVariablePairValue` has unique debugDescriptions",
-  .tags(.uriVariableValueData)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.debugDescription
-  )
-}
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let keys: [URIVariableTextValue] = [
   "a",

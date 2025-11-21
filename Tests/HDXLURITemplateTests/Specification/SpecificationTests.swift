@@ -1,29 +1,28 @@
 import Testing
 @testable import HDXLURITemplate
 
-@Test(
-  "`URITemplate` parses examples from spec.",
-  arguments: allReferenceExamples()
-)
-private func uriTemplateParsesOK(example: CaptionedTestCase) throws {
-  try verifyTemplateParsing(
-    source: example.source,
-    caption: example.caption,
-    testCase: example.testCase
-  )
-}
+@Suite
+struct SpecificationTests {
 
-@Test(
-  "`URITemplate` evaluates as-expected per spec.",
-  arguments: allReferenceExamples()
-)
-private func uriTemplateEvaluatesOK(example: CaptionedTestCase) throws {
-  try verifyTemplateExpansion(
-    source: example.source,
-    caption: example.caption,
-    testCase: example.testCase,
-    parameters: example.parameters
-  )
+  @Test(arguments: allReferenceExamples())
+  private func `spec examples parse`(example: CaptionedTestCase) throws {
+    try verifyTemplateParsing(
+      source: example.source,
+      caption: example.caption,
+      testCase: example.testCase
+    )
+  }
+  
+  @Test(arguments: allReferenceExamples())
+  private func `evaluation matches spec`(example: CaptionedTestCase) throws {
+    try verifyTemplateExpansion(
+      source: example.source,
+      caption: example.caption,
+      testCase: example.testCase,
+      parameters: example.parameters
+    )
+  }
+
 }
 
 // MARK: - Verifications

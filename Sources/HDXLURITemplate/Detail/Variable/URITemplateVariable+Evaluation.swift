@@ -7,7 +7,7 @@ extension URITemplateVariable {
   }
   
   @inlinable
-  internal func evaluate(
+  package func evaluate(
     parameters: [String: URIVariableValue],
     expansionType: URIValueExpansionType
   ) throws -> String {

@@ -8,7 +8,7 @@ extension URIVariableValue {
   ) throws -> String {
     switch storage {
     case .undefined:
-      ""
+      "" // per RFC
     case .text(let textValue):
       try textValue.expansion(
         expansionType: expansionType,

@@ -6,79 +6,78 @@ extension Tag {
   static var uriValueExpansionModifier: Self
 }
 
-@Test(
-  "`URIValueExpansionModifier.allCases` is ordered ascending",
-  .tags(.uriValueExpansionModifier)
-)
-private func allCasesOrderedAscending() {
-  verifyOrderedAscending(URIValueExpansionModifier.allCases)
-}
-
-@Test(
-  "`URIValueExpansionModifier` has unique descriptions",
-  .tags(.uriValueExpansionModifier)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    URIValueExpansionModifier.allCases,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URIValueExpansionModifier` has unique debugDescriptions",
-  .tags(.uriValueExpansionModifier)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    URIValueExpansionModifier.allCases,
-    using: \.debugDescription
-  )
-}
-
-@Test(
-  "`URIValueExpansionModifier.requiresAction`",
-  .tags(.uriValueExpansionModifier),
-  arguments: URIValueExpansionModifier.allCases
-)
-private func requiresActionOK(expansionModifier: URIValueExpansionModifier) throws {
-  switch expansionModifier {
-  case .unmodified:
-    #expect(!expansionModifier.requiresAction)
-  case .explode:
-    #expect(expansionModifier.requiresAction)
-  case .prefix:
-    #expect(expansionModifier.requiresAction)
+@Suite(.tags(.uriValueExpansionModifier))
+struct URIValueExpansionModifierTests {
+  
+  private let expansionModifiers = URIValueExpansionModifier.allCases
+  
+  @Test
+  private func `allCases ordered ascending`() {
+    verifyOrderedAscending(URIValueExpansionModifier.allCases)
   }
-}
-
-@Test(
-  "`URIValueExpansionModifier` is-type checks",
-  .tags(.uriValueExpansionModifier),
-  arguments: URIValueExpansionModifier.allCases
-)
-private func isTypeChecks(expansionModifier: URIValueExpansionModifier) throws {
-  switch expansionModifier {
-  case .unmodified:
-    #expect(expansionModifier.isUnmodifiedType)
-    #expect(!expansionModifier.isExplodeType)
-    #expect(!expansionModifier.isPrefixType)
-    #expect(expansionModifier.modifierType == .unmodified)
-  case .explode:
-    #expect(!expansionModifier.isUnmodifiedType)
-    #expect(expansionModifier.isExplodeType)
-    #expect(!expansionModifier.isPrefixType)
-    #expect(expansionModifier.modifierType == .explode)
-  case .prefix:
-    #expect(!expansionModifier.isUnmodifiedType)
-    #expect(!expansionModifier.isExplodeType)
-    #expect(expansionModifier.isPrefixType)
-    #expect(expansionModifier.modifierType == .prefix)
+  
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      URIValueExpansionModifier.allCases,
+      using: \.description
+    )
   }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      URIValueExpansionModifier.allCases,
+      using: \.debugDescription
+    )
+  }
+  
+  @Test
+  private func `requiresAction`() throws {
+    // this is ~10000 cases, Xcode's GUI *cannot* handle
+    // having that many individually-runnable test cases,
+    // and thus we can't use `@Test(arguments: URIValueExpansionModifier.allCases)`
+    for expansionModifier in expansionModifiers {
+      switch expansionModifier {
+      case .unmodified:
+        #expect(!expansionModifier.requiresAction)
+      case .explode:
+        #expect(expansionModifier.requiresAction)
+      case .prefix:
+        #expect(expansionModifier.requiresAction)
+      }
+    }
+  }
+  
+  @Test
+  private func `is-type checks`() throws {
+    // this is ~10000 cases, Xcode's GUI *cannot* handle
+    // having that many individually-runnable test cases,
+    // and thus we can't use `@Test(arguments: URIValueExpansionModifier.allCases)`
+    for expansionModifier in expansionModifiers {
+      switch expansionModifier {
+      case .unmodified:
+        #expect(expansionModifier.isUnmodifiedType)
+        #expect(!expansionModifier.isExplodeType)
+        #expect(!expansionModifier.isPrefixType)
+        #expect(expansionModifier.modifierType == .unmodified)
+      case .explode:
+        #expect(!expansionModifier.isUnmodifiedType)
+        #expect(expansionModifier.isExplodeType)
+        #expect(!expansionModifier.isPrefixType)
+        #expect(expansionModifier.modifierType == .explode)
+      case .prefix:
+        #expect(!expansionModifier.isUnmodifiedType)
+        #expect(!expansionModifier.isExplodeType)
+        #expect(expansionModifier.isPrefixType)
+        #expect(expansionModifier.modifierType == .prefix)
+      }
+    }
+  }
+
 }
 
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let probes = URIValueExpansionModifier.allCases
 private let reducedProbes = Array(probes[0..<25])

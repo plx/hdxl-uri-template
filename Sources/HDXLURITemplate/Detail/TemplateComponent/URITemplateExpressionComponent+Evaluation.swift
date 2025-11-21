@@ -2,7 +2,7 @@
 extension URITemplateExpressionComponent {
   
   @inlinable
-  internal func evaluate(parameters: [String: URIVariableValue]) throws -> String {
+  package func evaluate(parameters: [String: URIVariableValue]) throws -> String {
     var expansions: [String] = []
     for variable in variables {
       let expansion = try variable.evaluate(

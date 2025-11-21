@@ -20,20 +20,18 @@ import Foundation
 ///
 public struct URITemplate {
   
+  // MARK: - Stored Properties  
+
   @usableFromInline
   internal var storage: URITemplateStorage
+
+  // MARK: - Initialization
   
   @inlinable
   internal init(storage: URITemplateStorage) {
-#if HEAVY_DEBUG
-    pedanticAssert(storage.isValid)
-    defer { pedanticAssert(storage.isValid) }
-#endif
     self.storage = storage
   }
 
-  // MARK: Initialization
-  
   /// Public initializer, constructs a template by parsing a template string.
   ///
   /// - parameter template: A string containing a URI template.
@@ -61,7 +59,6 @@ public struct URITemplate {
 // MARK: - Synthesized Conformances
 
 extension URITemplate : Sendable { }
-extension URITemplate : SendableMetatype { }
 extension URITemplate : Equatable { }
 extension URITemplate : Hashable { }
 extension URITemplate : Codable { }

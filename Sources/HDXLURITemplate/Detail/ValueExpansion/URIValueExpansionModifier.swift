@@ -1,9 +1,9 @@
 import Foundation
 
-// MARK: URIValueExpansionModifier - Definition
+// MARK: URIValueExpansionModifier
 
 @usableFromInline
-internal enum URIValueExpansionModifier {
+package enum URIValueExpansionModifier {
   
   case unmodified
   case explode
@@ -11,14 +11,13 @@ internal enum URIValueExpansionModifier {
   
   /// - todo: Verify my interpretation of "positive integer < 10000" as excluding `0`
   @usableFromInline
-  internal static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
+  package static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
   
 }
 
 // MARK: - Synthesized Conformances
 
 extension URIValueExpansionModifier : Sendable { }
-extension URIValueExpansionModifier : SendableMetatype { }
 extension URIValueExpansionModifier : Equatable { }
 extension URIValueExpansionModifier : Hashable { }
 
@@ -27,7 +26,7 @@ extension URIValueExpansionModifier : Hashable { }
 extension URIValueExpansionModifier : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URIValueExpansionModifier,
     rhs: URIValueExpansionModifier
   ) -> Bool {
@@ -60,7 +59,7 @@ extension URIValueExpansionModifier : Comparable {
 extension URIValueExpansionModifier : CustomStringConvertible {
 
   @inlinable
-  internal var description: String {
+  package var description: String {
     switch self {
     case .unmodified:
       ".unmodified"
@@ -77,7 +76,7 @@ extension URIValueExpansionModifier : CustomStringConvertible {
 extension URIValueExpansionModifier : CustomDebugStringConvertible {
 
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .unmodified:
       "URIValueExpansionModifier.unmodified"
@@ -94,10 +93,10 @@ extension URIValueExpansionModifier : CustomDebugStringConvertible {
 extension URIValueExpansionModifier : Codable {
 
   @usableFromInline
-  internal typealias CodingKeys = StandardEnumerationCodingKeys
+  package typealias CodingKeys = StandardEnumerationCodingKeys
   
   @inlinable
-  internal func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.container(
       keyedBy: CodingKeys.self
     )
@@ -119,7 +118,7 @@ extension URIValueExpansionModifier : Codable {
   }
   
   @inlinable
-  init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.container(
       keyedBy: CodingKeys.self
     )
@@ -168,10 +167,10 @@ extension URIValueExpansionModifier : Codable {
 extension URIValueExpansionModifier : CaseIterable {
   
   @usableFromInline
-  internal typealias AllCases = [URIValueExpansionModifier]
+  package typealias AllCases = [URIValueExpansionModifier]
   
   @usableFromInline
-  internal static let allCases: AllCases = [
+  package static let allCases: AllCases = [
     .unmodified,
     .explode
   ] + URIValueExpansionModifier

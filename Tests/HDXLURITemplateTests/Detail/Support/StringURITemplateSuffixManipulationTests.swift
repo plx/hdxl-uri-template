@@ -6,111 +6,107 @@ extension Tag {
   static var suffixManipulation: Self
 }
 
-@Test(
-  "`String+URITemplateSuffixManipulation` degenerate scenarios",
-  .tags(.stringManipulation, .suffixManipulation)
-)
-private func degenerateScenarios() {
-  verifyRemoval(
-    ofSuffix: "",
-    from: "",
-    yields: ""
-  )
-  // empty-suffix
-  verifyRemoval(
-    ofSuffix: "",
-    from: "a",
-    yields: "a"
-  )
-  verifyRemoval(
-    ofSuffix: "",
-    from: "abc",
-    yields: "abc"
-  )
+@Suite(.tags(.stringManipulation, .suffixManipulation))
+struct StringSuffixManipulationTests {
+
+  @Test
+  private func `degenerate scenarios`() {
+    verifyRemoval(
+      ofSuffix: "",
+      from: "",
+      yields: ""
+    )
+    // empty-suffix
+    verifyRemoval(
+      ofSuffix: "",
+      from: "a",
+      yields: "a"
+    )
+    verifyRemoval(
+      ofSuffix: "",
+      from: "abc",
+      yields: "abc"
+    )
+    
+    // empty-target
+    verifyRemoval(
+      ofSuffix: "ab",
+      from: "",
+      yields: ""
+    )
+    verifyRemoval(
+      ofSuffix: "abc",
+      from: "",
+      yields: ""
+    )
+    
+  }
   
-  // empty-target
-  verifyRemoval(
-    ofSuffix: "ab",
-    from: "",
-    yields: ""
-  )
-  verifyRemoval(
-    ofSuffix: "abc",
-    from: "",
-    yields: ""
-  )
-
-}
-
-@Test(
-  "`String+URITemplateSuffixManipulation` canned examples",
-  .tags(.stringManipulation, .suffixManipulation)
-)
-private func cannedExamples() {
-  verifyRemoval(
-    ofSuffix: "?",
-    from: "foo?",
-    yields: "foo"
-  )
-  verifyRemoval(
-    ofSuffix: "?",
-    from: "foo??",
-    yields: "foo?"
-  )
-  verifyRemoval(
-    ofSuffix: "??",
-    from: "foo??",
-    yields: "foo"
-  )
-  verifyRemoval(
-    ofSuffix: "?",
-    from: "?foo?",
-    yields: "?foo"
-  )
-  verifyRemoval(
-    ofSuffix: "?",
-    from: "?foo",
-    yields: "?foo"
-  )
-}
-
-@Test(
-  "`String+URITemplateSuffixManipulation` programatic mixtures",
-  .tags(.stringManipulation, .suffixManipulation)
-)
-private func progammaticMixtures() {
-  // note use of non-overlapping character sets to ensure not suffixes:
-  let suffixes: [String] = ["a", "b", "c", "ab", "ac", "bc", "abc"]
-  let targets: [String] = ["x", "y", "z", "xy", "xz", "yz", "xyz"]
-  for suffix in suffixes {
-    for target in targets {
-      // verify it's not a suffix:
-      #expect(!target.hasSuffix(suffix))
-      // this should thus be a no-op:
-      verifyRemoval(
-        ofSuffix: suffix,
-        from: target,
-        yields: target
-      )
-      // this, too, should thus be a no-op:
-      #expect(!(suffix+target).hasSuffix(suffix))
-      verifyRemoval(
-        ofSuffix: suffix,
-        from: (suffix + target),
-        yields: (suffix + target)
-      )
-      // whereas this *will* remove the unwanted suffix:
-      #expect((target + suffix).hasSuffix(suffix))
-      verifyRemoval(
-        ofSuffix: suffix,
-        from: (target + suffix),
-        yields: target
-      )
+  @Test
+  private func `canned examples`() {
+    verifyRemoval(
+      ofSuffix: "?",
+      from: "foo?",
+      yields: "foo"
+    )
+    verifyRemoval(
+      ofSuffix: "?",
+      from: "foo??",
+      yields: "foo?"
+    )
+    verifyRemoval(
+      ofSuffix: "??",
+      from: "foo??",
+      yields: "foo"
+    )
+    verifyRemoval(
+      ofSuffix: "?",
+      from: "?foo?",
+      yields: "?foo"
+    )
+    verifyRemoval(
+      ofSuffix: "?",
+      from: "?foo",
+      yields: "?foo"
+    )
+  }
+  
+  @Test
+  private func `programmatic mixtures`() {
+    // note use of non-overlapping character sets to ensure not suffixes:
+    let suffixes: [String] = ["a", "b", "c", "ab", "ac", "bc", "abc"]
+    let targets: [String] = ["x", "y", "z", "xy", "xz", "yz", "xyz"]
+    for suffix in suffixes {
+      for target in targets {
+        // verify it's not a suffix:
+        #expect(!target.hasSuffix(suffix))
+        // this should thus be a no-op:
+        verifyRemoval(
+          ofSuffix: suffix,
+          from: target,
+          yields: target
+        )
+        // this, too, should thus be a no-op:
+        #expect(!(suffix+target).hasSuffix(suffix))
+        verifyRemoval(
+          ofSuffix: suffix,
+          from: (suffix + target),
+          yields: (suffix + target)
+        )
+        // whereas this *will* remove the unwanted suffix:
+        #expect((target + suffix).hasSuffix(suffix))
+        verifyRemoval(
+          ofSuffix: suffix,
+          from: (target + suffix),
+          yields: target
+        )
+      }
     }
   }
+
 }
 
-// MARK: Verifications
+// MARK: - Verifications
 
 private func verifyRemoval(
   ofSuffix suffix: String,

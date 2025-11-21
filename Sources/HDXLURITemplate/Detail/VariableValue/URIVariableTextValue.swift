@@ -10,16 +10,13 @@ import Foundation
 /// string, but I'll need to re-read the spec to verify that there are, in fact,
 /// no actual invariants/constraints/etc. that we need to satisfy here.
 @usableFromInline
-internal struct URIVariableTextValue: RawRepresentable {
+package struct URIVariableTextValue: RawRepresentable {
 
   @usableFromInline
-  internal var rawValue: String
+  package var rawValue: String
   
   @inlinable
-  internal init(rawValue: String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(rawValue: String) {
     self.rawValue = rawValue
   }
 
@@ -28,7 +25,6 @@ internal struct URIVariableTextValue: RawRepresentable {
 // MARK: - Synthesized Conformances
 
 extension URIVariableTextValue : Sendable { }
-extension URIVariableTextValue : SendableMetatype { }
 extension URIVariableTextValue : Equatable { }
 extension URIVariableTextValue : Hashable { }
 
@@ -37,15 +33,11 @@ extension URIVariableTextValue : Hashable { }
 extension URIVariableTextValue : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URIVariableTextValue,
     rhs: URIVariableTextValue
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.rawValue < rhs.rawValue
+    lhs.rawValue < rhs.rawValue
   }
 
 }
@@ -56,7 +48,7 @@ extension URIVariableTextValue : Comparable {
 extension URIVariableTextValue : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String { rawValue }
+  package var description: String { rawValue }
   
 }
 
@@ -65,7 +57,7 @@ extension URIVariableTextValue : CustomStringConvertible {
 extension URIVariableTextValue : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     "URIVariableTextValue(rawValue: '\(rawValue)')"
   }
   
@@ -76,45 +68,17 @@ extension URIVariableTextValue : CustomDebugStringConvertible {
 extension URIVariableTextValue : Codable {
   
   @usableFromInline
-  internal func encode(to encoder: any Encoder) throws {
+  package func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
   
   @usableFromInline
-  internal init(from decoder: any Decoder) throws {
+  package init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
     self.init(rawValue: try container.decode(String.self))
   }
   
-}
-
-// MARK: - Expressible
-
-extension URIVariableTextValue : ExpressibleByStringLiteral {
-  @usableFromInline
-  typealias ExtendedGraphemeClusterLiteralType = String.ExtendedGraphemeClusterLiteralType
-  
-  @usableFromInline
-  typealias StringLiteralType = String.StringLiteralType
-  
-  @inlinable
-  internal init(unicodeScalarLiteral value: ExtendedGraphemeClusterLiteralType) {
-    self.init(rawValue: String(value))
-    precondition(isValid)
-  }
-  
-  @inlinable
-  internal init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
-    self.init(rawValue: String(value))
-    precondition(isValid)
-  }
-  
-  @inlinable
-  internal init(stringLiteral value: StringLiteralType) {
-    self.init(rawValue: String(value))
-    precondition(isValid)
-  }
 }
 
 // MARK: - Validatable
@@ -122,7 +86,7 @@ extension URIVariableTextValue : ExpressibleByStringLiteral {
 extension URIVariableTextValue {
   
   @inlinable
-  internal var isValid: Bool { true }
+  package var isValid: Bool { true }
   
 }
 
@@ -132,10 +96,10 @@ extension URIVariableTextValue {
   
   /// `true` iff we're wrapping an empty string.
   @inlinable
-  internal var isEmpty: Bool { rawValue.isEmpty }
+  package var isEmpty: Bool { rawValue.isEmpty }
   
   @usableFromInline
-  internal var errorMessageRepresentation: String {
+  package var errorMessageRepresentation: String {
     rawValue
   }
   

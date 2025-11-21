@@ -6,46 +6,44 @@ extension Tag {
   static var uriTemplateLiteralComponent: Self
 }
 
-@Test(
-  "`URITemplateLiteralComponent` test-fixture validation",
+@Suite(
+  "URITemplateLiteralComponent",
   .tags(.uriTemplateLiteralComponent)
 )
-private func textFixtureIsOk() {
-  verifyOrderedAscending(probeStrings)
-  verifyOrderedAscending(probes)
-  
-  verifyAllSatisfy(
-    probes,
-    explanation: "`URITemplateLiteralComponent.isValid` should be true for all test-fixture probes!",
-    predicate: \.isValid
-  )
-  verifyPairwiseDistinct(probes)
+struct URITemplateLiteralComponentTests {
+  @Test
+  private func `test-fixture validation`() {
+    verifyOrderedAscending(probeStrings)
+    verifyOrderedAscending(probes)
+    
+    verifyAllSatisfy(
+      probes,
+      explanation: "`URITemplateLiteralComponent.isValid` should be true for all test-fixture probes!",
+      predicate: \.isValid
+    )
+    verifyPairwiseDistinct(probes)
+  }
+
+
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.description
+    )
+  }
+
+  @Test
+  private func `unique debugDescription`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.debugDescription
+    )
+  }
+
 }
 
-
-@Test(
-  "`URITemplateLiteralComponent` has unique descriptions",
-  .tags(.uriTemplateLiteralComponent)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URITemplateLiteralComponent` has unique debugDescriptions",
-  .tags(.uriTemplateLiteralComponent)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.debugDescription
-  )
-}
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let probeStrings: [String] = [
   "a",

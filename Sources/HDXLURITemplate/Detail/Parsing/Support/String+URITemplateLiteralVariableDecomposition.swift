@@ -55,13 +55,11 @@ extension String {
     var ranges: [URITemplateChunkRange] = []
     for index in indices {
       let character = self[index]
-      #if HEAVY_DEBUG
       // rare, valid usage: we need to be able to advance `index` at least once,
       // and thus it's critical `index` never be `endIndex`. This should be true
       // as long as `enumerateIndices()` is implemented OK, but never hurts
       // to be careful (and to document the requiremnet in case I refactor).
-      pedanticPrecondition(index < endIndex)
-      #endif
+      assert(index < endIndex)
       switch (character, state) {
       case ("{", .literal):
         // finishing a literal, starting a expression;

@@ -2,22 +2,19 @@
 // MARK: URITemplateExpressionComponent
 
 @usableFromInline
-internal struct URITemplateExpressionComponent {
+package struct URITemplateExpressionComponent {
   
   @usableFromInline
-  internal var expansionType: URIValueExpansionType
+  package var expansionType: URIValueExpansionType
   
   @usableFromInline
-  internal var variables: [URITemplateVariable]
+  package var variables: [URITemplateVariable]
   
   @inlinable
-  internal init(
+  package init(
     expansionType: URIValueExpansionType,
     variable: URITemplateVariable
   ) {
-    #if HEAVY_DEBUG
-    pedanticAssert(variable.isValid)
-    #endif
     self.init(
       expansionType: expansionType,
       variables: [variable]
@@ -25,14 +22,10 @@ internal struct URITemplateExpressionComponent {
   }
 
   @inlinable
-  internal init(
+  package init(
     expansionType: URIValueExpansionType,
     variables: [URITemplateVariable]
   ) {
-#if HEAVY_DEBUG
-    pedanticAssert(variables.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid)}
-#endif
     self.expansionType = expansionType
     self.variables = variables
   }
@@ -42,7 +35,6 @@ internal struct URITemplateExpressionComponent {
 // MARK: - Synthesized Conformances
 
 extension URITemplateExpressionComponent: Sendable { }
-extension URITemplateExpressionComponent: SendableMetatype { }
 extension URITemplateExpressionComponent: Equatable { }
 extension URITemplateExpressionComponent: Hashable { }
 extension URITemplateExpressionComponent: Codable { }
@@ -52,14 +44,10 @@ extension URITemplateExpressionComponent: Codable { }
 extension URITemplateExpressionComponent : Comparable {
 
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateExpressionComponent,
     rhs: URITemplateExpressionComponent
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
     guard lhs.expansionType == rhs.expansionType else {
       return lhs.expansionType < rhs.expansionType
     }
@@ -73,7 +61,7 @@ extension URITemplateExpressionComponent : Comparable {
 extension URITemplateExpressionComponent : CustomStringConvertible {
   
   @inlinable
-  internal var description: String {
+  package var description: String {
     let variables = variables
       .lazy
       .map(\.description)
@@ -88,7 +76,7 @@ extension URITemplateExpressionComponent : CustomStringConvertible {
 extension URITemplateExpressionComponent : CustomDebugStringConvertible {
   
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     let variables = variables
       .lazy
       .map(\.debugDescription)
@@ -104,17 +92,17 @@ extension URITemplateExpressionComponent : CustomDebugStringConvertible {
 extension URITemplateExpressionComponent {
   
   @inlinable
-  internal var isEmpty: Bool {
+  package var isEmpty: Bool {
     variables.isEmpty
   }
   
   @inlinable
-  internal var count: Int {
+  package var count: Int {
     variables.count
   }
   
   @inlinable
-  internal var templateRepresentation: String {
+  package var templateRepresentation: String {
     let variables = variables
       .lazy
       .map(\.templateRepresentation)
@@ -123,7 +111,7 @@ extension URITemplateExpressionComponent {
   }
   
   @inlinable
-  internal func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
+  package func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     receiver.formUnion(variables)
   }
   
@@ -134,7 +122,7 @@ extension URITemplateExpressionComponent {
 extension URITemplateExpressionComponent {
   
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     variables.allSatisfy(\.isValid)
   }
   

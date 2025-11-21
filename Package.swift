@@ -17,6 +17,12 @@ let package = Package(
     .library(
       name: "HDXLURITemplate",
       targets: ["HDXLURITemplate"]
+    ),
+    .library(
+      name: "HDXLURITemplateObjC",
+      targets: [
+        "HDXLURITemplateObjC"
+      ]
     )
   ],
   dependencies: [ ],
@@ -27,10 +33,36 @@ let package = Package(
       name: "HDXLURITemplate",
       dependencies: []
     ),
+    .target(
+      name: "HDXLURITemplateObjC",
+      dependencies: [
+        "HDXLURITemplate"
+      ]
+    ),
     .testTarget(
       name: "HDXLURITemplateTests",
       dependencies: [
         "HDXLURITemplate", 
+      ],
+      resources: [
+        Resource.copy(
+          "Resources/extended-tests.json"
+        ),
+        Resource.copy(
+          "Resources/negative-tests.json"
+        ),
+        Resource.copy(
+          "Resources/spec-examples.json"
+        ),
+        Resource.copy(
+          "Resources/spec-examples-by-section.json"
+        )
+      ]
+    ),
+    .testTarget(
+      name: "HDXLURITemplateObjCTests",
+      dependencies: [
+        "HDXLURITemplateObjC"
       ],
       resources: [
         Resource.copy(

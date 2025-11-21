@@ -3,24 +3,19 @@ import Foundation
 // MARK: URITemplateLiteralComponent
 
 @usableFromInline
-internal struct URITemplateLiteralComponent: RawRepresentable {
+package struct URITemplateLiteralComponent: RawRepresentable {
   
   @usableFromInline
-  internal typealias Storage = String
+  package typealias Storage = String
   
   @usableFromInline
-  internal var rawValue: Storage
+  package var rawValue: Storage
   
   @usableFromInline
-  internal static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
+  package static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
   
   @inlinable
-  internal init(rawValue: Storage) {
-#if HEAVY_DEBUG
-    pedanticAssert(!storage.isEmpty)
-    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(rawValue: Storage) {
     self.rawValue = rawValue
   }
   
@@ -29,7 +24,6 @@ internal struct URITemplateLiteralComponent: RawRepresentable {
 // MARK: - Synthesized Conformances
 
 extension URITemplateLiteralComponent : Sendable { }
-extension URITemplateLiteralComponent : SendableMetatype { }
 extension URITemplateLiteralComponent : Equatable { }
 extension URITemplateLiteralComponent : Hashable { }
 
@@ -38,15 +32,11 @@ extension URITemplateLiteralComponent : Hashable { }
 extension URITemplateLiteralComponent : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateLiteralComponent,
     rhs: URITemplateLiteralComponent
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.rawValue < rhs.rawValue
+    lhs.rawValue < rhs.rawValue
   }
   
 }
@@ -56,7 +46,7 @@ extension URITemplateLiteralComponent : Comparable {
 extension URITemplateLiteralComponent : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String { rawValue }
+  package var description: String { rawValue }
   
 }
 
@@ -65,7 +55,7 @@ extension URITemplateLiteralComponent : CustomStringConvertible {
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     "URITemplateLiteralComponent(storage: \"\(rawValue)\")"
   }
   
@@ -76,13 +66,13 @@ extension URITemplateLiteralComponent : CustomDebugStringConvertible {
 extension URITemplateLiteralComponent : Codable {
   
   @inlinable
-  func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
   
   @inlinable
-  init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let rawValue = try container.decode(String.self)
     guard Self.validationRegularExpression.matchesEntirety(of: rawValue) else {
@@ -101,7 +91,7 @@ extension URITemplateLiteralComponent : Codable {
 extension URITemplateLiteralComponent {
   
   @inlinable
-  internal static func prepareValidationRegularExpression() throws -> NSRegularExpression {
+  package static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     /*
      The characters outside of expressions in a URI Template string are
      intended to be copied literally to the URI reference if the character
@@ -172,7 +162,7 @@ extension URITemplateLiteralComponent {
 extension URITemplateLiteralComponent {
   
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     !rawValue.isEmpty
     &&
     URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(

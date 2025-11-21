@@ -14,9 +14,6 @@ extension String {
   /// we use it for within the URI template implementation.
   @inlinable
   internal func constrained(toCodePointCount codePointCount: Int) -> String {
-    #if HEAVY_DEBUG
-    pedanticAssert(codePointCount >= 0)
-    #endif
     guard codePointCount >= 0 else {
       return ""
     }
@@ -43,9 +40,6 @@ extension String {
   /// we use it for within the URI template implementation.
   @inlinable
   internal mutating func constrain(toCodePointCount codePointCount: Int) {
-#if HEAVY_DEBUG
-    pedanticAssert(codePointCount >= 0)
-#endif
     self = constrained(toCodePointCount: codePointCount)
   }
   

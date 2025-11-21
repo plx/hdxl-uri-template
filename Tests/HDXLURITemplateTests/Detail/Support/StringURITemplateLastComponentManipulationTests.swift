@@ -6,50 +6,52 @@ extension Tag {
   static var lastComponentManipulation: Self
 }
 
-@Test(
-  "`String+URITemplateLastComponentManipulation` degenerate scenarios",
-  .tags(.stringManipulation, .lastComponentManipulation)
-)
-private func checkDegenerateLastComponentManipulationScenarios() {
-  // all-empty
-  verifyLastComponent(
-    of: "",
-    forSeparator: "",
-    yields: nil
-  )
-  verifyRemovingLastComponent(
-    of: "",
-    forSeparator: "",
-    yields: ""
-  )
-  
-  // empty-target
-  verifyLastComponent(
-    of: "",
-    forSeparator: ",",
-    yields: nil
-  )
-  verifyRemovingLastComponent(
-    of: "",
-    forSeparator: ",",
-    yields: ""
-  )
-  
-  // empty-separator
-  verifyLastComponent(
-    of: "abc",
-    forSeparator: "",
-    yields: nil
-  )
-  verifyRemovingLastComponent(
-    of: "abc",
-    forSeparator: "",
-    yields: "abc"
-  )
+@Suite(.tags(.stringManipulation, .lastComponentManipulation))
+struct StringLastComponentManipulationTests {
+
+  @Test
+  private func `degenerate scenarios`() {
+    // all-empty
+    verifyLastComponent(
+      of: "",
+      forSeparator: "",
+      yields: nil
+    )
+    verifyRemovingLastComponent(
+      of: "",
+      forSeparator: "",
+      yields: ""
+    )
+    
+    // empty-target
+    verifyLastComponent(
+      of: "",
+      forSeparator: ",",
+      yields: nil
+    )
+    verifyRemovingLastComponent(
+      of: "",
+      forSeparator: ",",
+      yields: ""
+    )
+    
+    // empty-separator
+    verifyLastComponent(
+      of: "abc",
+      forSeparator: "",
+      yields: nil
+    )
+    verifyRemovingLastComponent(
+      of: "abc",
+      forSeparator: "",
+      yields: "abc"
+    )
+    
+  }
   
 }
 
-// MARK: Verifications
+// MARK: - Verifications
 
 private func verifyLastComponent(
   of target: String,

@@ -2,7 +2,7 @@
 extension Optional {
 
   @inlinable
-  mutating func obtainAssuredValue(
+  mutating package func obtainAssuredValue(
     guaranteedBy fallback: @autoclosure () -> Wrapped
   ) -> Wrapped {
     switch self {

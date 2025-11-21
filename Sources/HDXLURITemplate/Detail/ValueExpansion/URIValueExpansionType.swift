@@ -3,7 +3,7 @@ import Foundation
 // MARK: URIValueExpansionType -
 
 @usableFromInline
-internal enum URIValueExpansionType : UInt8 {
+package enum URIValueExpansionType : UInt8 {
     
   case simple = 1
   case reserved = 2
@@ -19,7 +19,6 @@ internal enum URIValueExpansionType : UInt8 {
 // MARK: - Synthesized Conformances
 
 extension URIValueExpansionType : Sendable { }
-extension URIValueExpansionType : SendableMetatype { }
 extension URIValueExpansionType : Equatable { }
 extension URIValueExpansionType : Hashable { }
 extension URIValueExpansionType : Codable { }
@@ -30,7 +29,7 @@ extension URIValueExpansionType : CaseIterable { }
 extension URIValueExpansionType : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: Self,
     rhs: Self
   ) -> Bool {
@@ -44,7 +43,7 @@ extension URIValueExpansionType : Comparable {
 extension URIValueExpansionType : CustomStringConvertible {
   
   @inlinable
-  internal var description: String {
+  package var description: String {
     switch self {
     case .simple:
       "simple"
@@ -71,7 +70,7 @@ extension URIValueExpansionType : CustomStringConvertible {
 extension URIValueExpansionType : CustomDebugStringConvertible {
   
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .simple:
       "URIValueExpansionType.simple"
@@ -99,7 +98,7 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
 extension URIValueExpansionType {
   
   @inlinable
-  internal var isQueryExpansionType: Bool {
+  package var isQueryExpansionType: Bool {
     switch self {
     case .query, .queryContinuation:
       true
@@ -109,7 +108,7 @@ extension URIValueExpansionType {
   }
   
   @inlinable
-  internal var formatString: String {
+  package var formatString: String {
     switch self {
     case .simple:
       .simpleFormatString
@@ -131,7 +130,7 @@ extension URIValueExpansionType {
   }
   
   @inlinable
-  internal var prefixForExpandedVariableList: String {
+  package var prefixForExpandedVariableList: String {
     switch self {
     case .simple:
       .simplePrefixForExpandedVariableList
@@ -153,7 +152,7 @@ extension URIValueExpansionType {
   }
   
   @inlinable
-  internal var separatorForExpandedVariableList: String {
+  package var separatorForExpandedVariableList: String {
     switch self {
     case .simple:
       .simpleSeparatorForExpandedVariableList
@@ -176,7 +175,7 @@ extension URIValueExpansionType {
   
   
   @inlinable
-  internal init?(formatString: String) {
+  package init?(formatString: String) {
     switch formatString {
     case .simpleFormatString:
       self = .simple

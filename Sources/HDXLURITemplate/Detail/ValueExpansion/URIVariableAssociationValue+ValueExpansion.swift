@@ -13,11 +13,7 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(templateVariable.isValid)
-    pedanticAssert(isValid)
-#endif
-    return try expansion(
+    try expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -30,11 +26,6 @@ extension URIVariableAssociationValue {
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
     guard !isEmpty else {
       return ""
     }
@@ -62,11 +53,7 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
-    return try storage
+    try storage
       .lazy
       .map {
         pair
@@ -105,10 +92,6 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
     let joinedValues = try storage
       .lazy
       .map {

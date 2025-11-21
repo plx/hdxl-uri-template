@@ -2,9 +2,6 @@
 build-debug:
     swift build -c debug -q
 
-build-heavy-debug:
-    swift build -c debug -q -Xswiftc -DHEAVY_DEBUG 
-
 build-release:
     swift build -c release -q
 

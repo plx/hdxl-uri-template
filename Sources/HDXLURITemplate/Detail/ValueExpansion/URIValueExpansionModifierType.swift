@@ -14,7 +14,6 @@ internal enum URIValueExpansionModifierType : UInt8 {
 // MARK: - Synthesized Conformances
 
 extension URIValueExpansionModifierType : Sendable { }
-extension URIValueExpansionModifierType : SendableMetatype { }
 extension URIValueExpansionModifierType : Equatable { }
 extension URIValueExpansionModifierType : Hashable { }
 extension URIValueExpansionModifierType : CaseIterable { }

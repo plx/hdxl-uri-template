@@ -22,7 +22,6 @@ public enum URIVariableValueType : UInt8 {
 // MARK: - Synthesized Conformances
 
 extension URIVariableValueType : Sendable { }
-extension URIVariableValueType : SendableMetatype { }
 extension URIVariableValueType : Equatable { }
 extension URIVariableValueType : Hashable { }
 extension URIVariableValueType : Codable { }

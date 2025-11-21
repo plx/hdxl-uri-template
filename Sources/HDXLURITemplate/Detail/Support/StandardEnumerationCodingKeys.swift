@@ -1,29 +1,25 @@
-//
-//  StandardEnumerationCodingKeys.swift
-//
-
 import Foundation
 
 @usableFromInline
-internal enum StandardEnumerationCodingKeys : String, CodingKey, CaseIterable {
+package enum StandardEnumerationCodingKeys : String, CodingKey, CaseIterable {
   
   case type = "type"
   case data = "data"
   
   @inlinable
-  internal var intValue: Int? {
+  package var intValue: Int? {
     get {
       switch self {
       case .type:
-        return 0
+        0
       case .data:
-        return 1
+        1
       }
     }
   }
   
   @inlinable
-  internal init?(intValue: Int) {
+  package init?(intValue: Int) {
     switch intValue {
     case 0:
       self = .type
@@ -35,9 +31,9 @@ internal enum StandardEnumerationCodingKeys : String, CodingKey, CaseIterable {
   }
   
   @usableFromInline
-  internal typealias AllCases = [StandardEnumerationCodingKeys]
+  package typealias AllCases = [StandardEnumerationCodingKeys]
   
   @usableFromInline
-  internal static let allCases: AllCases = [ .type, .data ]
+  package static let allCases: AllCases = [ .type, .data ]
   
 }
