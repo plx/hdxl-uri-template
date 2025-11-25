@@ -116,4 +116,8 @@ public final class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureC
   @objc
   public class var supportsSecureCoding: Bool { true }
 
+  // MARK: - Evaluation
+  
+  
+
 }

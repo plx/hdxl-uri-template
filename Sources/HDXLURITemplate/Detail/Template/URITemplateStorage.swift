@@ -168,7 +168,7 @@ internal final class URITemplateStorage {
     cachedFieldLock.precondition(.owner)
     return _variableNames.obtainAssuredValue(
       guaranteedBy: Set(
-        templateVariables
+        _withLockTemplateVariables
           .lazy
           .map(\.variableName.rawValue)
       )

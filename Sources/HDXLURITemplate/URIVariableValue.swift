@@ -80,9 +80,9 @@ public struct URIVariableValue {
     ifFalse falseRepresentation: @autoclosure () -> String
   ) -> Self {
     let textRepresentation = switch boolValue {
-    case false:
-      trueRepresentation()
     case true:
+      trueRepresentation()
+    case false:
       falseRepresentation()
     }
     

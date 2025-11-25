@@ -54,7 +54,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
 
   @objc
   public var isUndefinedVariableValue: Bool {
-    variableValue.isDefined
+    !variableValue.isDefined
   }
 
   @objc
@@ -445,7 +445,7 @@ extension URIVariableValueWrapper {
     capitalization: URIVariableValue.BooleanCapitalization
   ) -> Self {
     Self(
-      variableValue: URIVariableValue.trueOrFalse(
+      variableValue: URIVariableValue.yOrN(
         boolValue: boolValue,
         capitalization: capitalization
       )

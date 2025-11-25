@@ -83,7 +83,7 @@ extension URITemplate : CustomStringConvertible {
   
   @inlinable
   public var description: String {
-    storage.description
+    templateRepresentation
   }
   
 }
