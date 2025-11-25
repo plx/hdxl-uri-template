@@ -22,13 +22,6 @@ extension URITemplateComponent : Codable {}
 
 extension URITemplateComponent : Comparable {
 
-  /// Compares two components, with literals ordered before expressions.
-  ///
-  /// - Parameters:
-  ///   - lhs: The left-hand side component.
-  ///   - rhs: The right-hand side component.
-  ///
-  /// - Returns: `true` if `lhs` is ordered before `rhs`.
   @inlinable
   package static func <(
     lhs: URITemplateComponent,
@@ -51,7 +44,6 @@ extension URITemplateComponent : Comparable {
 
 extension URITemplateComponent : CustomStringConvertible {
 
-  /// A textual representation of the component.
   @usableFromInline
   package var description: String {
     switch self {
@@ -68,7 +60,6 @@ extension URITemplateComponent : CustomStringConvertible {
 
 extension URITemplateComponent : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the component.
   @usableFromInline
   package var debugDescription: String {
     switch self {

@@ -25,7 +25,6 @@ extension URITemplate {
       self.underlyingError = underlyingError
     }
 
-    /// A localized description of the evaluation error.
     public var localizedDescription: String {
       let baseMessage =
       """

@@ -43,7 +43,6 @@ extension URITemplateVariable : Codable { }
 
 extension URITemplateVariable : Comparable {
 
-  /// Compares two variables by name, then by expansion modifier.
   @inlinable
   package static func <(
     lhs: URITemplateVariable,
@@ -62,7 +61,6 @@ extension URITemplateVariable : Comparable {
 
 extension URITemplateVariable : CustomStringConvertible {
 
-  /// A textual representation showing the variable name and modifier.
   @usableFromInline
   package var description: String {
     "\"\(variableName)\", \(expansionModifier.description)"
@@ -74,7 +72,6 @@ extension URITemplateVariable : CustomStringConvertible {
 
 extension URITemplateVariable : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the variable.
   @usableFromInline
   package var debugDescription: String {
     "URITemplateVariable(variableName: \(String(reflecting: variableName)), expansionModifier: \(String(reflecting: expansionModifier)))"

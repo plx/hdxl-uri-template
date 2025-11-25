@@ -23,7 +23,6 @@ extension URITemplate {
       self.underlyingError = underlyingError
     }
 
-    /// A localized description of the parsing error.
     public var localizedDescription: String {
       """
       Couldn't parse template-string "\(template)" due to underlying-error: \(underlyingError.bestAvailableExplanation)

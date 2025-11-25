@@ -41,7 +41,6 @@ extension URITemplateLiteralComponent : Hashable { }
 
 extension URITemplateLiteralComponent : Comparable {
 
-  /// Compares two literal components lexicographically.
   @inlinable
   package static func <(
     lhs: URITemplateLiteralComponent,
@@ -56,7 +55,6 @@ extension URITemplateLiteralComponent : Comparable {
 
 extension URITemplateLiteralComponent : CustomStringConvertible {
 
-  /// The literal string value.
   @usableFromInline
   package var description: String { rawValue }
 
@@ -66,7 +64,6 @@ extension URITemplateLiteralComponent : CustomStringConvertible {
 
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the literal component.
   @usableFromInline
   package var debugDescription: String {
     "URITemplateLiteralComponent(storage: \"\(rawValue)\")"

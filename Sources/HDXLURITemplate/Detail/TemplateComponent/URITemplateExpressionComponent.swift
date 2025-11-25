@@ -55,7 +55,6 @@ extension URITemplateExpressionComponent: Codable { }
 
 extension URITemplateExpressionComponent : Comparable {
 
-  /// Compares two expression components by expansion type, then by variables.
   @inlinable
   package static func <(
     lhs: URITemplateExpressionComponent,
@@ -73,7 +72,6 @@ extension URITemplateExpressionComponent : Comparable {
 
 extension URITemplateExpressionComponent : CustomStringConvertible {
 
-  /// A textual representation of the expression component.
   @inlinable
   package var description: String {
     let variables = variables
@@ -89,7 +87,6 @@ extension URITemplateExpressionComponent : CustomStringConvertible {
 
 extension URITemplateExpressionComponent : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the expression component.
   @inlinable
   package var debugDescription: String {
     let variables = variables

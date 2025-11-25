@@ -53,13 +53,6 @@ extension URIScalarVariableValue : Hashable { }
 
 extension URIScalarVariableValue : Comparable {
 
-  /// Compares two scalar values lexicographically.
-  ///
-  /// - Parameters:
-  ///   - lhs: The left-hand side value.
-  ///   - rhs: The right-hand side value.
-  ///
-  /// - Returns: `true` if `lhs` is lexicographically less than `rhs`.
   @inlinable
   public static func <(
     lhs: URIScalarVariableValue,
@@ -74,7 +67,6 @@ extension URIScalarVariableValue : Comparable {
 
 extension URIScalarVariableValue : CustomStringConvertible {
 
-  /// The underlying text value.
   @inlinable
   public var description: String {
     storage.description
@@ -86,7 +78,6 @@ extension URIScalarVariableValue : CustomStringConvertible {
 
 extension URIScalarVariableValue : CustomDebugStringConvertible {
 
-  /// A detailed debug description showing the storage representation.
   @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"

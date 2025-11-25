@@ -66,14 +66,7 @@ extension URITemplate : Codable { }
 // MARK: - Comparable
 
 extension URITemplate : Comparable {
-  
-  /// Compares two templates lexicographically by their template representations.
-  ///
-  /// - Parameters:
-  ///   - lhs: The left-hand side template.
-  ///   - rhs: The right-hand side template.
-  ///
-  /// - Returns: `true` if `lhs` is lexicographically less than `rhs`.
+
   @inlinable
   public static func <(
     lhs: URITemplate,
@@ -88,7 +81,6 @@ extension URITemplate : Comparable {
 
 extension URITemplate : CustomStringConvertible {
 
-  /// The template representation string.
   @inlinable
   public var description: String {
     templateRepresentation
@@ -100,7 +92,6 @@ extension URITemplate : CustomStringConvertible {
 
 extension URITemplate : CustomDebugStringConvertible {
 
-  /// A detailed debug description including storage and template representation.
   @inlinable
   public var debugDescription: String {
     "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"

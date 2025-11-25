@@ -23,7 +23,6 @@ extension URITemplateComponentType : CaseIterable { }
 
 extension URITemplateComponentType : Comparable {
 
-  /// Compares two component types by their raw values.
   @inlinable
   package static func <(
     lhs: URITemplateComponentType,
@@ -38,7 +37,6 @@ extension URITemplateComponentType : Comparable {
 
 extension URITemplateComponentType : CustomStringConvertible {
 
-  /// A textual representation of the component type.
   @usableFromInline
   package var description: String {
     switch self {
@@ -55,7 +53,6 @@ extension URITemplateComponentType : CustomStringConvertible {
 
 extension URITemplateComponentType : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the component type.
   @usableFromInline
   package var debugDescription: String {
     switch self {

@@ -41,7 +41,6 @@ extension URITemplateVariableName : Hashable { }
 
 extension URITemplateVariableName : Comparable {
 
-  /// Compares two variable names lexicographically.
   @inlinable
   package static func <(
     lhs: URITemplateVariableName,
@@ -56,7 +55,6 @@ extension URITemplateVariableName : Comparable {
 
 extension URITemplateVariableName : CustomStringConvertible {
 
-  /// The variable name string.
   @inlinable
   package var description: String {
     rawValue
@@ -68,7 +66,6 @@ extension URITemplateVariableName : CustomStringConvertible {
 
 extension URITemplateVariableName : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the variable name.
   @inlinable
   package var debugDescription: String {
     "URITemplateVariableName(rawValue: \"\(rawValue)\")"

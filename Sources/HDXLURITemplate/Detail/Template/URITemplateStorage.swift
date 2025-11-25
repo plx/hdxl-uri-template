@@ -214,7 +214,6 @@ extension URITemplateStorage: @unchecked Sendable { }
 
 extension URITemplateStorage : Equatable {
 
-  /// Compares two storages for equality by their components.
   @inlinable
   internal static func ==(
     lhs: URITemplateStorage,
@@ -232,7 +231,6 @@ extension URITemplateStorage : Equatable {
 
 extension URITemplateStorage : Comparable {
 
-  /// Compares two storages lexicographically by their template representations.
   @inlinable
   internal static func <(
     lhs: URITemplateStorage,
@@ -250,7 +248,6 @@ extension URITemplateStorage : Comparable {
 
 extension URITemplateStorage : Hashable {
 
-  /// Hashes the storage by its components.
   @inlinable
   internal func hash(into hasher: inout Hasher) {
     components.hash(into: &hasher)
@@ -262,7 +259,6 @@ extension URITemplateStorage : Hashable {
 
 extension URITemplateStorage : CustomStringConvertible {
 
-  /// A textual representation of the storage.
   @usableFromInline
   internal var description: String {
     "storage for uri template: \"\(templateRepresentation)\""
@@ -274,7 +270,6 @@ extension URITemplateStorage : CustomStringConvertible {
 
 extension URITemplateStorage : CustomDebugStringConvertible {
 
-  /// A detailed debug description showing all components.
   @usableFromInline
   internal var debugDescription: String {
     let components = components

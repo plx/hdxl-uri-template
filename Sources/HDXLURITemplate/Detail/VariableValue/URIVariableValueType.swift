@@ -35,7 +35,6 @@ extension URIVariableValueType : CaseIterable { }
 
 extension URIVariableValueType : Comparable {
 
-  /// Compares two value types by their raw values.
   @inlinable
   public static func <(
     lhs: URIVariableValueType,
@@ -50,7 +49,6 @@ extension URIVariableValueType : Comparable {
 
 extension URIVariableValueType : CustomStringConvertible {
 
-  /// A textual representation of the value type.
   @inlinable
   public var description: String {
     switch self {
@@ -71,7 +69,6 @@ extension URIVariableValueType : CustomStringConvertible {
 
 extension URIVariableValueType : CustomDebugStringConvertible {
 
-  /// A detailed debug description of the value type.
   @inlinable
   public var debugDescription: String {
     switch self {

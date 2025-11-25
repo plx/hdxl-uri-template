@@ -312,15 +312,6 @@ extension URIVariableValue : Hashable { }
 
 extension URIVariableValue : Comparable {
 
-  /// Compares two values structurally by flavor, then content.
-  ///
-  /// - Parameters:
-  ///   - lhs: The left-hand side value.
-  ///   - rhs: The right-hand side value.
-  ///
-  /// - Returns: `true` if `lhs` is structurally less than `rhs`.
-  ///
-  /// - Note: This is a *structural* comparison, not semantic.
   @inlinable
   public static func <(
     lhs: URIVariableValue,
@@ -335,7 +326,6 @@ extension URIVariableValue : Comparable {
 
 extension URIVariableValue : CustomStringConvertible {
 
-  /// A textual representation of the value.
   @inlinable
   public var description: String {
     storage.description
@@ -347,7 +337,6 @@ extension URIVariableValue : CustomStringConvertible {
 
 extension URIVariableValue : CustomDebugStringConvertible {
 
-  /// A detailed debug description showing the storage representation.
   @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"
