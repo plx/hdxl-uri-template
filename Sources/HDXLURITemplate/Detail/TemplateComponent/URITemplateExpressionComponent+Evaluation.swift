@@ -1,6 +1,12 @@
-
 extension URITemplateExpressionComponent {
-  
+
+  /// Evaluates this expression component with the given parameters.
+  ///
+  /// - Parameter parameters: A dictionary mapping variable names to their values.
+  ///
+  /// - Returns: The expanded string for this expression.
+  ///
+  /// - Throws: An error if variable evaluation fails.
   @inlinable
   package func evaluate(parameters: [String: URIVariableValue]) throws -> String {
     var expansions: [String] = []

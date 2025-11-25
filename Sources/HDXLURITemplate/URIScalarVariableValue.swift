@@ -1,7 +1,12 @@
 import Foundation
 
-// MARK: URIVariableValue
+// MARK: URIScalarVariableValue
 
+/// A lightweight wrapper for single text values, used primarily in array and dictionary literals.
+///
+/// This type serves as the element type for `URIVariableValue`'s `ExpressibleByArrayLiteral`
+/// and dictionary literal conformances, enabling concise syntax like `["a", "b", "c"]` for lists
+/// and `["key": "value"]` for associations.
 public struct URIScalarVariableValue {
   
   // MARK: - Primary Properties
@@ -24,7 +29,11 @@ public struct URIScalarVariableValue {
   
   // MARK: - Public Constructors
   
-  /// Constructs a `.text`-flavored `URIVariableValue` wrapping `text`.
+  /// Constructs a scalar value wrapping `text`.
+  ///
+  /// - Parameter text: The string value to wrap.
+  ///
+  /// - Returns: A scalar value containing the text.
   @inlinable
   public static func text(_ text: String) -> Self {
     Self(
@@ -43,7 +52,14 @@ extension URIScalarVariableValue : Hashable { }
 // MARK: - Comparable
 
 extension URIScalarVariableValue : Comparable {
-  
+
+  /// Compares two scalar values lexicographically.
+  ///
+  /// - Parameters:
+  ///   - lhs: The left-hand side value.
+  ///   - rhs: The right-hand side value.
+  ///
+  /// - Returns: `true` if `lhs` is lexicographically less than `rhs`.
   @inlinable
   public static func <(
     lhs: URIScalarVariableValue,
@@ -51,48 +67,60 @@ extension URIScalarVariableValue : Comparable {
   ) -> Bool {
     lhs.storage < rhs.storage
   }
-  
+
 }
 
 // MARK: - CustomStringConvertible
 
 extension URIScalarVariableValue : CustomStringConvertible {
-  
+
+  /// The underlying text value.
   @inlinable
   public var description: String {
     storage.description
   }
-  
+
 }
 
 // MARK: - CustomDebugStringConvertible
 
 extension URIScalarVariableValue : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description showing the storage representation.
   @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"
   }
-  
+
 }
 
 // MARK: - Codable
 
 extension URIScalarVariableValue : Codable {
-  
+
+  /// Encodes this value into the given encoder.
+  ///
+  /// - Parameter encoder: The encoder to write data to.
+  ///
+  /// - Throws: An error if encoding fails.
   @inlinable
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(storage)
   }
-  
+
+  /// Creates a new instance by decoding from the given decoder.
+  ///
+  /// - Parameter decoder: The decoder to read data from.
+  ///
+  /// - Throws: An error if decoding fails.
   @inlinable
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let storage = try container.decode(Storage.self)
     self.init(storage: storage)
   }
-  
+
 }
 
 // MARK: - Core API

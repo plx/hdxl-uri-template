@@ -1,19 +1,30 @@
 import Foundation
 
-// MARK: URIValueExpansionType -
+// MARK: URIValueExpansionType
 
+/// The expansion type for URI template variables, as defined by RFC 6570.
+///
+/// Each type determines how variables are expanded and what characters are allowed/encoded.
 @usableFromInline
 package enum URIValueExpansionType : UInt8 {
-    
+
+  /// Simple string expansion (no operator prefix).
   case simple = 1
+  /// Reserved expansion (`+` operator) - allows reserved characters.
   case reserved = 2
+  /// Fragment expansion (`#` operator) - begins with `#`.
   case fragment = 4
+  /// Label expansion (`.` operator) - dot-separated.
   case label = 8
+  /// Path segment expansion (`/` operator) - slash-separated.
   case pathSegment = 16
+  /// Path parameter expansion (`;` operator) - semicolon-separated with name.
   case pathParameter = 32
+  /// Query expansion (`?` operator) - begins with `?`.
   case query = 64
+  /// Query continuation expansion (`&` operator) - begins with `&`.
   case queryContinuation = 128
-  
+
 }
 
 // MARK: - Synthesized Conformances

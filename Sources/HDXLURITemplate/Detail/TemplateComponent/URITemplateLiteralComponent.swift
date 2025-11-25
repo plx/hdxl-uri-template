@@ -2,23 +2,33 @@ import Foundation
 
 // MARK: URITemplateLiteralComponent
 
+/// Represents a literal text component in a URI template.
+///
+/// Literal components are copied verbatim to the expanded URI, subject to
+/// RFC 6570 character restrictions.
 @usableFromInline
 package struct URITemplateLiteralComponent: RawRepresentable {
-  
+
+  /// The storage type for the raw value.
   @usableFromInline
   package typealias Storage = String
-  
+
+  /// The literal string value.
   @usableFromInline
   package var rawValue: Storage
-  
+
+  /// Regular expression for validating literal content per RFC 6570.
   @usableFromInline
   package static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
-  
+
+  /// Creates a literal component with the given raw value.
+  ///
+  /// - Parameter rawValue: The literal string.
   @inlinable
   package init(rawValue: Storage) {
     self.rawValue = rawValue
   }
-  
+
 }
 
 // MARK: - Synthesized Conformances
@@ -30,7 +40,8 @@ extension URITemplateLiteralComponent : Hashable { }
 // MARK: - Comparable
 
 extension URITemplateLiteralComponent : Comparable {
-  
+
+  /// Compares two literal components lexicographically.
   @inlinable
   package static func <(
     lhs: URITemplateLiteralComponent,
@@ -38,39 +49,49 @@ extension URITemplateLiteralComponent : Comparable {
   ) -> Bool {
     lhs.rawValue < rhs.rawValue
   }
-  
+
 }
 
 // MARK: - CustomStringConvertible
 
 extension URITemplateLiteralComponent : CustomStringConvertible {
-  
+
+  /// The literal string value.
   @usableFromInline
   package var description: String { rawValue }
-  
+
 }
 
 // MARK: - CustomDebugStringConvertible
 
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description of the literal component.
   @usableFromInline
   package var debugDescription: String {
     "URITemplateLiteralComponent(storage: \"\(rawValue)\")"
   }
-  
+
 }
 
 // MARK: - Codable
 
 extension URITemplateLiteralComponent : Codable {
-  
+
+  /// Encodes this literal component.
+  ///
+  /// - Parameter encoder: The encoder to write data to.
   @inlinable
   package func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
-  
+
+  /// Creates a literal component by decoding from the given decoder.
+  ///
+  /// - Parameter decoder: The decoder to read data from.
+  ///
+  /// - Throws: `DataValidationError` if the decoded string is not valid literal content.
   @inlinable
   package init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -89,7 +110,10 @@ extension URITemplateLiteralComponent : Codable {
 // MARK: - Validation Support
 
 extension URITemplateLiteralComponent {
-  
+
+  /// Prepares the validation regular expression for literal content per RFC 6570.
+  ///
+  /// - Returns: An `NSRegularExpression` matching valid URI literal characters.
   @inlinable
   package static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     /*
@@ -160,7 +184,8 @@ extension URITemplateLiteralComponent {
 // MARK: - Validatable
 
 extension URITemplateLiteralComponent {
-  
+
+  /// Indicates whether this literal component is valid (non-empty and RFC 6570 compliant).
   @inlinable
   package var isValid: Bool {
     !rawValue.isEmpty
@@ -169,5 +194,5 @@ extension URITemplateLiteralComponent {
       of: rawValue
     )
   }
-  
+
 }

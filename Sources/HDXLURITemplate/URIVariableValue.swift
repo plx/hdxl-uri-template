@@ -64,14 +64,26 @@ public struct URIVariableValue {
     )
   }
 
+  /// Controls capitalization of boolean text representations.
   @objc(URIVariableValueBooleanCapitalization)
   public enum BooleanCapitalization: Int {
+    /// Lowercase representation (e.g., "true", "false").
     case lowercase
+    /// Capitalized representation (e.g., "True", "False").
     case capitalized
+    /// All-caps representation (e.g., "TRUE", "FALSE").
     case allCaps
   }
   
   /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `trueRepresentation` or `falseRepresentation`.
+  ///
+  /// - Parameters:
+  ///   - boolValue: The boolean value to represent.
+  ///   - capitalization: The capitalization style to apply.
+  ///   - trueRepresentation: The string to use when `boolValue` is `true`.
+  ///   - falseRepresentation: The string to use when `boolValue` is `false`.
+  ///
+  /// - Returns: A text-flavored value with the appropriate representation.
   @inlinable
   public static func boolean(
     _ boolValue: Bool,
@@ -99,6 +111,12 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `true` or `false`.
+  ///
+  /// - Parameters:
+  ///   - boolValue: The boolean value to represent.
+  ///   - capitalization: The capitalization style to apply.
+  ///
+  /// - Returns: A text-flavored value with "true" or "false".
   @inlinable
   public static func trueOrFalse(
     boolValue: Bool,
@@ -113,6 +131,12 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `yes` or `no`.
+  ///
+  /// - Parameters:
+  ///   - boolValue: The boolean value to represent.
+  ///   - capitalization: The capitalization style to apply.
+  ///
+  /// - Returns: A text-flavored value with "yes" or "no".
   @inlinable
   public static func yesOrNo(
     boolValue: Bool,
@@ -127,6 +151,12 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `y` or `n`.
+  ///
+  /// - Parameters:
+  ///   - boolValue: The boolean value to represent.
+  ///   - capitalization: The capitalization style to apply (defaults to `.allCaps`).
+  ///
+  /// - Returns: A text-flavored value with "y" or "n".
   @inlinable
   public static func yOrN(
     boolValue: Bool,
@@ -141,6 +171,10 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` representing `boolValue` as `1` or `0`.
+  ///
+  /// - Parameter boolValue: The boolean value to represent.
+  ///
+  /// - Returns: A text-flavored value with "1" or "0".
   @inlinable
   public static func zeroOrOne(boolValue: Bool) -> Self {
     boolean(
@@ -152,6 +186,10 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` by converting `integer` to a `String`.
+  ///
+  /// - Parameter integer: The integer value to convert.
+  ///
+  /// - Returns: A text-flavored value with the integer's string representation.
   @inlinable
   public static func integer<T>(
     _ integer: T
@@ -162,6 +200,12 @@ public struct URIVariableValue {
   }
   
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `number` as formatted-by `style`.
+  ///
+  /// - Parameters:
+  ///   - number: The integer value to format.
+  ///   - style: The format style to apply.
+  ///
+  /// - Returns: A text-flavored value with the formatted number.
   @inlinable
   public static func formattedNumber<T>(
     _ number: T,
@@ -173,6 +217,12 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `number` as formatted-by `style`.
+  ///
+  /// - Parameters:
+  ///   - number: The floating-point value to format.
+  ///   - style: The format style to apply.
+  ///
+  /// - Returns: A text-flavored value with the formatted number.
   @inlinable
   public static func formattedNumber<T>(
     _ number: T,
@@ -184,6 +234,12 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `number` as formatted-by `style`.
+  ///
+  /// - Parameters:
+  ///   - number: The decimal value to format.
+  ///   - style: The format style to apply.
+  ///
+  /// - Returns: A text-flavored value with the formatted number.
   @inlinable
   public static func formattedNumber(
     _ number: Decimal,
@@ -195,6 +251,10 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.list`-flavored `URIVariableValue` wrapping `texts`.
+  ///
+  /// - Parameter texts: The sequence of strings to include in the list.
+  ///
+  /// - Returns: A list-flavored value containing the strings.
   @inlinable
   public static func list(_ texts: some Sequence<String>) -> Self {
     Self(
@@ -203,6 +263,10 @@ public struct URIVariableValue {
   }
 
   /// Constructs a single-element `.list`-flavored `URIVariableValue` wrapping `text`.
+  ///
+  /// - Parameter text: The single string to include in the list.
+  ///
+  /// - Returns: A list-flavored value containing one string.
   @inlinable
   public static func list(_ text: String) -> Self {
     Self(
@@ -211,6 +275,10 @@ public struct URIVariableValue {
   }
 
   /// Constructs an `.association`-flavored `URIVariableValue` wrapping `pairs`.
+  ///
+  /// - Parameter pairs: The sequence of key-value pairs to include.
+  ///
+  /// - Returns: An association-flavored value containing the pairs.
   @inlinable
   public static func association(_ pairs: some Sequence<(String, String)>) -> Self {
     Self(
@@ -219,6 +287,12 @@ public struct URIVariableValue {
   }
 
   /// Constructs a single-element `.association`-flavored `URIVariableValue` wrapping `pair`.
+  ///
+  /// - Parameters:
+  ///   - key: The key of the single pair.
+  ///   - value: The value of the single pair.
+  ///
+  /// - Returns: An association-flavored value containing one pair.
   @inlinable
   public static func association(key: String, value: String) -> Self {
     Self(
@@ -237,7 +311,16 @@ extension URIVariableValue : Hashable { }
 // MARK: - Comparable
 
 extension URIVariableValue : Comparable {
-  
+
+  /// Compares two values structurally by flavor, then content.
+  ///
+  /// - Parameters:
+  ///   - lhs: The left-hand side value.
+  ///   - rhs: The right-hand side value.
+  ///
+  /// - Returns: `true` if `lhs` is structurally less than `rhs`.
+  ///
+  /// - Note: This is a *structural* comparison, not semantic.
   @inlinable
   public static func <(
     lhs: URIVariableValue,
@@ -251,35 +334,47 @@ extension URIVariableValue : Comparable {
 // MARK: - CustomStringConvertible
 
 extension URIVariableValue : CustomStringConvertible {
-  
+
+  /// A textual representation of the value.
   @inlinable
   public var description: String {
     storage.description
   }
-  
+
 }
 
 // MARK: - CustomDebugStringConvertible
 
 extension URIVariableValue : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description showing the storage representation.
   @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"
   }
-  
+
 }
 
 // MARK: - Codable
 
 extension URIVariableValue : Codable {
-  
+
+  /// Encodes this value into the given encoder.
+  ///
+  /// - Parameter encoder: The encoder to write data to.
+  ///
+  /// - Throws: An error if encoding fails.
   @inlinable
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(storage)
   }
-  
+
+  /// Creates a new instance by decoding from the given decoder.
+  ///
+  /// - Parameter decoder: The decoder to read data from.
+  ///
+  /// - Throws: `DataValidationError` if the decoded value is invalid.
   @inlinable
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -329,16 +424,21 @@ extension URIVariableValue : Codable {
 }
 
 extension URIVariableValue: ExpressibleByNilLiteral {
-  
+
+  /// Creates an undefined value from a nil literal.
   public init(nilLiteral: ()) {
     self = .undefined
   }
 }
 
 extension URIVariableValue: ExpressibleByArrayLiteral {
-  
+
+  /// The element type for array literal initialization.
   public typealias ArrayLiteralElement = URIScalarVariableValue
-  
+
+  /// Creates a list-flavored value from an array literal of scalar values.
+  ///
+  /// - Parameter elements: The scalar values to include in the list.
   public init(arrayLiteral elements: ArrayLiteralElement...) {
     self.init(
       storage: .list(
@@ -346,14 +446,20 @@ extension URIVariableValue: ExpressibleByArrayLiteral {
       )
     )
   }
-  
+
 }
 
 extension URIVariableValue: ExpressibleByDictionaryLiteral {
-  
+
+  /// The key type for dictionary literal initialization.
   public typealias Key = String
+
+  /// The value type for dictionary literal initialization.
   public typealias Value = URIScalarVariableValue
-  
+
+  /// Creates an association-flavored value from a dictionary literal.
+  ///
+  /// - Parameter elements: The key-value pairs to include in the association.
   public init(dictionaryLiteral elements: (Key, Value)...) {
     self.init(
       storage: .association(
@@ -368,13 +474,17 @@ extension URIVariableValue: ExpressibleByDictionaryLiteral {
       )
     )
   }
-  
+
 }
 
 extension URIVariableValue: ExpressibleByIntegerLiteral {
-  
+
+  /// The integer literal type for initialization.
   public typealias IntegerLiteralType = Int
-  
+
+  /// Creates a text-flavored value from an integer literal.
+  ///
+  /// - Parameter value: The integer value to convert to text.
   public init(integerLiteral value: IntegerLiteralType) {
     self.init(
       storage: .text(
@@ -385,9 +495,13 @@ extension URIVariableValue: ExpressibleByIntegerLiteral {
 }
 
 extension URIVariableValue: ExpressibleByFloatLiteral {
-  
+
+  /// The floating-point literal type for initialization.
   public typealias FloatLiteralType = Double
-  
+
+  /// Creates a text-flavored value from a floating-point literal.
+  ///
+  /// - Parameter value: The floating-point value to convert to text.
   public init(floatLiteral value: FloatLiteralType) {
     self.init(
       storage: .text(

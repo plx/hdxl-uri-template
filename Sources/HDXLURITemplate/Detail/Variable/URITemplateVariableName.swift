@@ -2,23 +2,33 @@ import Foundation
 
 // MARK: URITemplateVariableName
 
+/// A newtype wrapper representing a valid URI template variable name.
+///
+/// Variable names must conform to RFC 6570 naming rules, which allow alphanumeric
+/// characters, underscores, and percent-encoded sequences, optionally separated by dots.
 @usableFromInline
 package struct URITemplateVariableName: RawRepresentable {
-  
+
+  /// The raw value type (String).
   @usableFromInline
   package typealias RawValue = String
-  
+
+  /// The underlying variable name string.
   @usableFromInline
   package var rawValue: RawValue
-  
+
+  /// Regular expression for validating variable names per RFC 6570.
   @usableFromInline
   package static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
-  
+
+  /// Creates a variable name with the given raw value.
+  ///
+  /// - Parameter rawValue: The variable name string.
   @inlinable
   package init(rawValue: RawValue) {
     self.rawValue = rawValue
   }
-  
+
 }
 
 // MARK: - Synthesized Conformances
@@ -30,7 +40,8 @@ extension URITemplateVariableName : Hashable { }
 // MARK: URITemplateVariableName - Comparable
 
 extension URITemplateVariableName : Comparable {
-  
+
+  /// Compares two variable names lexicographically.
   @inlinable
   package static func <(
     lhs: URITemplateVariableName,
@@ -38,41 +49,47 @@ extension URITemplateVariableName : Comparable {
   ) -> Bool {
     lhs.rawValue < rhs.rawValue
   }
-  
+
 }
 
 // MARK: - CustomStringConvertible
 
 extension URITemplateVariableName : CustomStringConvertible {
-  
+
+  /// The variable name string.
   @inlinable
   package var description: String {
     rawValue
   }
-  
+
 }
 
 // MARK: - CustomDebugStringConvertible
 
 extension URITemplateVariableName : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description of the variable name.
   @inlinable
   package var debugDescription: String {
     "URITemplateVariableName(rawValue: \"\(rawValue)\")"
   }
-  
+
 }
 
 // MARK: - Codable
 
 extension URITemplateVariableName : Codable {
-  
+
+  /// Encodes the variable name.
   @inlinable
   package func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
-  
+
+  /// Creates a variable name by decoding from the given decoder.
+  ///
+  /// - Throws: `DataValidationError` if the decoded string is not a valid variable name.
   @inlinable
   package init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -91,7 +108,10 @@ extension URITemplateVariableName : Codable {
 // MARK: - Validation Support
 
 extension URITemplateVariableName {
-    
+
+  /// Prepares the validation regular expression for variable names per RFC 6570.
+  ///
+  /// - Returns: An `NSRegularExpression` matching valid variable names.
   @inlinable
   package static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     // NOTE: `varname       =  varchar *( ["."] varchar )`
@@ -173,7 +193,8 @@ extension URITemplateVariableName {
 // MARK: - Validatable
 
 extension URITemplateVariableName {
-  
+
+  /// Indicates whether this is a valid variable name (non-empty and RFC 6570 compliant).
   @inlinable
   package var isValid: Bool {
     guard
@@ -186,5 +207,5 @@ extension URITemplateVariableName {
     }
     return true
   }
-  
+
 }

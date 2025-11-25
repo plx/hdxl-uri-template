@@ -67,6 +67,13 @@ extension URITemplate : Codable { }
 
 extension URITemplate : Comparable {
   
+  /// Compares two templates lexicographically by their template representations.
+  ///
+  /// - Parameters:
+  ///   - lhs: The left-hand side template.
+  ///   - rhs: The right-hand side template.
+  ///
+  /// - Returns: `true` if `lhs` is lexicographically less than `rhs`.
   @inlinable
   public static func <(
     lhs: URITemplate,
@@ -80,34 +87,39 @@ extension URITemplate : Comparable {
 // MARK: - CustomStringConvertible
 
 extension URITemplate : CustomStringConvertible {
-  
+
+  /// The template representation string.
   @inlinable
   public var description: String {
     templateRepresentation
   }
-  
+
 }
 
 // MARK: - CustomDebugStringConvertible
 
 extension URITemplate : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description including storage and template representation.
   @inlinable
   public var debugDescription: String {
     "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"
   }
-  
+
 }
 
 // MARK: - Validatable
 
 extension URITemplate {
-  
+
+  /// Indicates whether the template is structurally valid.
+  ///
+  /// - Invariant: A successfully-parsed template is always valid.
   @inlinable
   public var isValid: Bool {
     storage.isValid
   }
-  
+
 }
 
 // MARK: - Core API

@@ -3,11 +3,16 @@ import os.lock
 
 // MARK: URITemplateStorage
 
+/// Internal storage class for `URITemplate`, holding parsed components and cached derived properties.
+///
+/// This class provides COW-style semantics for `URITemplate` while caching
+/// frequently-accessed derived properties like template representation and variable names.
 @usableFromInline
 internal final class URITemplateStorage {
-  
+
   // MARK: - Fields
-    
+
+  /// The parsed template components (literals and expressions).
   @usableFromInline
   internal var components: [URITemplateComponent] {
     didSet {
@@ -32,28 +37,40 @@ internal final class URITemplateStorage {
   @usableFromInline
   internal var cachedFieldLock: OSAllocatedUnfairLock<Void>
   
-    // MARK: `init`
-    
+  // MARK: `init`
+
+  /// Creates an empty template storage.
   @inlinable
   internal convenience init() {
     self.init(
       components: []
     )
   }
-  
+
+  /// Creates storage with a single component.
+  ///
+  /// - Parameter component: The single template component.
   @inlinable
   internal convenience init(component: URITemplateComponent) {
     self.init(
       components: [component]
     )
   }
-  
+
+  /// Creates storage with the given components.
+  ///
+  /// - Parameter components: The template components.
   @inlinable
   internal required init(components: [URITemplateComponent]) {
     self.components = components
     self.cachedFieldLock = OSAllocatedUnfairLock()
   }
-  
+
+  /// Creates storage by parsing a template string.
+  ///
+  /// - Parameter template: The template string to parse.
+  ///
+  /// - Throws: An error if parsing fails.
   @inlinable
   internal convenience init(parsing template: String) throws {
     if template.isEmpty {
@@ -65,6 +82,7 @@ internal final class URITemplateStorage {
     }
   }
     
+  /// Resets all cached derived properties.
   @inlinable
   func resetCachedDerivedProperties() {
     cachedFieldLock.precondition(.notOwner)
@@ -76,11 +94,13 @@ internal final class URITemplateStorage {
     }
   }
   
-    // MARK: `templateRepresentation`
-    
+  // MARK: `templateRepresentation`
+
+  /// Cached template representation string.
   @usableFromInline
   internal var _templateRepresentation: String? = nil
-  
+
+  /// The reconstructed template string representation.
   @inlinable
   internal var templateRepresentation: String {
     cachedFieldLock.precondition(.notOwner)
@@ -89,6 +109,7 @@ internal final class URITemplateStorage {
     }
   }
 
+  /// Thread-safe accessor for template representation (requires lock ownership).
   @inlinable
   internal var _withLockTemplateRepresentation: String {
     cachedFieldLock.precondition(.owner)
@@ -103,11 +124,13 @@ internal final class URITemplateStorage {
     )
   }
 
-    // MARK: `templateVariables`
-    
+  // MARK: `templateVariables`
+
+  /// Cached set of template variables.
   @usableFromInline
   internal var _templateVariables: Set<URITemplateVariable>? = nil
-  
+
+  /// The set of all variables in the template.
   @inlinable
   internal var templateVariables: Set<URITemplateVariable> {
     cachedFieldLock.precondition(.notOwner)
@@ -116,6 +139,7 @@ internal final class URITemplateStorage {
     }
   }
 
+  /// Thread-safe accessor for template variables (requires lock ownership).
   @inlinable
   internal var _withLockTemplateVariables: Set<URITemplateVariable> {
     cachedFieldLock.precondition(.owner)
@@ -124,6 +148,7 @@ internal final class URITemplateStorage {
     )
   }
 
+  /// Collects all variables from components (requires lock ownership).
   @inlinable
   func _withLockPrepareTemplateVariables() -> Set<URITemplateVariable> {
     cachedFieldLock.precondition(.owner)
@@ -134,11 +159,13 @@ internal final class URITemplateStorage {
     return result
   }
   
-    // MARK: `templateVariableNames`
-    
+  // MARK: `templateVariableNames`
+
+  /// Cached set of variable names as `URITemplateVariableName`.
   @usableFromInline
   internal var _templateVariableNames: Set<URITemplateVariableName>? = nil
-  
+
+  /// The set of variable names as `URITemplateVariableName` objects.
   @inlinable
   internal var templateVariablesNames: Set<URITemplateVariableName> {
     _templateVariableNames.obtainAssuredValue(
@@ -150,11 +177,13 @@ internal final class URITemplateStorage {
     )
   }
   
-    // MARK: `variableNames`
-    
+  // MARK: `variableNames`
+
+  /// Cached set of variable names as strings.
   @usableFromInline
   internal var _variableNames: Set<String>? = nil
-  
+
+  /// The set of variable names as plain strings.
   @inlinable
   internal var variableNames: Set<String> {
     cachedFieldLock.precondition(.notOwner)
@@ -163,6 +192,7 @@ internal final class URITemplateStorage {
     }
   }
 
+  /// Thread-safe accessor for variable names (requires lock ownership).
   @inlinable
   internal var withLockVariableNames: Set<String> {
     cachedFieldLock.precondition(.owner)
@@ -183,7 +213,8 @@ extension URITemplateStorage: @unchecked Sendable { }
 // MARK: - Equatable
 
 extension URITemplateStorage : Equatable {
-  
+
+  /// Compares two storages for equality by their components.
   @inlinable
   internal static func ==(
     lhs: URITemplateStorage,
@@ -200,7 +231,8 @@ extension URITemplateStorage : Equatable {
 // MARK: - Comparable
 
 extension URITemplateStorage : Comparable {
-  
+
+  /// Compares two storages lexicographically by their template representations.
   @inlinable
   internal static func <(
     lhs: URITemplateStorage,
@@ -217,30 +249,32 @@ extension URITemplateStorage : Comparable {
 // MARK: - Hashable
 
 extension URITemplateStorage : Hashable {
-  
+
+  /// Hashes the storage by its components.
   @inlinable
   internal func hash(into hasher: inout Hasher) {
     components.hash(into: &hasher)
   }
-  
+
 }
 
 // MARK: - CustomStringConvertible
 
 extension URITemplateStorage : CustomStringConvertible {
-  
+
+  /// A textual representation of the storage.
   @usableFromInline
   internal var description: String {
     "storage for uri template: \"\(templateRepresentation)\""
   }
-  
-  
+
 }
 
 // MARK: - CustomDebugStringConvertible
 
 extension URITemplateStorage : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description showing all components.
   @usableFromInline
   internal var debugDescription: String {
     let components = components
@@ -249,19 +283,23 @@ extension URITemplateStorage : CustomDebugStringConvertible {
       .joined(separator: ", ")
     return "URITemplateStorage(components: [ \(components) ])"
   }
-  
+
 }
 
 // MARK: - Codable
 
 extension URITemplateStorage : Codable {
-  
+
+  /// Encodes the storage's components.
   @inlinable
   internal func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(components)
   }
-  
+
+  /// Creates storage by decoding components from the given decoder.
+  ///
+  /// - Throws: `DataValidationError` if any decoded component is invalid.
   @inlinable
   internal convenience init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -282,10 +320,11 @@ extension URITemplateStorage : Codable {
 // MARK: - Validatable
 
 extension URITemplateStorage {
-  
+
+  /// Indicates whether all components are valid.
   @inlinable
   internal var isValid: Bool {
     components.allSatisfy(\.isValid)
   }
-  
+
 }

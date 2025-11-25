@@ -11,12 +11,16 @@ import Foundation
 ///
 @objc(HDXLURIVariableValueType)
 public enum URIVariableValueType : UInt8 {
-  
+
+  /// An undefined (nil-like) value.
   case undefined = 1
+  /// A simple text string value.
   case text = 2
+  /// A list of strings.
   case list = 4
+  /// An ordered list of key-value pairs.
   case association = 8
-  
+
 }
 
 // MARK: - Synthesized Conformances
@@ -30,7 +34,8 @@ extension URIVariableValueType : CaseIterable { }
 // MARK: - Comparable
 
 extension URIVariableValueType : Comparable {
-  
+
+  /// Compares two value types by their raw values.
   @inlinable
   public static func <(
     lhs: URIVariableValueType,
@@ -44,7 +49,8 @@ extension URIVariableValueType : Comparable {
 // MARK: - CustomStringConvertible
 
 extension URIVariableValueType : CustomStringConvertible {
-  
+
+  /// A textual representation of the value type.
   @inlinable
   public var description: String {
     switch self {
@@ -64,7 +70,8 @@ extension URIVariableValueType : CustomStringConvertible {
 // MARK: - CustomDebugStringConvertible
 
 extension URIVariableValueType : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description of the value type.
   @inlinable
   public var debugDescription: String {
     switch self {

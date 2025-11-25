@@ -1,11 +1,14 @@
 // MARK: URITemplateComponentType
 
+/// Identifies the type of a template component.
 @usableFromInline
 package enum URITemplateComponentType : UInt8 {
-  
+
+  /// A literal text component.
   case literal = 1
+  /// An expression component containing variables.
   case expression = 2
-  
+
 }
 
 // MARK: - Synthesized Conformances
@@ -20,6 +23,7 @@ extension URITemplateComponentType : CaseIterable { }
 
 extension URITemplateComponentType : Comparable {
 
+  /// Compares two component types by their raw values.
   @inlinable
   package static func <(
     lhs: URITemplateComponentType,
@@ -34,6 +38,7 @@ extension URITemplateComponentType : Comparable {
 
 extension URITemplateComponentType : CustomStringConvertible {
 
+  /// A textual representation of the component type.
   @usableFromInline
   package var description: String {
     switch self {
@@ -49,7 +54,8 @@ extension URITemplateComponentType : CustomStringConvertible {
 // MARK: - CustomDebugStringConvertible
 
 extension URITemplateComponentType : CustomDebugStringConvertible {
-  
+
+  /// A detailed debug description of the component type.
   @usableFromInline
   package var debugDescription: String {
     switch self {

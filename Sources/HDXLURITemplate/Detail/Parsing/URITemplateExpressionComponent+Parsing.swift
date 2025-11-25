@@ -1,13 +1,25 @@
 import Foundation
 
 extension URITemplateExpressionComponent {
-   
+
+  /// Errors that can occur when parsing an expression component.
   @usableFromInline
   internal enum ParseError : Error {
+    /// The input string was unexpectedly empty.
     case invalidEmptyString
+    /// No variables were found in the expression string.
     case noVariablesFound(String)
   }
-  
+
+  /// Parses an expression component from a string.
+  ///
+  /// The string should contain an optional expansion operator prefix followed by
+  /// a comma-separated list of variable specifications.
+  ///
+  /// - Parameter string: The expression string to parse (without surrounding braces).
+  ///
+  /// - Throws: `ParseError.invalidEmptyString` if the string is empty, or
+  ///   `ParseError.noVariablesFound` if no variables are present.
   @inlinable
   internal init(parsing string: String) throws {
     guard !string.isEmpty else {

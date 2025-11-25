@@ -1,12 +1,24 @@
 import Foundation
 
 extension URIValueExpansionModifier {
-  
+
+  /// Errors that can occur when parsing an expansion modifier.
   @usableFromInline
   internal enum ParseError : Error {
+    /// The prefix length specification was invalid.
     case invalidPrefixSpecification(String)
   }
-  
+
+  /// Parses an expansion modifier from the end of a string, modifying the string in place.
+  ///
+  /// Recognizes:
+  /// - `*` suffix for explode modifier
+  /// - `:N` suffix for prefix modifier (where N is 1-9999)
+  /// - No suffix for unmodified
+  ///
+  /// - Parameter string: The string to parse; will have the modifier suffix removed.
+  ///
+  /// - Throws: `ParseError.invalidPrefixSpecification` if a prefix modifier is malformed.
   @inlinable
   internal init(parsing string: inout String) throws {
     if string.hasSuffix("*") {

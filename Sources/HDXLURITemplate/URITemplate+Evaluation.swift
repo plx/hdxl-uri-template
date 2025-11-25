@@ -1,13 +1,19 @@
 import Foundation
 
 extension URITemplate {
-  
+
+  /// Error thrown when template evaluation fails.
+  ///
+  /// Contains the template being evaluated, the parameters provided, and any underlying error.
   public struct EvaluationError: Error, LocalizedError {
+    /// The template that failed to evaluate.
     public internal(set) var template: URITemplate
+    /// The parameters passed to the evaluation.
     public internal(set) var parameters: [String: URIVariableValue]
-    
+
+    /// The underlying error that caused the evaluation failure, if any.
     public internal(set) var underlyingError: Error?
-    
+
     @usableFromInline
     internal init(
       template: URITemplate,
@@ -18,7 +24,8 @@ extension URITemplate {
       self.parameters = parameters
       self.underlyingError = underlyingError
     }
-    
+
+    /// A localized description of the evaluation error.
     public var localizedDescription: String {
       let baseMessage =
       """
@@ -38,6 +45,13 @@ extension URITemplate {
     }
   }
   
+  /// Evaluates the template with the given parameters, returning the result as a string.
+  ///
+  /// - Parameter parameters: A dictionary mapping variable names to their values.
+  ///
+  /// - Returns: The expanded URI template as a string.
+  ///
+  /// - Throws: `EvaluationError` if evaluation fails.
   @inlinable
   public func evaluateAsString(parameters: [String: URIVariableValue]) throws -> String {
     do {
@@ -62,6 +76,14 @@ extension URITemplate {
     }
   }
 
+  /// Evaluates the template with the given parameters, returning a URL.
+  ///
+  /// - Parameter parameters: A dictionary mapping variable names to their values.
+  ///
+  /// - Returns: The expanded URI template as a `URL`.
+  ///
+  /// - Throws: `EvaluationError` if evaluation fails, or `URLError(.badURL)` if the
+  ///   expanded string is not a valid URL.
   @inlinable
   public func evaluate(parameters: [String: URIVariableValue]) throws -> URL {
     let stringResult = try evaluateAsString(parameters: parameters)

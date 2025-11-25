@@ -1,12 +1,14 @@
-
 // MARK: URITemplateComponent
 
+/// Represents a single component of a URI template: either a literal string or an expression.
 @usableFromInline
 package enum URITemplateComponent {
-  
+
+  /// A literal text component to be included verbatim in the expanded URI.
   case literal(URITemplateLiteralComponent)
+  /// An expression component containing variables to be substituted.
   case expression(URITemplateExpressionComponent)
-    
+
 }
 
 // MARK: - Synthesized Properties
@@ -20,6 +22,13 @@ extension URITemplateComponent : Codable {}
 
 extension URITemplateComponent : Comparable {
 
+  /// Compares two components, with literals ordered before expressions.
+  ///
+  /// - Parameters:
+  ///   - lhs: The left-hand side component.
+  ///   - rhs: The right-hand side component.
+  ///
+  /// - Returns: `true` if `lhs` is ordered before `rhs`.
   @inlinable
   package static func <(
     lhs: URITemplateComponent,
@@ -41,7 +50,8 @@ extension URITemplateComponent : Comparable {
 // MARK: - CustomStringConvertible
 
 extension URITemplateComponent : CustomStringConvertible {
-  
+
+  /// A textual representation of the component.
   @usableFromInline
   package var description: String {
     switch self {
@@ -58,6 +68,7 @@ extension URITemplateComponent : CustomStringConvertible {
 
 extension URITemplateComponent : CustomDebugStringConvertible {
 
+  /// A detailed debug description of the component.
   @usableFromInline
   package var debugDescription: String {
     switch self {
@@ -73,7 +84,8 @@ extension URITemplateComponent : CustomDebugStringConvertible {
 // MARK: - Core API
 
 extension URITemplateComponent {
-  
+
+  /// `true` if this is a literal component.
   @inlinable
   package var isLiteralComponent: Bool {
     switch self {
@@ -83,7 +95,8 @@ extension URITemplateComponent {
       false
     }
   }
-  
+
+  /// `true` if this is an expression component.
   @inlinable
   package var isExpressionComponent: Bool {
     switch self {
@@ -93,7 +106,8 @@ extension URITemplateComponent {
       true
     }
   }
-  
+
+  /// The template string representation of this component.
   @inlinable
   package var templateRepresentation: String {
     switch self {
@@ -103,7 +117,8 @@ extension URITemplateComponent {
       "{\(expression.templateRepresentation)}"
     }
   }
-  
+
+  /// The type of this component (literal or expression).
   @inlinable
   package var templateComponentType: URITemplateComponentType {
     switch self {
@@ -113,7 +128,10 @@ extension URITemplateComponent {
       .expression
     }
   }
-  
+
+  /// Injects the variables from this component into the given set.
+  ///
+  /// - Parameter receiver: The set to receive the variables.
   @inlinable
   package func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     switch self {
@@ -131,7 +149,8 @@ extension URITemplateComponent {
 // MARK: - Validatable
 
 extension URITemplateComponent {
-  
+
+  /// Indicates whether this component is structurally valid.
   @inlinable
   package var isValid: Bool {
     switch self {
