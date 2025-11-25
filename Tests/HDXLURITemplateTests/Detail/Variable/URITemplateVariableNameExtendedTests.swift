@@ -10,182 +10,99 @@ extension Tag {
 @Suite(.tags(.uriTemplateVariableNameExtended))
 struct URITemplateVariableNameExtendedTests {
 
-  // MARK: - Valid Name Tests
+  // MARK: - Validity Tests
 
   @Test
-  func `simple letter name is valid`() {
-    let name = URITemplateVariableName(rawValue: "x")
-    #expect(name.isValid)
+  func `valid names`() {
+    // simple letter names
+    #expect(URITemplateVariableName(rawValue: "x").isValid)
+    #expect(URITemplateVariableName(rawValue: "name").isValid)
+
+    // names with digits
+    #expect(URITemplateVariableName(rawValue: "var1").isValid)
+    #expect(URITemplateVariableName(rawValue: "1var").isValid)
+
+    // names with underscores
+    #expect(URITemplateVariableName(rawValue: "var_name").isValid)
+    #expect(URITemplateVariableName(rawValue: "_").isValid)
+
+    // names with dot separators
+    #expect(URITemplateVariableName(rawValue: "var.name").isValid)
+    #expect(URITemplateVariableName(rawValue: "a.b.c").isValid)
+
+    // names with percent encoding
+    #expect(URITemplateVariableName(rawValue: "%20").isValid)
+    #expect(URITemplateVariableName(rawValue: "var%2Fname").isValid)
+
+    // case variations
+    #expect(URITemplateVariableName(rawValue: "VAR").isValid)
+    #expect(URITemplateVariableName(rawValue: "VarName").isValid)
   }
 
   @Test
-  func `multiple letter name is valid`() {
-    let name = URITemplateVariableName(rawValue: "name")
-    #expect(name.isValid)
-  }
+  func `invalid names`() {
+    // empty and whitespace
+    #expect(!URITemplateVariableName(rawValue: "").isValid)
+    #expect(!URITemplateVariableName(rawValue: " ").isValid)
+    #expect(!URITemplateVariableName(rawValue: "var name").isValid)
 
-  @Test
-  func `name with digits is valid`() {
-    let name = URITemplateVariableName(rawValue: "var1")
-    #expect(name.isValid)
-  }
+    // dot issues
+    #expect(!URITemplateVariableName(rawValue: "var.").isValid)
+    #expect(!URITemplateVariableName(rawValue: ".var").isValid)
+    #expect(!URITemplateVariableName(rawValue: "var..name").isValid)
 
-  @Test
-  func `name starting with digit is valid`() {
-    let name = URITemplateVariableName(rawValue: "1var")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `name with underscore is valid`() {
-    let name = URITemplateVariableName(rawValue: "var_name")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `underscore only is valid`() {
-    let name = URITemplateVariableName(rawValue: "_")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `name with dot separator is valid`() {
-    let name = URITemplateVariableName(rawValue: "var.name")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `name with multiple dot separators is valid`() {
-    let name = URITemplateVariableName(rawValue: "a.b.c")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `name with percent encoding is valid`() {
-    let name = URITemplateVariableName(rawValue: "%20")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `name with mixed percent encoding is valid`() {
-    let name = URITemplateVariableName(rawValue: "var%2Fname")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `uppercase letters are valid`() {
-    let name = URITemplateVariableName(rawValue: "VAR")
-    #expect(name.isValid)
-  }
-
-  @Test
-  func `mixed case is valid`() {
-    let name = URITemplateVariableName(rawValue: "VarName")
-    #expect(name.isValid)
-  }
-
-  // MARK: - Invalid Name Tests
-
-  @Test
-  func `empty string is invalid`() {
-    let name = URITemplateVariableName(rawValue: "")
-    #expect(!name.isValid)
-  }
-
-  @Test
-  func `space is invalid`() {
-    let name = URITemplateVariableName(rawValue: " ")
-    #expect(!name.isValid)
-  }
-
-  @Test
-  func `name with space is invalid`() {
-    let name = URITemplateVariableName(rawValue: "var name")
-    #expect(!name.isValid)
-  }
-
-  @Test
-  func `name ending with dot is invalid`() {
-    let name = URITemplateVariableName(rawValue: "var.")
-    #expect(!name.isValid)
-  }
-
-  @Test
-  func `name starting with dot is invalid`() {
-    let name = URITemplateVariableName(rawValue: ".var")
-    #expect(!name.isValid)
-  }
-
-  @Test
-  func `consecutive dots are invalid`() {
-    let name = URITemplateVariableName(rawValue: "var..name")
-    #expect(!name.isValid)
-  }
-
-  @Test
-  func `special characters are invalid`() {
+    // special characters
     let invalidNames = [
-      "var@name",
-      "var#name",
-      "var$name",
-      "var!name",
-      "var+name",
-      "var=name",
-      "var&name",
-      "var?name",
-      "var/name",
-      "var:name"
+      "var@name", "var#name", "var$name", "var!name", "var+name",
+      "var=name", "var&name", "var?name", "var/name", "var:name"
     ]
     for rawValue in invalidNames {
-      let name = URITemplateVariableName(rawValue: rawValue)
-      #expect(!name.isValid, "Expected '\(rawValue)' to be invalid")
+      #expect(!URITemplateVariableName(rawValue: rawValue).isValid, "Expected '\(rawValue)' to be invalid")
     }
   }
 
   // MARK: - Codable Tests
 
   @Test
-  func `valid name codable round trip`() throws {
-    let original = URITemplateVariableName(rawValue: "validName")
+  func `codable round trip`() throws {
     let encoder = JSONEncoder()
-    let data = try encoder.encode(original)
     let decoder = JSONDecoder()
-    let decoded = try decoder.decode(URITemplateVariableName.self, from: data)
-    #expect(original == decoded)
+
+    // valid name
+    let validName = URITemplateVariableName(rawValue: "validName")
+    let validData = try encoder.encode(validName)
+    let decodedValid = try decoder.decode(URITemplateVariableName.self, from: validData)
+    #expect(validName == decodedValid)
+
+    // name with dots
+    let dottedName = URITemplateVariableName(rawValue: "path.to.var")
+    let dottedData = try encoder.encode(dottedName)
+    let decodedDotted = try decoder.decode(URITemplateVariableName.self, from: dottedData)
+    #expect(dottedName == decodedDotted)
   }
 
   @Test
-  func `name with dots codable round trip`() throws {
-    let original = URITemplateVariableName(rawValue: "path.to.var")
-    let encoder = JSONEncoder()
-    let data = try encoder.encode(original)
-    let decoder = JSONDecoder()
-    let decoded = try decoder.decode(URITemplateVariableName.self, from: data)
-    #expect(original == decoded)
-  }
-
-  @Test
-  func `decoding invalid name throws`() {
-    let json = "\"invalid name with space\""
-    let data = Data(json.utf8)
+  func `decoding invalid names throws`() {
+    // invalid name with space
+    let invalidJson = "\"invalid name with space\""
+    let invalidData = Data(invalidJson.utf8)
     #expect(throws: (any Error).self) {
-      try JSONDecoder().decode(URITemplateVariableName.self, from: data)
+      try JSONDecoder().decode(URITemplateVariableName.self, from: invalidData)
+    }
+
+    // empty string
+    let emptyJson = "\"\""
+    let emptyData = Data(emptyJson.utf8)
+    #expect(throws: (any Error).self) {
+      try JSONDecoder().decode(URITemplateVariableName.self, from: emptyData)
     }
   }
 
-  @Test
-  func `decoding empty string throws`() {
-    let json = "\"\""
-    let data = Data(json.utf8)
-    #expect(throws: (any Error).self) {
-      try JSONDecoder().decode(URITemplateVariableName.self, from: data)
-    }
-  }
-
-  // MARK: - Comparable Extended Tests
+  // MARK: - Comparable Tests
 
   @Test
-  func `names are ordered lexicographically`() {
+  func `ordering`() {
+    // lexicographic ordering
     let names = [
       URITemplateVariableName(rawValue: "a"),
       URITemplateVariableName(rawValue: "b"),
@@ -193,54 +110,43 @@ struct URITemplateVariableNameExtendedTests {
       URITemplateVariableName(rawValue: "z")
     ]
     verifyOrderedAscending(names)
-  }
 
-  @Test
-  func `shorter name before longer with same prefix`() {
+    // shorter name before longer with same prefix
     let shorter = URITemplateVariableName(rawValue: "var")
     let longer = URITemplateVariableName(rawValue: "variable")
     #expect(shorter < longer)
-  }
 
-  @Test
-  func `uppercase before lowercase in ASCII order`() {
+    // uppercase before lowercase in ASCII order
     let upper = URITemplateVariableName(rawValue: "A")
     let lower = URITemplateVariableName(rawValue: "a")
     #expect(upper < lower)
   }
 
-  // MARK: - Regex Compilation Tests
+  // MARK: - Regex Tests
 
   @Test
-  func `validation regex compiles successfully`() throws {
+  func `validation regex`() throws {
     let regex = try URITemplateVariableName.prepareValidationRegularExpression()
     #expect(regex.pattern.count > 0)
-  }
 
-  @Test
-  func `regex matches simple names`() throws {
-    let regex = URITemplateVariableName.validationRegularExpression
-    let names = ["x", "var", "name123", "_test", "a1b2"]
-    for name in names {
-      #expect(regex.matchesEntirety(of: name), "Expected regex to match '\(name)'")
+    let validationRegex = URITemplateVariableName.validationRegularExpression
+
+    // matches simple names
+    let simpleNames = ["x", "var", "name123", "_test", "a1b2"]
+    for name in simpleNames {
+      #expect(validationRegex.matchesEntirety(of: name), "Expected regex to match '\(name)'")
     }
-  }
 
-  @Test
-  func `regex matches dotted names`() throws {
-    let regex = URITemplateVariableName.validationRegularExpression
-    let names = ["a.b", "path.to.value", "x.y.z"]
-    for name in names {
-      #expect(regex.matchesEntirety(of: name), "Expected regex to match '\(name)'")
+    // matches dotted names
+    let dottedNames = ["a.b", "path.to.value", "x.y.z"]
+    for name in dottedNames {
+      #expect(validationRegex.matchesEntirety(of: name), "Expected regex to match '\(name)'")
     }
-  }
 
-  @Test
-  func `regex rejects invalid names`() throws {
-    let regex = URITemplateVariableName.validationRegularExpression
+    // rejects invalid names
     let invalidNames = ["", " ", "a b", "a..b", ".a", "a."]
     for name in invalidNames {
-      #expect(!regex.matchesEntirety(of: name), "Expected regex to reject '\(name)'")
+      #expect(!validationRegex.matchesEntirety(of: name), "Expected regex to reject '\(name)'")
     }
   }
 
@@ -254,84 +160,79 @@ struct URITemplateVariableExtendedTests {
   // MARK: - Template Representation Tests
 
   @Test
-  func `unmodified variable template representation`() {
-    let variable = URITemplateVariable(
+  func `templateRepresentation`() {
+    // unmodified
+    let unmodified = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "name"),
       expansionModifier: .unmodified
     )
-    #expect(variable.templateRepresentation == "name")
-  }
+    #expect(unmodified.templateRepresentation == "name")
 
-  @Test
-  func `explode variable template representation`() {
-    let variable = URITemplateVariable(
+    // explode
+    let explode = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "list"),
       expansionModifier: .explode
     )
-    #expect(variable.templateRepresentation == "list*")
-  }
+    #expect(explode.templateRepresentation == "list*")
 
-  @Test
-  func `prefix variable template representation`() {
-    let variable = URITemplateVariable(
+    // prefix
+    let prefix = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "text"),
       expansionModifier: .prefix(10)
     )
-    #expect(variable.templateRepresentation == "text:10")
+    #expect(prefix.templateRepresentation == "text:10")
   }
 
   // MARK: - Validity Tests
 
   @Test
-  func `variable with valid name and modifier is valid`() {
-    let variable = URITemplateVariable(
+  func `validity`() {
+    // valid name and modifier
+    let valid = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "valid"),
       expansionModifier: .unmodified
     )
-    #expect(variable.isValid)
-  }
+    #expect(valid.isValid)
 
-  @Test
-  func `variable with invalid name is invalid`() {
-    let variable = URITemplateVariable(
+    // invalid name
+    let invalid = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: ""),
       expansionModifier: .unmodified
     )
-    #expect(!variable.isValid)
+    #expect(!invalid.isValid)
   }
 
   // MARK: - Codable Tests
 
   @Test
-  func `variable codable round trip`() throws {
-    let original = URITemplateVariable(
+  func `codable round trip`() throws {
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+
+    // with explode modifier
+    let explodeVar = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "testVar"),
       expansionModifier: .explode
     )
-    let encoder = JSONEncoder()
-    let data = try encoder.encode(original)
-    let decoder = JSONDecoder()
-    let decoded = try decoder.decode(URITemplateVariable.self, from: data)
-    #expect(original == decoded)
-  }
+    let explodeData = try encoder.encode(explodeVar)
+    let decodedExplode = try decoder.decode(URITemplateVariable.self, from: explodeData)
+    #expect(explodeVar == decodedExplode)
 
-  @Test
-  func `variable with prefix codable round trip`() throws {
-    let original = URITemplateVariable(
+    // with prefix modifier
+    let prefixVar = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "prefixVar"),
       expansionModifier: .prefix(500)
     )
-    let encoder = JSONEncoder()
-    let data = try encoder.encode(original)
-    let decoder = JSONDecoder()
-    let decoded = try decoder.decode(URITemplateVariable.self, from: data)
-    #expect(original == decoded)
+    let prefixData = try encoder.encode(prefixVar)
+    let decodedPrefix = try decoder.decode(URITemplateVariable.self, from: prefixData)
+    #expect(prefixVar == decodedPrefix)
   }
 
-  // MARK: - Comparable Extended Tests
+  // MARK: - Comparable Tests
 
   @Test
-  func `variables compare by name first`() {
+  func `ordering`() {
+    // compares by name first
     let varA = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "aaa"),
       expansionModifier: .explode
@@ -341,10 +242,8 @@ struct URITemplateVariableExtendedTests {
       expansionModifier: .unmodified
     )
     #expect(varA < varB)
-  }
 
-  @Test
-  func `same name compares by modifier`() {
+    // same name compares by modifier
     let varUnmod = URITemplateVariable(
       variableName: URITemplateVariableName(rawValue: "same"),
       expansionModifier: .unmodified

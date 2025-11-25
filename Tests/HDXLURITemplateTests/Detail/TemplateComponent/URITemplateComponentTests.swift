@@ -10,226 +10,19 @@ extension Tag {
 @Suite(.tags(.uriTemplateComponent))
 struct URITemplateComponentTests {
 
-  // MARK: - Construction Tests
+  // MARK: - Construction and Type Classification Tests
 
   @Test
-  func `literal component construction`() {
-    let component = URITemplateComponent.literal(
+  func `construction and type classification`() {
+    // literal component
+    let literal = URITemplateComponent.literal(
       URITemplateLiteralComponent(rawValue: "hello")
     )
-    #expect(component.isLiteralComponent)
-    #expect(!component.isExpressionComponent)
-  }
+    #expect(literal.isLiteralComponent)
+    #expect(!literal.isExpressionComponent)
+    #expect(literal.templateComponentType == .literal)
 
-  @Test
-  func `expression component construction`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "var"),
-          expansionModifier: .unmodified
-        )
-      )
-    )
-    #expect(component.isExpressionComponent)
-    #expect(!component.isLiteralComponent)
-  }
-
-  // MARK: - Type Classification Tests
-
-  @Test
-  func `templateComponentType for literal`() {
-    let component = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "text")
-    )
-    #expect(component.templateComponentType == .literal)
-  }
-
-  @Test
-  func `templateComponentType for expression`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .query,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "q"),
-          expansionModifier: .unmodified
-        )
-      )
-    )
-    #expect(component.templateComponentType == .expression)
-  }
-
-  // MARK: - Template Representation Tests
-
-  @Test
-  func `templateRepresentation for literal`() {
-    let component = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "https://example.com/")
-    )
-    #expect(component.templateRepresentation == "https://example.com/")
-  }
-
-  @Test
-  func `templateRepresentation for simple expression`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "var"),
-          expansionModifier: .unmodified
-        )
-      )
-    )
-    #expect(component.templateRepresentation == "{var}")
-  }
-
-  @Test
-  func `templateRepresentation for query expression`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .query,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "query"),
-          expansionModifier: .unmodified
-        )
-      )
-    )
-    #expect(component.templateRepresentation == "{?query}")
-  }
-
-  @Test
-  func `templateRepresentation for expression with explode`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "list"),
-          expansionModifier: .explode
-        )
-      )
-    )
-    #expect(component.templateRepresentation == "{list*}")
-  }
-
-  @Test
-  func `templateRepresentation for expression with prefix`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "name"),
-          expansionModifier: .prefix(5)
-        )
-      )
-    )
-    #expect(component.templateRepresentation == "{name:5}")
-  }
-
-  // MARK: - Variable Injection Tests
-
-  @Test
-  func `injectTemplateVariables for literal yields nothing`() {
-    let component = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "literal")
-    )
-    var variables: Set<URITemplateVariable> = []
-    component.injectTemplateVariables(into: &variables)
-    #expect(variables.isEmpty)
-  }
-
-  @Test
-  func `injectTemplateVariables for expression yields variables`() {
-    let variable = URITemplateVariable(
-      variableName: URITemplateVariableName(rawValue: "test"),
-      expansionModifier: .unmodified
-    )
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variable: variable
-      )
-    )
-    var variables: Set<URITemplateVariable> = []
-    component.injectTemplateVariables(into: &variables)
-    #expect(variables.count == 1)
-    #expect(variables.contains(variable))
-  }
-
-  @Test
-  func `injectTemplateVariables for expression with multiple variables`() {
-    let var1 = URITemplateVariable(
-      variableName: URITemplateVariableName(rawValue: "x"),
-      expansionModifier: .unmodified
-    )
-    let var2 = URITemplateVariable(
-      variableName: URITemplateVariableName(rawValue: "y"),
-      expansionModifier: .explode
-    )
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variables: [var1, var2]
-      )
-    )
-    var variables: Set<URITemplateVariable> = []
-    component.injectTemplateVariables(into: &variables)
-    #expect(variables.count == 2)
-  }
-
-  // MARK: - Validity Tests
-
-  @Test
-  func `valid literal component`() {
-    let component = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "valid")
-    )
-    #expect(component.isValid)
-  }
-
-  @Test
-  func `valid expression component`() {
-    let component = URITemplateComponent.expression(
-      URITemplateExpressionComponent(
-        expansionType: .simple,
-        variable: URITemplateVariable(
-          variableName: URITemplateVariableName(rawValue: "var"),
-          expansionModifier: .unmodified
-        )
-      )
-    )
-    #expect(component.isValid)
-  }
-
-  // MARK: - Equatable Tests
-
-  @Test
-  func `equal literal components are equal`() {
-    let component1 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "same")
-    )
-    let component2 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "same")
-    )
-    #expect(component1 == component2)
-  }
-
-  @Test
-  func `different literal components are not equal`() {
-    let component1 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "first")
-    )
-    let component2 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "second")
-    )
-    #expect(component1 != component2)
-  }
-
-  @Test
-  func `literal and expression are not equal`() {
-    let literal = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "var")
-    )
+    // expression component
     let expression = URITemplateComponent.expression(
       URITemplateExpressionComponent(
         expansionType: .simple,
@@ -239,41 +32,184 @@ struct URITemplateComponentTests {
         )
       )
     )
-    #expect(literal != expression)
+    #expect(expression.isExpressionComponent)
+    #expect(!expression.isLiteralComponent)
+    #expect(expression.templateComponentType == .expression)
   }
 
-  // MARK: - Hashable Tests
+  // MARK: - Template Representation Tests
 
   @Test
-  func `equal components have equal hashes`() {
-    let component1 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "test")
+  func `templateRepresentation`() {
+    // literal
+    let literal = URITemplateComponent.literal(
+      URITemplateLiteralComponent(rawValue: "https://example.com/")
     )
-    let component2 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "test")
+    #expect(literal.templateRepresentation == "https://example.com/")
+
+    // simple expression
+    let simple = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variable: URITemplateVariable(
+          variableName: URITemplateVariableName(rawValue: "var"),
+          expansionModifier: .unmodified
+        )
+      )
     )
-    #expect(component1.hashValue == component2.hashValue)
+    #expect(simple.templateRepresentation == "{var}")
+
+    // query expression
+    let query = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .query,
+        variable: URITemplateVariable(
+          variableName: URITemplateVariableName(rawValue: "query"),
+          expansionModifier: .unmodified
+        )
+      )
+    )
+    #expect(query.templateRepresentation == "{?query}")
+
+    // expression with explode
+    let explode = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variable: URITemplateVariable(
+          variableName: URITemplateVariableName(rawValue: "list"),
+          expansionModifier: .explode
+        )
+      )
+    )
+    #expect(explode.templateRepresentation == "{list*}")
+
+    // expression with prefix
+    let prefix = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variable: URITemplateVariable(
+          variableName: URITemplateVariableName(rawValue: "name"),
+          expansionModifier: .prefix(5)
+        )
+      )
+    )
+    #expect(prefix.templateRepresentation == "{name:5}")
   }
 
+  // MARK: - Variable Injection Tests
+
   @Test
-  func `components work in sets`() {
+  func `injectTemplateVariables`() {
+    // literal yields nothing
+    let literal = URITemplateComponent.literal(
+      URITemplateLiteralComponent(rawValue: "literal")
+    )
+    var literalVariables: Set<URITemplateVariable> = []
+    literal.injectTemplateVariables(into: &literalVariables)
+    #expect(literalVariables.isEmpty)
+
+    // expression yields single variable
+    let variable = URITemplateVariable(
+      variableName: URITemplateVariableName(rawValue: "test"),
+      expansionModifier: .unmodified
+    )
+    let expression = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variable: variable
+      )
+    )
+    var expressionVariables: Set<URITemplateVariable> = []
+    expression.injectTemplateVariables(into: &expressionVariables)
+    #expect(expressionVariables.count == 1)
+    #expect(expressionVariables.contains(variable))
+
+    // expression with multiple variables
+    let var1 = URITemplateVariable(
+      variableName: URITemplateVariableName(rawValue: "x"),
+      expansionModifier: .unmodified
+    )
+    let var2 = URITemplateVariable(
+      variableName: URITemplateVariableName(rawValue: "y"),
+      expansionModifier: .explode
+    )
+    let multiVarExpression = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variables: [var1, var2]
+      )
+    )
+    var multiVariables: Set<URITemplateVariable> = []
+    multiVarExpression.injectTemplateVariables(into: &multiVariables)
+    #expect(multiVariables.count == 2)
+  }
+
+  // MARK: - Validity Tests
+
+  @Test
+  func `validity`() {
+    let validLiteral = URITemplateComponent.literal(
+      URITemplateLiteralComponent(rawValue: "valid")
+    )
+    #expect(validLiteral.isValid)
+
+    let validExpression = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variable: URITemplateVariable(
+          variableName: URITemplateVariableName(rawValue: "var"),
+          expansionModifier: .unmodified
+        )
+      )
+    )
+    #expect(validExpression.isValid)
+  }
+
+  // MARK: - Equatable and Hashable Tests
+
+  @Test
+  func `equality and hashing`() {
+    // equal literals are equal
     let literal1 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "a")
+      URITemplateLiteralComponent(rawValue: "same")
     )
     let literal2 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "b")
+      URITemplateLiteralComponent(rawValue: "same")
     )
+    #expect(literal1 == literal2)
+    #expect(literal1.hashValue == literal2.hashValue)
+
+    // different literals are not equal
     let literal3 = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "a")
+      URITemplateLiteralComponent(rawValue: "different")
     )
-    let set: Set<URITemplateComponent> = [literal1, literal2, literal3]
+    #expect(literal1 != literal3)
+
+    // literal and expression are not equal (even with same content)
+    let expression = URITemplateComponent.expression(
+      URITemplateExpressionComponent(
+        expansionType: .simple,
+        variable: URITemplateVariable(
+          variableName: URITemplateVariableName(rawValue: "same"),
+          expansionModifier: .unmodified
+        )
+      )
+    )
+    #expect(literal1 != expression)
+
+    // components work in sets
+    let a = URITemplateComponent.literal(URITemplateLiteralComponent(rawValue: "a"))
+    let b = URITemplateComponent.literal(URITemplateLiteralComponent(rawValue: "b"))
+    let aDuplicate = URITemplateComponent.literal(URITemplateLiteralComponent(rawValue: "a"))
+    let set: Set<URITemplateComponent> = [a, b, aDuplicate]
     #expect(set.count == 2)
   }
 
   // MARK: - Comparable Tests
 
   @Test
-  func `literal less than expression`() {
+  func `ordering`() {
+    // literal < expression (regardless of content)
     let literal = URITemplateComponent.literal(
       URITemplateLiteralComponent(rawValue: "zzz")
     )
@@ -287,22 +223,18 @@ struct URITemplateComponentTests {
       )
     )
     #expect(literal < expression)
-  }
 
-  @Test
-  func `literals compare by content`() {
-    let literal1 = URITemplateComponent.literal(
+    // literals compare by content
+    let literalA = URITemplateComponent.literal(
       URITemplateLiteralComponent(rawValue: "aaa")
     )
-    let literal2 = URITemplateComponent.literal(
+    let literalB = URITemplateComponent.literal(
       URITemplateLiteralComponent(rawValue: "bbb")
     )
-    #expect(literal1 < literal2)
-  }
+    #expect(literalA < literalB)
 
-  @Test
-  func `expressions compare by content`() {
-    let expression1 = URITemplateComponent.expression(
+    // expressions compare by content
+    let expressionA = URITemplateComponent.expression(
       URITemplateExpressionComponent(
         expansionType: .simple,
         variable: URITemplateVariable(
@@ -311,7 +243,7 @@ struct URITemplateComponentTests {
         )
       )
     )
-    let expression2 = URITemplateComponent.expression(
+    let expressionB = URITemplateComponent.expression(
       URITemplateExpressionComponent(
         expansionType: .simple,
         variable: URITemplateVariable(
@@ -320,26 +252,26 @@ struct URITemplateComponentTests {
         )
       )
     )
-    #expect(expression1 < expression2)
+    #expect(expressionA < expressionB)
   }
 
   // MARK: - Codable Tests
 
   @Test
-  func `literal codable round trip`() throws {
-    let original = URITemplateComponent.literal(
+  func `codable round trip`() throws {
+    let encoder = JSONEncoder()
+    let decoder = JSONDecoder()
+
+    // literal
+    let literal = URITemplateComponent.literal(
       URITemplateLiteralComponent(rawValue: "https://example.com/")
     )
-    let encoder = JSONEncoder()
-    let data = try encoder.encode(original)
-    let decoder = JSONDecoder()
-    let decoded = try decoder.decode(URITemplateComponent.self, from: data)
-    #expect(original == decoded)
-  }
+    let literalData = try encoder.encode(literal)
+    let decodedLiteral = try decoder.decode(URITemplateComponent.self, from: literalData)
+    #expect(literal == decodedLiteral)
 
-  @Test
-  func `expression codable round trip`() throws {
-    let original = URITemplateComponent.expression(
+    // expression
+    let expression = URITemplateComponent.expression(
       URITemplateExpressionComponent(
         expansionType: .query,
         variable: URITemplateVariable(
@@ -348,27 +280,23 @@ struct URITemplateComponentTests {
         )
       )
     )
-    let encoder = JSONEncoder()
-    let data = try encoder.encode(original)
-    let decoder = JSONDecoder()
-    let decoded = try decoder.decode(URITemplateComponent.self, from: data)
-    #expect(original == decoded)
+    let expressionData = try encoder.encode(expression)
+    let decodedExpression = try decoder.decode(URITemplateComponent.self, from: expressionData)
+    #expect(expression == decodedExpression)
   }
 
   // MARK: - Description Tests
 
   @Test
-  func `literal description contains rawValue`() {
-    let component = URITemplateComponent.literal(
+  func `descriptions`() {
+    let literal = URITemplateComponent.literal(
       URITemplateLiteralComponent(rawValue: "content")
     )
-    #expect(component.description.contains("literal"))
-    #expect(component.description.contains("content"))
-  }
+    #expect(literal.description.contains("literal"))
+    #expect(literal.description.contains("content"))
+    #expect(literal.debugDescription.contains("URITemplateComponent"))
 
-  @Test
-  func `expression description contains expression info`() {
-    let component = URITemplateComponent.expression(
+    let expression = URITemplateComponent.expression(
       URITemplateExpressionComponent(
         expansionType: .simple,
         variable: URITemplateVariable(
@@ -377,15 +305,7 @@ struct URITemplateComponentTests {
         )
       )
     )
-    #expect(component.description.contains("expression"))
-  }
-
-  @Test
-  func `debugDescription contains type name`() {
-    let component = URITemplateComponent.literal(
-      URITemplateLiteralComponent(rawValue: "test")
-    )
-    #expect(component.debugDescription.contains("URITemplateComponent"))
+    #expect(expression.description.contains("expression"))
   }
 
 }

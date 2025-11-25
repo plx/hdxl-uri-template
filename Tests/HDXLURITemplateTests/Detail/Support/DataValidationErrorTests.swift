@@ -13,91 +13,84 @@ struct DataValidationErrorTests {
   // MARK: - Construction Tests
 
   @Test
-  func `constructs with all parameters`() {
-    let error = DataValidationError(
+  func `construction`() {
+    // with all parameters
+    let withAll = DataValidationError(
       forType: String.self,
       problemDescription: "The string is invalid",
       repairDescription: "Use a default string",
       repairSuggestion: "default"
     )
-    #expect(error.repairSuggestion == "default")
-  }
+    #expect(withAll.repairSuggestion == "default")
 
-  @Test
-  func `constructs with minimal parameters`() {
-    let error = DataValidationError(
+    // with minimal parameters
+    let minimal = DataValidationError(
       forType: Int.self,
       problemDescription: nil,
       repairDescription: nil,
       repairSuggestion: nil
     )
-    #expect(error.repairSuggestion == nil)
-  }
+    #expect(minimal.repairSuggestion == nil)
 
-  @Test
-  func `constructs without repair suggestion`() {
-    let error = DataValidationError(
+    // without repair suggestion
+    let withoutRepair = DataValidationError(
       forType: Double.self,
       problemDescription: "Invalid value",
       repairDescription: nil,
       repairSuggestion: nil
     )
-    #expect(error.repairSuggestion == nil)
-  }
+    #expect(withoutRepair.repairSuggestion == nil)
 
-  @Test
-  func `constructs with only problem description`() {
-    let error = DataValidationError<String>(
+    // with only problem description
+    let problemOnly = DataValidationError<String>(
       forType: String.self,
       problemDescription: "Something went wrong"
     )
-    #expect(error.repairSuggestion == nil)
+    #expect(problemOnly.repairSuggestion == nil)
   }
 
   // MARK: - Repair Suggestion Tests
 
   @Test
-  func `repair suggestion is accessible`() {
+  func `repair suggestion`() {
+    // simple type
     let suggestion = "repaired value"
-    let error = DataValidationError(
+    let simple = DataValidationError(
       forType: String.self,
       problemDescription: "Invalid",
       repairDescription: "Here's a fix",
       repairSuggestion: suggestion
     )
-    #expect(error.repairSuggestion == suggestion)
-  }
+    #expect(simple.repairSuggestion == suggestion)
 
-  @Test
-  func `repair suggestion with complex type`() {
+    // complex type
     struct ComplexType: Sendable, Equatable {
       let id: Int
       let name: String
     }
 
-    let suggestion = ComplexType(id: 1, name: "fixed")
-    let error = DataValidationError(
+    let complexSuggestion = ComplexType(id: 1, name: "fixed")
+    let complex = DataValidationError(
       forType: ComplexType.self,
       problemDescription: "Invalid complex type",
       repairDescription: "Use default",
-      repairSuggestion: suggestion
+      repairSuggestion: complexSuggestion
     )
-    #expect(error.repairSuggestion == suggestion)
+    #expect(complex.repairSuggestion == complexSuggestion)
   }
 
   // MARK: - Error Protocol Conformance Tests
 
   @Test
-  func `conforms to Error protocol`() {
+  func `error protocol conformance`() throws {
+    // conforms to Error
     let error: any Error = DataValidationError(
       forType: String.self,
       problemDescription: "test"
     )
     #expect(error is DataValidationError<String>)
-  }
 
-  @Test
-  func `can be thrown and caught`() {
+    // can be thrown and caught
     do {
       throw DataValidationError(
         forType: Int.self,
@@ -108,10 +101,8 @@ struct DataValidationErrorTests {
     } catch {
       Issue.record("Expected DataValidationError<Int>, got \(type(of: error))")
     }
-  }
 
-  @Test
-  func `can be thrown and caught with repair`() throws {
+    // can be thrown and caught with repair suggestion
     let repairValue = 42
     do {
       throw DataValidationError(
@@ -128,47 +119,42 @@ struct DataValidationErrorTests {
   // MARK: - Various Types Tests
 
   @Test
-  func `works with array type`() {
-    let error = DataValidationError(
+  func `various types`() {
+    // array type
+    let arrayError = DataValidationError(
       forType: [String].self,
       problemDescription: "Invalid array",
       repairDescription: "Use empty array",
       repairSuggestion: []
     )
-    #expect(error.repairSuggestion?.isEmpty == true)
-  }
+    #expect(arrayError.repairSuggestion?.isEmpty == true)
 
-  @Test
-  func `works with optional repair suggestion`() {
-    let error: DataValidationError<String?> = DataValidationError(
+    // optional type
+    let optionalError: DataValidationError<String?> = DataValidationError(
       forType: (String?).self,
       problemDescription: "Invalid optional",
       repairDescription: "Use nil",
       repairSuggestion: nil
     )
-    #expect(error.repairSuggestion == nil)
-  }
+    #expect(optionalError.repairSuggestion == nil)
 
-  @Test
-  func `works with URIVariableValue type`() {
-    let error = DataValidationError(
+    // URIVariableValue type
+    let variableValueError = DataValidationError(
       forType: URIVariableValue.self,
       problemDescription: "Invalid variable value",
       repairDescription: "Use undefined",
       repairSuggestion: .undefined
     )
-    #expect(error.repairSuggestion == .undefined)
-  }
+    #expect(variableValueError.repairSuggestion == .undefined)
 
-  @Test
-  func `works with URIValueExpansionModifier type`() {
-    let error = DataValidationError(
+    // URIValueExpansionModifier type
+    let modifierError = DataValidationError(
       forType: URIValueExpansionModifier.self,
       problemDescription: "Invalid prefix value",
       repairDescription: "Use minimum prefix",
       repairSuggestion: .prefix(1)
     )
-    #expect(error.repairSuggestion == .prefix(1))
+    #expect(modifierError.repairSuggestion == .prefix(1))
   }
 
 }

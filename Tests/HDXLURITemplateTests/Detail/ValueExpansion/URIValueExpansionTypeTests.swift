@@ -37,9 +37,9 @@ struct URIValueExpansionTypeTests {
     let roundTrippedExpansionType = try #require(URIValueExpansionType(formatString: formatString))
     #expect(
       expansionType == roundTrippedExpansionType,
-    """
-    Failed to round-trip `\(expansionType)` through intermediate format-string `\(formatString)`!
-    """
+      """
+      Failed to round-trip `\(expansionType)` through intermediate format-string `\(formatString)`!
+      """
     )
   }
 
