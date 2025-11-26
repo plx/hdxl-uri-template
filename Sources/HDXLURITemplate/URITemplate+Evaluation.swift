@@ -87,7 +87,7 @@ extension URITemplate {
   public func evaluate(parameters: [String: URIVariableValue]) throws -> URL {
     let stringResult = try evaluateAsString(parameters: parameters)
     guard let url = URL(string: stringResult) else {
-      // TODO:
+      // TODO: extend `EvaluationError` to cover this case, and then make this and the wrapped method both `throws(EvaluationError)`
       throw URLError(
         .badURL,
         userInfo: [

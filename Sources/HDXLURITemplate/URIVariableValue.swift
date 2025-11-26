@@ -563,7 +563,6 @@ extension URIVariableValue: ExpressibleByStringLiteral {
   
 }
 
-
 // MARK: - Core API
 
 extension URIVariableValue {

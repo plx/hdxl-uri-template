@@ -114,6 +114,93 @@ extension URIScalarVariableValue : Codable {
 
 }
 
+extension URIScalarVariableValue: ExpressibleByIntegerLiteral {
+
+  /// The integer literal type for initialization.
+  public typealias IntegerLiteralType = Int
+
+  /// Creates a text-flavored value from an integer literal.
+  ///
+  /// - Parameter value: The integer value to convert to text.
+  public init(integerLiteral value: IntegerLiteralType) {
+    self.init(
+      storage: URIVariableTextValue(rawValue: "\(value)")
+    )
+  }
+}
+
+extension URIScalarVariableValue: ExpressibleByFloatLiteral {
+
+  /// The floating-point literal type for initialization.
+  public typealias FloatLiteralType = Double
+
+  /// Creates a text-flavored value from a floating-point literal.
+  ///
+  /// - Parameter value: The floating-point value to convert to text.
+  public init(floatLiteral value: FloatLiteralType) {
+    self.init(
+      storage: URIVariableTextValue(rawValue: "\(value)")
+    )
+  }
+}
+
+extension URIScalarVariableValue: ExpressibleByUnicodeScalarLiteral {
+  
+  /// A type that represents a Unicode scalar literal.
+  ///
+  /// Valid types for `UnicodeScalarLiteralType` are `Unicode.Scalar`,
+  /// `Character`, `String`, and `StaticString`.
+  public typealias UnicodeScalarLiteralType = Unicode.Scalar
+  
+  /// Creates an instance initialized to the given value.
+  ///
+  /// - Parameter value: The value of the new instance.
+  public init(unicodeScalarLiteral value: UnicodeScalarLiteralType) {
+    self.init(
+      storage: URIVariableTextValue(rawValue: String(value))
+    )
+  }
+
+}
+
+extension URIScalarVariableValue: ExpressibleByExtendedGraphemeClusterLiteral {
+  
+  /// A type that represents a Unicode scalar literal.
+  ///
+  /// Valid types for `UnicodeScalarLiteralType` are `Unicode.Scalar`,
+  /// `Character`, `String`, and `StaticString`.
+  public typealias ExtendedGraphemeClusterLiteralType = Character
+  
+  /// Creates an instance initialized to the given value.
+  ///
+  /// - Parameter value: The value of the new instance.
+  public init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
+    self.init(
+      storage: URIVariableTextValue(rawValue: String(value))
+    )
+  }
+  
+}
+
+extension URIScalarVariableValue: ExpressibleByStringLiteral {
+  
+  /// A type that represents a Unicode scalar literal.
+  ///
+  /// Valid types for `UnicodeScalarLiteralType` are `Unicode.Scalar`,
+  /// `Character`, `String`, and `StaticString`.
+  public typealias StringLiteralType = String
+  
+  /// Creates an instance initialized to the given value.
+  ///
+  /// - Parameter value: The value of the new instance.
+  public init(stringLiteral value: String) {
+    self.init(
+      storage: URIVariableTextValue(rawValue: String(value))
+    )
+  }
+  
+}
+
 // MARK: - Core API
 
 extension URIScalarVariableValue {
