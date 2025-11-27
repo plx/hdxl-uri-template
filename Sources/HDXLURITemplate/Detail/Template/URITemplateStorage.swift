@@ -85,7 +85,7 @@ internal final class URITemplateStorage {
   /// Resets all cached derived properties.
   @inlinable
   func resetCachedDerivedProperties() {
-    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.precondition(.notOwner) // deadlock detection/prevention
     cachedFieldLock.withLock {
       _templateRepresentation = nil
       _templateVariables = nil
@@ -103,7 +103,7 @@ internal final class URITemplateStorage {
   /// The reconstructed template string representation.
   @inlinable
   internal var templateRepresentation: String {
-    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.precondition(.notOwner) // deadlock detection/prevention
     return cachedFieldLock.withLock {
       _withLockTemplateRepresentation
     }
@@ -112,7 +112,7 @@ internal final class URITemplateStorage {
   /// Thread-safe accessor for template representation (requires lock ownership).
   @inlinable
   internal var _withLockTemplateRepresentation: String {
-    cachedFieldLock.precondition(.owner)
+    cachedFieldLock.precondition(.owner) // deadlock detection/prevention
     return _templateRepresentation.obtainAssuredValue(
       guaranteedBy: components
         .lazy
@@ -186,7 +186,7 @@ internal final class URITemplateStorage {
   /// The set of variable names as plain strings.
   @inlinable
   internal var variableNames: Set<String> {
-    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.precondition(.notOwner) // deadlock detection/prevention
     return cachedFieldLock.withLock {
       withLockVariableNames
     }
