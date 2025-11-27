@@ -1,17 +1,18 @@
 import Foundation
 import os.lock
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateStorage - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateStorage
 
+/// Internal storage class for `URITemplate`, holding parsed components and cached derived properties.
+///
+/// This class provides COW-style semantics for `URITemplate` while caching
+/// frequently-accessed derived properties like template representation and variable names.
 @usableFromInline
 internal final class URITemplateStorage {
-  
-  // ------------------------------------------------------------------------ //
-  // MARK: Fields
-  // ------------------------------------------------------------------------ //
-  
+
+  // MARK: - Fields
+
+  /// The parsed template components (literals and expressions).
   @usableFromInline
   internal var components: [URITemplateComponent] {
     didSet {
@@ -36,37 +37,40 @@ internal final class URITemplateStorage {
   @usableFromInline
   internal var cachedFieldLock: OSAllocatedUnfairLock<Void>
   
-  // ------------------------------------------------------------------------ //
   // MARK: `init`
-  // ------------------------------------------------------------------------ //
-  
+
+  /// Creates an empty template storage.
   @inlinable
   internal convenience init() {
     self.init(
       components: []
     )
   }
-  
+
+  /// Creates storage with a single component.
+  ///
+  /// - Parameter component: The single template component.
   @inlinable
   internal convenience init(component: URITemplateComponent) {
-#if HEAVY_DEBUG
-    pedanticAssert(component.isValid)
-#endif
     self.init(
       components: [component]
     )
   }
-  
+
+  /// Creates storage with the given components.
+  ///
+  /// - Parameter components: The template components.
   @inlinable
   internal required init(components: [URITemplateComponent]) {
-#if HEAVY_DEBUG
-    pedanticAssert(components.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid) }
-#endif
     self.components = components
     self.cachedFieldLock = OSAllocatedUnfairLock()
   }
-  
+
+  /// Creates storage by parsing a template string.
+  ///
+  /// - Parameter template: The template string to parse.
+  ///
+  /// - Throws: An error if parsing fails.
   @inlinable
   internal convenience init(parsing template: String) throws {
     if template.isEmpty {
@@ -78,9 +82,10 @@ internal final class URITemplateStorage {
     }
   }
     
+  /// Resets all cached derived properties.
   @inlinable
   func resetCachedDerivedProperties() {
-    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.precondition(.notOwner) // deadlock detection/prevention
     cachedFieldLock.withLock {
       _templateRepresentation = nil
       _templateVariables = nil
@@ -89,24 +94,25 @@ internal final class URITemplateStorage {
     }
   }
   
-  // ------------------------------------------------------------------------ //
   // MARK: `templateRepresentation`
-  // ------------------------------------------------------------------------ //
-  
+
+  /// Cached template representation string.
   @usableFromInline
   internal var _templateRepresentation: String? = nil
-  
+
+  /// The reconstructed template string representation.
   @inlinable
   internal var templateRepresentation: String {
-    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.precondition(.notOwner) // deadlock detection/prevention
     return cachedFieldLock.withLock {
       _withLockTemplateRepresentation
     }
   }
 
+  /// Thread-safe accessor for template representation (requires lock ownership).
   @inlinable
   internal var _withLockTemplateRepresentation: String {
-    cachedFieldLock.precondition(.owner)
+    cachedFieldLock.precondition(.owner) // deadlock detection/prevention
     return _templateRepresentation.obtainAssuredValue(
       guaranteedBy: components
         .lazy
@@ -118,13 +124,13 @@ internal final class URITemplateStorage {
     )
   }
 
-  // ------------------------------------------------------------------------ //
   // MARK: `templateVariables`
-  // ------------------------------------------------------------------------ //
-  
+
+  /// Cached set of template variables.
   @usableFromInline
   internal var _templateVariables: Set<URITemplateVariable>? = nil
-  
+
+  /// The set of all variables in the template.
   @inlinable
   internal var templateVariables: Set<URITemplateVariable> {
     cachedFieldLock.precondition(.notOwner)
@@ -133,6 +139,7 @@ internal final class URITemplateStorage {
     }
   }
 
+  /// Thread-safe accessor for template variables (requires lock ownership).
   @inlinable
   internal var _withLockTemplateVariables: Set<URITemplateVariable> {
     cachedFieldLock.precondition(.owner)
@@ -141,6 +148,7 @@ internal final class URITemplateStorage {
     )
   }
 
+  /// Collects all variables from components (requires lock ownership).
   @inlinable
   func _withLockPrepareTemplateVariables() -> Set<URITemplateVariable> {
     cachedFieldLock.precondition(.owner)
@@ -151,13 +159,13 @@ internal final class URITemplateStorage {
     return result
   }
   
-  // ------------------------------------------------------------------------ //
   // MARK: `templateVariableNames`
-  // ------------------------------------------------------------------------ //
-  
+
+  /// Cached set of variable names as `URITemplateVariableName`.
   @usableFromInline
   internal var _templateVariableNames: Set<URITemplateVariableName>? = nil
-  
+
+  /// The set of variable names as `URITemplateVariableName` objects.
   @inlinable
   internal var templateVariablesNames: Set<URITemplateVariableName> {
     _templateVariableNames.obtainAssuredValue(
@@ -169,27 +177,28 @@ internal final class URITemplateStorage {
     )
   }
   
-  // ------------------------------------------------------------------------ //
   // MARK: `variableNames`
-  // ------------------------------------------------------------------------ //
-  
+
+  /// Cached set of variable names as strings.
   @usableFromInline
   internal var _variableNames: Set<String>? = nil
-  
+
+  /// The set of variable names as plain strings.
   @inlinable
   internal var variableNames: Set<String> {
-    cachedFieldLock.precondition(.notOwner)
+    cachedFieldLock.precondition(.notOwner) // deadlock detection/prevention
     return cachedFieldLock.withLock {
       withLockVariableNames
     }
   }
 
+  /// Thread-safe accessor for variable names (requires lock ownership).
   @inlinable
   internal var withLockVariableNames: Set<String> {
     cachedFieldLock.precondition(.owner)
     return _variableNames.obtainAssuredValue(
       guaranteedBy: Set(
-        templateVariables
+        _withLockTemplateVariables
           .lazy
           .map(\.variableName.rawValue)
       )
@@ -197,28 +206,19 @@ internal final class URITemplateStorage {
   }
 
 }
-
-// -------------------------------------------------------------------------- //
-// MARK: - Sendable
-// -------------------------------------------------------------------------- //
+// MARK: - Synthesized Conformances
 
 extension URITemplateStorage: @unchecked Sendable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Equatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Equatable {
-  
+
   @inlinable
   internal static func ==(
     lhs: URITemplateStorage,
     rhs: URITemplateStorage
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
     guard lhs !== rhs else {
       return true
     }
@@ -227,21 +227,15 @@ extension URITemplateStorage : Equatable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Comparable {
-  
+
   @inlinable
   internal static func <(
     lhs: URITemplateStorage,
     rhs: URITemplateStorage
   ) -> Bool {
-    #if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-    #endif
     guard lhs !== rhs else {
       return false
     }
@@ -250,39 +244,32 @@ extension URITemplateStorage : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Hashable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Hashable {
-  
+
   @inlinable
   internal func hash(into hasher: inout Hasher) {
     components.hash(into: &hasher)
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : CustomStringConvertible {
-  
+
   @usableFromInline
   internal var description: String {
     "storage for uri template: \"\(templateRepresentation)\""
   }
-  
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : CustomDebugStringConvertible {
-  
+
   @usableFromInline
   internal var debugDescription: String {
     let components = components
@@ -291,21 +278,23 @@ extension URITemplateStorage : CustomDebugStringConvertible {
       .joined(separator: ", ")
     return "URITemplateStorage(components: [ \(components) ])"
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateStorage : Codable {
-  
+
+  /// Encodes the storage's components.
   @inlinable
   internal func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(components)
   }
-  
+
+  /// Creates storage by decoding components from the given decoder.
+  ///
+  /// - Throws: `DataValidationError` if any decoded component is invalid.
   @inlinable
   internal convenience init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -323,15 +312,28 @@ extension URITemplateStorage : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: - Validatable
-// -------------------------------------------------------------------------- //
+// MARK: - Core API
 
 extension URITemplateStorage {
   
   @inlinable
+  internal var underestimatedExpansionLength: Int {
+    // TODO: consider caching, but also consider *not* caching if we pass the expansion variables in, too
+    components.reduce(0) { length, component in
+      length + component.underestimatedExpansionLength
+    }
+  }
+  
+}
+
+// MARK: - Validatable
+
+extension URITemplateStorage {
+
+  /// Indicates whether all components are valid.
+  @inlinable
   internal var isValid: Bool {
     components.allSatisfy(\.isValid)
   }
-  
+
 }

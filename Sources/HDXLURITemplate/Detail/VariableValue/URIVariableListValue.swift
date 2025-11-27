@@ -1,50 +1,41 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableListValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableListValue
 
 @usableFromInline
-internal struct URIVariableListValue {
+package struct URIVariableListValue {
   
   @usableFromInline
-  internal var storage: [URIVariableTextValue]
+  package var storage: [URIVariableTextValue]
   
   @inlinable
-  internal init() {
+  package init() {
     self.init(
       values: []
     )
   }
 
   @inlinable
-  internal init(value: URIVariableTextValue) {
-#if HEAVY_DEBUG
-    pedanticAssert(value.isValid)
-#endif
+  package init(value: URIVariableTextValue) {
     self.init(
       values: [value]
     )
   }
 
   @inlinable
-  internal init(values: [URIVariableTextValue]) {
-#if HEAVY_DEBUG
-    pedanticAssert(values.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid)}
-#endif
+  package init(values: [URIVariableTextValue]) {
     self.storage = values
   }
 
   @inlinable
-  internal init(string: String) {
+  package init(string: String) {
     self.init(
       value: URIVariableTextValue(rawValue: string)
     )
   }
 
   @inlinable
-  internal init(strings: [String]) {
+  package init(strings: [String]) {
     self.init(
       values: strings.map { URIVariableTextValue(rawValue: $0)}
     )
@@ -52,42 +43,32 @@ internal struct URIVariableListValue {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue: Sendable { }
 extension URIVariableListValue: Equatable { }
 extension URIVariableListValue: Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: Self,
     rhs: Self
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.storage.lexicographicallyPrecedes(rhs.storage)
+    lhs.storage.lexicographicallyPrecedes(rhs.storage)
   }
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     let values = storage
       .lazy
       .map(\.description)
@@ -98,14 +79,12 @@ extension URIVariableListValue : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     let values = storage
       .lazy
       .map(\.debugDescription)
@@ -114,41 +93,25 @@ extension URIVariableListValue : CustomDebugStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue : Codable {
 
   @usableFromInline
-  internal func encode(to encoder: any Encoder) throws {
+  package func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(storage)
   }
   
   @usableFromInline
-  internal init(from decoder: any Decoder) throws {
+  package init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
     self.init(values: try container.decode([URIVariableTextValue].self))
   }
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: - Expressible
-// -------------------------------------------------------------------------- //
-
-extension URIVariableListValue : ExpressibleByArrayLiteral {
-  
-  @inlinable
-  internal init(arrayLiteral elements: URIVariableTextValue...) {
-    self.init(values: elements)
-  }
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue {
   
@@ -159,29 +122,27 @@ extension URIVariableListValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIVariableListValue {
   
   @inlinable
-  internal var isEmpty: Bool {
+  package var isEmpty: Bool {
     storage.isEmpty
   }
   
   @inlinable
-  internal var count: Int {
+  package var count: Int {
     storage.count
   }
   
   @inlinable
-  internal subscript(index: Int) -> URIVariableTextValue {
+  package subscript(index: Int) -> URIVariableTextValue {
     storage[index]
   }
   
   @usableFromInline
-  internal var errorMessageRepresentation: String {
+  package var errorMessageRepresentation: String {
     let memberErrorRepresentation = storage.lazy.map { $0.errorMessageRepresentation }.joined(separator: ", ")
     return "[ \(memberErrorRepresentation) ]"
   }

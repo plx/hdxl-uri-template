@@ -1,12 +1,29 @@
 import Foundation
 
 extension URIValueExpansionType {
-  
+
+  /// Errors that can occur when parsing an expansion type.
   @usableFromInline
   internal enum ParseError : Error {
+    /// The input string was unexpectedly empty.
     case invalidEmptyString
   }
-  
+
+  /// Parses an expansion type from the beginning of a string, modifying the string in place.
+  ///
+  /// Recognizes RFC 6570 expansion operators:
+  /// - `+` for reserved expansion
+  /// - `#` for fragment expansion
+  /// - `.` for label expansion
+  /// - `/` for path segment expansion
+  /// - `;` for path parameter expansion
+  /// - `?` for query expansion
+  /// - `&` for query continuation expansion
+  /// - No prefix for simple expansion
+  ///
+  /// - Parameter string: The string to parse; will have the operator prefix removed.
+  ///
+  /// - Throws: `ParseError.invalidEmptyString` if the string is empty.
   @inlinable
   internal init(parsing string: inout String) throws {
     guard !string.isEmpty else {

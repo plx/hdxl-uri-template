@@ -13,11 +13,7 @@ extension URIVariableListValue {
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(templateVariable.isValid)
-    pedanticAssert(isValid)
-#endif
-    return try expansion(
+    try expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -30,11 +26,6 @@ extension URIVariableListValue {
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
     guard !isEmpty else {
       return ""
     }
@@ -90,10 +81,6 @@ extension URIVariableListValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
     // we inline this logic instead of using `variableName.escapedVariableName`
     // because the code flow is a bit weird (despite originally intending to do it like that...)
     guard let escapedName = variableName.rawValue.escaped(forValueExpansionType: expansionType) else {
@@ -120,10 +107,6 @@ extension URIVariableListValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
     let joinedValues = try storage
       .lazy
       .map { text in

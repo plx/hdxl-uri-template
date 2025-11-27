@@ -44,11 +44,7 @@ extension URIVariableTextValue {
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(templateVariable.isValid)
-    pedanticAssert(isValid)
-#endif
-    return try expansion(
+    try expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -61,11 +57,6 @@ extension URIVariableTextValue {
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) throws -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
     guard
       let escapedVariableValue = escapedVariableValue(
         expansionType: expansionType,
@@ -83,11 +74,14 @@ extension URIVariableTextValue {
     case .unnecessary:
       return escapedVariableValue
     case .escaped(let variableName):
-      return switch escapedVariableValue.isEmpty {
-      case true:
-        "\(variableName)="
-      case false:
-        "\(variableName)=\(escapedVariableValue)"
+      return switch (escapedVariableValue.isEmpty, expansionType) {
+        // RFC 6570 Section 3.2.7: Path-style parameters omit the "=" for empty values
+        case (true, .pathParameter):
+          variableName
+        case (true, _):
+          "\(variableName)="
+        case (false, _):
+          "\(variableName)=\(escapedVariableValue)"
       }
     case .failure:
       throw ExpansionError.unableToEscapeVariableName(
@@ -102,11 +96,7 @@ extension URIVariableTextValue {
     expansionType: URIValueExpansionType,
     expansionModifier: URIValueExpansionModifier
   ) -> String? {
-#if HEAVY_DEBUG
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
-    return effectiveVariableValue(
+    effectiveVariableValue(
       forExpansionModifier: expansionModifier
     ).escaped(
       forValueExpansionType: expansionType
@@ -117,10 +107,6 @@ extension URIVariableTextValue {
   func effectiveVariableValue(
     forExpansionModifier expansionModifier: URIValueExpansionModifier
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
     return switch expansionModifier {
     case .unmodified:
       rawValue

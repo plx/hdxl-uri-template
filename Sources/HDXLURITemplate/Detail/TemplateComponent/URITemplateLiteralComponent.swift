@@ -1,99 +1,96 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateLiteralComponent
 
+/// Represents a literal text component in a URI template.
+///
+/// Literal components are copied verbatim to the expanded URI, subject to
+/// RFC 6570 character restrictions.
 @usableFromInline
-internal struct URITemplateLiteralComponent: RawRepresentable {
-  
+package struct URITemplateLiteralComponent: RawRepresentable {
+
+  /// The storage type for the raw value.
   @usableFromInline
-  internal typealias Storage = String
-  
+  package typealias Storage = String
+
+  /// The literal string value.
   @usableFromInline
-  internal var rawValue: Storage
-  
+  package var rawValue: Storage
+
+  /// Regular expression for validating literal content per RFC 6570.
   @usableFromInline
-  internal static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
-  
+  package static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
+
+  /// Creates a literal component with the given raw value.
+  ///
+  /// - Parameter rawValue: The literal string.
   @inlinable
-  internal init(rawValue: Storage) {
-#if HEAVY_DEBUG
-    pedanticAssert(!storage.isEmpty)
-    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(rawValue: Storage) {
     self.rawValue = rawValue
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Sendable { }
 extension URITemplateLiteralComponent : Equatable { }
 extension URITemplateLiteralComponent : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Comparable {
-  
+
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateLiteralComponent,
     rhs: URITemplateLiteralComponent
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.rawValue < rhs.rawValue
+    lhs.rawValue < rhs.rawValue
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : CustomStringConvertible {
-  
+
   @usableFromInline
-  internal var description: String { rawValue }
-  
+  package var description: String { rawValue }
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
-  
+
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     "URITemplateLiteralComponent(storage: \"\(rawValue)\")"
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Codable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateLiteralComponent : Codable {
-  
+
+  /// Encodes this literal component.
+  ///
+  /// - Parameter encoder: The encoder to write data to.
   @inlinable
-  func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
-  
+
+  /// Creates a literal component by decoding from the given decoder.
+  ///
+  /// - Parameter decoder: The decoder to read data from.
+  ///
+  /// - Throws: `DataValidationError` if the decoded string is not valid literal content.
   @inlinable
-  init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let rawValue = try container.decode(String.self)
     guard Self.validationRegularExpression.matchesEntirety(of: rawValue) else {
@@ -107,14 +104,15 @@ extension URITemplateLiteralComponent : Codable {
 
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateLiteralComponent - Validation Support
-// -------------------------------------------------------------------------- //
+// MARK: - Validation Support
 
 extension URITemplateLiteralComponent {
-  
+
+  /// Prepares the validation regular expression for literal content per RFC 6570.
+  ///
+  /// - Returns: An `NSRegularExpression` matching valid URI literal characters.
   @inlinable
-  internal static func prepareValidationRegularExpression() throws -> NSRegularExpression {
+  package static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     /*
      The characters outside of expressions in a URI Template string are
      intended to be copied literally to the URI reference if the character
@@ -180,19 +178,29 @@ extension URITemplateLiteralComponent {
 
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: - Validatable
-// -------------------------------------------------------------------------- //
+// MARK: - Core API
 
 extension URITemplateLiteralComponent {
   
   @inlinable
-  internal var isValid: Bool {
+  package var underestimatedExpansionLength: Int {
+    rawValue.count
+  }
+  
+}
+
+// MARK: - Validatable
+
+extension URITemplateLiteralComponent {
+
+  /// Indicates whether this literal component is valid (non-empty and RFC 6570 compliant).
+  @inlinable
+  package var isValid: Bool {
     !rawValue.isEmpty
     &&
     URITemplateLiteralComponent.validationRegularExpression.matchesEntirety(
       of: rawValue
     )
   }
-  
+
 }

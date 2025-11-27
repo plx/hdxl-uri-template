@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifierType - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIValueExpansionModifierType
 
 @usableFromInline
 internal enum URIValueExpansionModifierType : UInt8 {
@@ -13,9 +11,7 @@ internal enum URIValueExpansionModifierType : UInt8 {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : Sendable { }
 extension URIValueExpansionModifierType : Equatable { }
@@ -23,9 +19,7 @@ extension URIValueExpansionModifierType : Hashable { }
 extension URIValueExpansionModifierType : CaseIterable { }
 extension URIValueExpansionModifierType : Codable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : Comparable {
   
@@ -39,9 +33,7 @@ extension URIValueExpansionModifierType : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : CustomStringConvertible {
   
@@ -58,9 +50,7 @@ extension URIValueExpansionModifierType : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifierType : CustomDebugStringConvertible {
   

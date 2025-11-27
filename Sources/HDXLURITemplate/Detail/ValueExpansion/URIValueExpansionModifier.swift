@@ -1,38 +1,38 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIValueExpansionModifier
 
+/// The expansion modifier for a URI template variable, as defined by RFC 6570.
+///
+/// Modifiers affect how list and association values are expanded.
 @usableFromInline
-internal enum URIValueExpansionModifier {
-  
+package enum URIValueExpansionModifier {
+
+  /// No modifier applied - default expansion.
   case unmodified
+  /// Explode modifier (`*`) - expands each list/association element separately.
   case explode
+  /// Prefix modifier (`:N`) - limits output to first N characters.
   case prefix(Int)
-  
-  /// - todo: Verify my interpretation of "positive integer < 10000" as excluding `0`
+
+  /// The valid range for prefix code point counts (1-9999 per RFC 6570).
   @usableFromInline
-  internal static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
-  
+  package static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : Sendable { }
 extension URIValueExpansionModifier : Equatable { }
 extension URIValueExpansionModifier : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URIValueExpansionModifier,
     rhs: URIValueExpansionModifier
   ) -> Bool {
@@ -60,14 +60,12 @@ extension URIValueExpansionModifier : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier : CustomStringConvertible {
 
   @inlinable
-  internal var description: String {
+  package var description: String {
     switch self {
     case .unmodified:
       ".unmodified"
@@ -79,14 +77,12 @@ extension URIValueExpansionModifier : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
+// MARK: - CustomDebugStringConvertible
 
 extension URIValueExpansionModifier : CustomDebugStringConvertible {
 
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .unmodified:
       "URIValueExpansionModifier.unmodified"
@@ -98,17 +94,15 @@ extension URIValueExpansionModifier : CustomDebugStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Codable
-// -------------------------------------------------------------------------- //
+// MARK: - Codable
 
 extension URIValueExpansionModifier : Codable {
 
   @usableFromInline
-  internal typealias CodingKeys = StandardEnumerationCodingKeys
+  package typealias CodingKeys = StandardEnumerationCodingKeys
   
   @inlinable
-  internal func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.container(
       keyedBy: CodingKeys.self
     )
@@ -130,7 +124,7 @@ extension URIValueExpansionModifier : Codable {
   }
   
   @inlinable
-  init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.container(
       keyedBy: CodingKeys.self
     )
@@ -174,17 +168,15 @@ extension URIValueExpansionModifier : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - CaseIterable
-// -------------------------------------------------------------------------- //
+// MARK: - CaseIterable
 
 extension URIValueExpansionModifier : CaseIterable {
   
   @usableFromInline
-  internal typealias AllCases = [URIValueExpansionModifier]
+  package typealias AllCases = [URIValueExpansionModifier]
   
   @usableFromInline
-  internal static let allCases: AllCases = [
+  package static let allCases: AllCases = [
     .unmodified,
     .explode
   ] + URIValueExpansionModifier
@@ -196,9 +188,7 @@ extension URIValueExpansionModifier : CaseIterable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK:  - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier {
   
@@ -216,9 +206,7 @@ extension URIValueExpansionModifier {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionModifier - Core API
-// -------------------------------------------------------------------------- //
+// MARK: - Core API
 
 extension URIValueExpansionModifier {
   

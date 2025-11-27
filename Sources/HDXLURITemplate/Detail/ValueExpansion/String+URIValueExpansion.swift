@@ -69,43 +69,47 @@ extension String {
   @inlinable
   internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
     guard !isEmpty else { return self }
-    
-    guard
-      let withoutPercentEncoding = removingPercentEncoding,
-      let restoringPercentEncoding = withoutPercentEncoding.addingPercentEncoding(
-        withAllowedCharacters: .allowedCharacters(
-          forValueExpansionType: valueExpansionType
-        )
-      )
-    else {
-      return nil
+
+    // RFC 6570 Section 2.4.2: Percent-encoded triplets in values should be treated
+    // as literals. For reserved/fragment expansion, preserve them; for other
+    // expansions, re-encode them (the % becomes %25).
+    let decomposition = unicodeScalars.decomposedIntoEscapedAndUnescapedParts
+    var chunks: [String] = []
+    chunks.reserveCapacity(decomposition.count)
+
+    let allowedCharacters = CharacterSet.allowedCharacters(forValueExpansionType: valueExpansionType)
+
+    for decompositionElement in decomposition {
+      switch decompositionElement {
+      case .escaped(let percentEscapedString):
+        // For reserved and fragment expansion, preserve existing percent-encoded triplets
+        // For other expansion types, re-encode the triplet (% becomes %25)
+        if valueExpansionType == .reserved || valueExpansionType == .fragment {
+          chunks.append(percentEscapedString)
+        } else {
+          // Re-encode the already-encoded triplet by encoding each character
+          guard
+            let reEncodedString = percentEscapedString.addingPercentEncoding(
+              withAllowedCharacters: allowedCharacters
+            )
+          else {
+            return nil
+          }
+          chunks.append(reEncodedString)
+        }
+      case .unescaped(let unescapedString):
+        guard
+          let escapedString = unescapedString.addingPercentEncoding(
+            withAllowedCharacters: allowedCharacters
+          )
+        else {
+          return nil
+        }
+        chunks.append(escapedString)
+      }
     }
-    
-    print("\(valueExpansionType) @ (original: \(self) -> \(withoutPercentEncoding) -> \(restoringPercentEncoding))")
-    return restoringPercentEncoding
-    
-//    let decomposition = unicodeScalars.decomposedIntoEscapedAndUnescapedParts
-//    var chunks: [String] = []
-//    chunks.reserveCapacity(decomposition.count)
-//    for decompositionElement in decomposition {
-//      switch decompositionElement {
-//      case .escaped(let percentEscapedString):
-//        chunks.append(percentEscapedString)
-//      case .unescaped(let unescapedString):
-//        guard
-//          let escapedString = unescapedString.addingPercentEncoding(
-//            withAllowedCharacters: .allowedCharacters(
-//              forValueExpansionType: valueExpansionType
-//            )
-//          )
-//        else {
-//          return nil
-//        }
-//        chunks.append(escapedString)
-//      }
-//    }
-//    
-//    return chunks.joined()
+
+    return chunks.joined()
   }
     
 }

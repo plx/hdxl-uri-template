@@ -1,102 +1,94 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateVariableName
 
+/// A newtype wrapper representing a valid URI template variable name.
+///
+/// Variable names must conform to RFC 6570 naming rules, which allow alphanumeric
+/// characters, underscores, and percent-encoded sequences, optionally separated by dots.
 @usableFromInline
-internal struct URITemplateVariableName: RawRepresentable {
-  
+package struct URITemplateVariableName: RawRepresentable {
+
+  /// The raw value type (String).
   @usableFromInline
-  internal typealias RawValue = String
-  
+  package typealias RawValue = String
+
+  /// The underlying variable name string.
   @usableFromInline
-  internal var rawValue: RawValue
-  
+  package var rawValue: RawValue
+
+  /// Regular expression for validating variable names per RFC 6570.
   @usableFromInline
-  internal static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
-  
+  package static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
+
+  /// Creates a variable name with the given raw value.
+  ///
+  /// - Parameter rawValue: The variable name string.
   @inlinable
-  internal init(rawValue: RawValue) {
-#if HEAVY_DEBUG
-    pedanticAssert(!rawValue.isEmpty)
-    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(rawValue: RawValue) {
     self.rawValue = rawValue
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : Sendable { }
 extension URITemplateVariableName : Equatable { }
 extension URITemplateVariableName : Hashable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: URITemplateVariableName - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : Comparable {
-  
+
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateVariableName,
     rhs: URITemplateVariableName
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    // /////////////////////////////////////////////////////////////////////////
-    return lhs.rawValue < rhs.rawValue
+    lhs.rawValue < rhs.rawValue
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : CustomStringConvertible {
-  
+
   @inlinable
-  internal var description: String {
+  package var description: String {
     rawValue
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName : CustomDebugStringConvertible {
-  
+
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     "URITemplateVariableName(rawValue: \"\(rawValue)\")"
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Codable
-// -------------------------------------------------------------------------- //
+// MARK: - Codable
 
 extension URITemplateVariableName : Codable {
-  
+
+  /// Encodes the variable name.
   @inlinable
-  func encode(to encoder: Encoder) throws {
+  package func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(rawValue)
   }
-  
+
+  /// Creates a variable name by decoding from the given decoder.
+  ///
+  /// - Throws: `DataValidationError` if the decoded string is not a valid variable name.
   @inlinable
-  init(from decoder: Decoder) throws {
+  package init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let storage = try container.decode(String.self)
     guard Self.validationRegularExpression.matchesEntirety(of: storage) else {
@@ -110,14 +102,15 @@ extension URITemplateVariableName : Codable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validation Support
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName {
-    
+
+  /// Prepares the validation regular expression for variable names per RFC 6570.
+  ///
+  /// - Returns: An `NSRegularExpression` matching valid variable names.
   @inlinable
-  static func prepareValidationRegularExpression() throws -> NSRegularExpression {
+  package static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     // NOTE: `varname       =  varchar *( ["."] varchar )`
     // *appears* nonsensical and is *probably* a mistake...
     // ...IMHO it *should* be `varname = varchar *( ["."] varname )`.
@@ -194,14 +187,13 @@ extension URITemplateVariableName {
     
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateVariableName {
-  
+
+  /// Indicates whether this is a valid variable name (non-empty and RFC 6570 compliant).
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     guard
       !rawValue.isEmpty,
       URITemplateVariableName.validationRegularExpression.matchesEntirety(
@@ -212,5 +204,5 @@ extension URITemplateVariableName {
     }
     return true
   }
-  
+
 }

@@ -1,5 +1,7 @@
 import Foundation
 
+// MARK: Character Sets 
+
 extension CharacterSet {
   
   @inlinable
@@ -27,9 +29,7 @@ extension CharacterSet {
 }
 
 
-// -------------------------------------------------------------------------- //
-// MARK: Character Sets - Allowed By Expansion Type
-// -------------------------------------------------------------------------- //
+// MARK: - Allowed By Expansion Type
 
 /*
  For each defined variable in the variable-list, perform variable
@@ -44,15 +44,17 @@ internal let simpleExpansionAllowedCharacterSet: CharacterSet = rfc_unreserved
  2 and above templates, is identical to simple string expansion except
  that the substituted values may also contain pct-encoded triplets and
  characters in the reserved set.
+
+ Note: We do NOT include '%' in the allowed character set here. Valid
+ percent-encoded triplets (%XX) are handled specially in the expansion
+ logic - they are preserved as-is. But a lone '%' character should be
+ encoded as '%25'.
  */
 @usableFromInline
 internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
   unionOf: [
     rfc_unreserved,
-    rfc_reserved,
-    rfc_pct_encode
-    // ^ technically a misnomer b/c the RFC uses "pct-encode" to refer to a
-    // BNF-grammar-spec like % DIGIT DIGIT, but what I did here works for our purposes
+    rfc_reserved
   ]
 )
 
@@ -81,9 +83,7 @@ internal let labelAllowedCharacterSet: CharacterSet = rfc_unreserved
  character and will be pct-encoded if found in a value.
  */
 @usableFromInline
-internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet.union(
-  CharacterSet(charactersIn: "/")
-)
+internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet
 
 /*
  o  perform variable expansion, as defined in Section 3.2.1, with the
@@ -107,9 +107,7 @@ internal let queryAllowedCharacterSet: CharacterSet = rfc_unreserved
 internal let queryContinuationAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 
-// -------------------------------------------------------------------------- //
-// MARK: Character Sets - From RFC
-// -------------------------------------------------------------------------- //
+// MARK: - From RFC
 
 @usableFromInline
 internal let rfcALPHA:CharacterSet = CharacterSet(

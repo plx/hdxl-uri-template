@@ -1,8 +1,7 @@
 import Foundation
+import HDXLURITemplate
 
-// -------------------------------------------------------------------------- //
-// MARK: HDXLURIVariableValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: HDXLURIVariableValue
 
 /// Objective-C compatible wrapper around the native-Swift `URIVariableValue`.
 ///
@@ -12,10 +11,8 @@ import Foundation
 @objc(HDXLURIVariableValue)
 public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding  {
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSObject Overrides
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - NSObject Overrides
+    
   @objc
   override public func isEqual(_ object: Any?) -> Bool {
     guard let other = object as? URIVariableValueWrapper else {
@@ -39,16 +36,12 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     "HDXLURIVariableValue<\(ObjectIdentifier(self).debugDescription)>(variableValue: \"\(variableValue.debugDescription)\")"
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Stored Properties
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Stored Properties
+  
   internal let variableValue: URIVariableValue
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Derived Properties
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Derived Properties
+    
   @objc
   public var variableValueType: URIVariableValueType {
     variableValue.valueType
@@ -61,7 +54,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
 
   @objc
   public var isUndefinedVariableValue: Bool {
-    variableValue.isDefined
+    !variableValue.isDefined
   }
 
   @objc
@@ -102,6 +95,31 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     }
   }
 
+  @discardableResult
+  @objc(enumerateListValuesUsingBlock:)
+  public func enumerateAssociation(
+    using block: (String, Int, UnsafeMutablePointer<ObjCBool>) -> Void
+  ) -> Bool {
+    guard case .list(let listValue) = variableValue.storage else {
+      return false
+    }
+    
+    var stop: ObjCBool = false
+    for (index,stringValue) in listValue.storage.enumerated() {
+      block(
+        stringValue.rawValue,
+        index,
+        &stop
+      )
+      if stop.boolValue {
+        return true
+      }
+    }
+    
+    return true
+  }
+
+
   @objc
   public var associationValueAsDictionary: [String:String]? {
     guard
@@ -117,12 +135,13 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     })
   }
   
+  @discardableResult
   @objc(enumerateAssociationPairsUsingBlock:)
   public func enumerateAssociation(
     using block: (String, String, Int, UnsafeMutablePointer<ObjCBool>) -> Void
-  ) {
+  ) -> Bool {
     guard case .association(let association) = variableValue.storage else {
-      return
+      return false
     }
     
     var stop: ObjCBool = false
@@ -134,25 +153,23 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
         &stop
       )
       if stop.boolValue {
-        return
+        return true
       }
     }
+    
+    return true
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Designated Initializer
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Designated Initializer
+  
   @nonobjc
-  required internal init(variableValue: URIVariableValue) {
+  required public init(variableValue: URIVariableValue) {
     self.variableValue = variableValue
     super.init()
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Objective-C Initializers
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Objective-C Initializers
+  
   @objc(initWithString:)
   public convenience init(string: String) {
     self.init(
@@ -187,7 +204,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     )
   }
 
-  @objc(initWithDictionary:sortDescriptor:)
+  @objc(initWithDictionary:sortDescriptorForKeys:)
   public convenience init(
     dictionary: [String:String],
     comparator: (String, String) -> ComparisonResult) {
@@ -202,10 +219,8 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     )
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Objective-C Well-Known Values
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - Objective-C Well-Known Values
+  
   @objc(undefinedVariableValue)
   public class var undefined: URIVariableValueWrapper {
     _undefined
@@ -226,23 +241,20 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     _emptyAssociation
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: NSCopying Protocol Methods
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - NSCopying
+  
   @objc
   public func copy(with zone: NSZone? = nil) -> Any {
     return self
   }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: NSCoding Protocol Methods
-  // ------------------------------------------------------------------------ //
-
+  // MARK: - NSCoding
+  
   @objc
   public required init?(coder: NSCoder) {
     guard
       let decoder = coder as? NSKeyedUnarchiver,
+      decoder.containsValue(forKey: "variableValue"),
       let variableValue = decoder.decodeDecodable(
         URIVariableValue.self,
         forKey: "variableValue"
@@ -264,24 +276,22 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
           forKey: "variableValue"
         )
       }
-      catch let e {
-        // TODO: just fail quietly? What's best in 2025?
-        fatalError("Failed to encode our `variableValue` \(self.variableValue.debugDescription) due to error: \(String(reflecting: e))!")
+      catch {
+        encoder.encode(
+          nil,
+          forKey: "variableValue"
+        )
       }
     }
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: NSSecureCoding Protocol Methods
-  // ------------------------------------------------------------------------ //
-
+    // MARK: - NSSecureCoding Protocol Methods
+  
   @objc
   public class var supportsSecureCoding: Bool { true }
   
-  // ------------------------------------------------------------------------ //
-  // MARK: Storage For Well-Known Values
-  // ------------------------------------------------------------------------ //
-  
+  // MARK: - Storage For Well-Known Values
+    
   @nonobjc
   internal static let _undefined: URIVariableValueWrapper = URIVariableValueWrapper(variableValue: .undefined)
   
@@ -298,3 +308,185 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
 
 // ok to be `Sendable` b/c we're internally-immutable
 extension URIVariableValueWrapper: @unchecked Sendable { }
+
+// MARK: - Integer Conveniences
+
+extension URIVariableValueWrapper {
+  
+  @objc(variableValueWithInteger:)
+  public class func make(wrapping value: Int) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+
+  @objc(variableValueWithChar:)
+  public class func make(wrapping value: Int8) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+
+  @objc(variableValueWithShort:)
+  public class func make(wrapping value: Int16) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+
+  @objc(variableValueWithLong:)
+  public class func make(wrapping value: Int32) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+
+  @objc(variableValueWithLongLong:)
+  public class func make(wrapping value: Int64) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+
+  @objc(variableValueWithInt:)
+  public class func __make(wrapping value: Int32) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+  
+}
+
+// MARK: - Unsigned Integer Conveniences
+
+extension URIVariableValueWrapper {
+  
+  @objc(variableValueWithUnsignedInteger:)
+  public class func make(wrapping value: UInt) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+
+  @objc(variableValueWithUnsignedChar:)
+  public class func make(wrapping value: UInt8) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+  
+  @objc(variableValueWithUnsignedShort:)
+  public class func make(wrapping value: UInt16) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+  
+  @objc(variableValueWithUnsignedLong:)
+  public class func make(wrapping value: UInt32) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+  
+  @objc(variableValueWithUnsignedLongLong:)
+  public class func make(wrapping value: UInt64) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+ 
+  @objc(variableValueWithUnsignedInt:)
+  public class func __make(wrapping value: UInt32) -> Self {
+    Self(
+      variableValue: URIVariableValue.integer(value)
+    )
+  }
+  
+}
+
+// MARK: - Boolean-Value Conveniences
+
+extension URIVariableValueWrapper {
+  
+  // MARK: - Yes-or-No
+  
+  @objc(yesOrNoVariableValue:)
+  public class func makeYesOrNo(wrapping boolValue: Bool) -> Self {
+    makeYesOrNo(
+      wrapping: boolValue,
+      capitalization: .lowercase
+    )
+  }
+
+  @objc(yesOrNoVariableValue:capitalization:)
+  public class func makeYesOrNo(
+    wrapping boolValue: Bool,
+    capitalization: URIVariableValue.BooleanCapitalization
+  ) -> Self {
+    Self(
+      variableValue: URIVariableValue.yesOrNo(
+        boolValue: boolValue,
+        capitalization: capitalization
+      )
+    )
+  }
+
+  // MARK: - Y-or-N
+  
+  @objc(yOrNVariableValue:)
+  public class func makeYOrN(wrapping boolValue: Bool) -> Self {
+    makeYOrN(
+      wrapping: boolValue,
+      capitalization: .allCaps
+    )
+  }
+  
+  @objc(yOrNVariableValue:capitalization:)
+  public class func makeYOrN(
+    wrapping boolValue: Bool,
+    capitalization: URIVariableValue.BooleanCapitalization
+  ) -> Self {
+    Self(
+      variableValue: URIVariableValue.yOrN(
+        boolValue: boolValue,
+        capitalization: capitalization
+      )
+    )
+  }
+
+  // MARK: - True-or-False
+  
+  @objc(trueOrFalseVariableValue:)
+  public class func makeTrueOrFalse(wrapping boolValue: Bool) -> Self {
+    makeTrueOrFalse(
+      wrapping: boolValue,
+      capitalization: .lowercase
+    )
+  }
+  
+  @objc(trueOrFalseVariableValue:capitalization:)
+  public class func makeTrueOrFalse(
+    wrapping boolValue: Bool,
+    capitalization: URIVariableValue.BooleanCapitalization
+  ) -> Self {
+    Self(
+      variableValue: URIVariableValue.trueOrFalse(
+        boolValue: boolValue,
+        capitalization: capitalization
+      )
+    )
+  }
+
+  // MARK: - Zero-or-One
+
+  @objc(zeroOrOne:)
+  public class func zeroOrOne(wrapping boolValue: Bool) -> Self {
+    Self(
+      variableValue: URIVariableValue.zeroOrOne(
+        boolValue: boolValue
+      )
+    )
+  }
+
+}

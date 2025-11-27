@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: DataValidationError - Definition
-// -------------------------------------------------------------------------- //
+// MARK: DataValidationError
 
 /// Error to throw when a `Validatable` is initialized with invalid data.
 /// Intended use is e.g. to throw if a `Codable` implementation deserializes

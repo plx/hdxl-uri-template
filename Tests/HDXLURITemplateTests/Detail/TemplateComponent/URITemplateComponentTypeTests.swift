@@ -7,32 +7,28 @@ extension Tag {
   static var uriTemplateComponentType: Self
 }
 
-@Test(
-  "`URITemplateComponentType.allCases` is ordered ascending",
-  .tags(.uriTemplateComponentType)
-)
-private func allCasesOrderedAscending() {
-  verifyOrderedAscending(URITemplateComponentType.allCases)
-}
+@Suite(.tags(.uriTemplateComponentType))
+struct URITemplateComponentTypeTests {
+  
+  @Test
+  private func `allCases ordered ascending`() {
+    verifyOrderedAscending(URITemplateComponentType.allCases)
+  }
 
-@Test(
-  "`URITemplateComponentType` has unique descriptions",
-  .tags(.uriTemplateComponentType)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    URITemplateComponentType.allCases,
-    using: \.description
-  )
-}
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      URITemplateComponentType.allCases,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      URITemplateComponentType.allCases,
+      using: \.debugDescription
+    )
+  }
 
-@Test(
-  "`URITemplateComponentType` has unique debugDescriptions",
-  .tags(.uriTemplateComponentType)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    URITemplateComponentType.allCases,
-    using: \.debugDescription
-  )
 }

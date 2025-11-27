@@ -6,55 +6,47 @@ extension Tag {
   static var uriVariableTextValue: Self
 }
 
-@Test(
-  "`URIVariableTextValue` fixtures",
-  .tags(.uriVariableTextValue)
-)
-private func validateFixtures() {
-  verifyOrderedAscending(probeStrings)
-  verifyOrderedAscending(probes)
+@Suite(.tags(.uriVariableTextValue))
+struct URIVariableTextValueTests {
   
-  verifyAllSatisfy(
-    probes,
-    explanation: "Expect all probes to be valid.",
-    predicate: \.isValid
-  )
+  @Test
+  private func `fixtures are sensible`() {
+    verifyOrderedAscending(probeStrings)
+    verifyOrderedAscending(probes)
+    
+    verifyAllSatisfy(
+      probes,
+      explanation: "Expect all probes to be valid.",
+      predicate: \.isValid
+    )
+    
+    verifyPairwiseDistinct(probes)
+  }
   
-  verifyPairwiseDistinct(probes)
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.debugDescription
+    )
+  }
+  
+  @Test(arguments: probes)
+  private func `isEmpty`(probe: URIVariableTextValue) {
+    #expect(probe.isEmpty == probe.rawValue.isEmpty)
+  }
+
 }
 
-@Test(
-  "`URIVariableTextValue` has unique descriptions",
-  .tags(.uriVariableTextValue)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URIVariableTextValue` has unique debugDescriptions",
-  .tags(.uriVariableTextValue)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.debugDescription
-  )
-}
-
-@Test(
-  "`URIVariableTextValue` isEmpty coherence",
-  .tags(.uriVariableTextValue),
-  arguments: probes
-)
-private func isEmptyCoherence(probe: URIVariableTextValue) {
-  #expect(probe.isEmpty == probe.rawValue.isEmpty)
-}
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let probeStrings: [String] = [
   "",

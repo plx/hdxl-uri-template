@@ -1,26 +1,33 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URIValueExpansionType - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIValueExpansionType
 
+/// The expansion type for URI template variables, as defined by RFC 6570.
+///
+/// Each type determines how variables are expanded and what characters are allowed/encoded.
 @usableFromInline
-internal enum URIValueExpansionType : UInt8 {
-    
+package enum URIValueExpansionType : UInt8 {
+
+  /// Simple string expansion (no operator prefix).
   case simple = 1
+  /// Reserved expansion (`+` operator) - allows reserved characters.
   case reserved = 2
+  /// Fragment expansion (`#` operator) - begins with `#`.
   case fragment = 4
+  /// Label expansion (`.` operator) - dot-separated.
   case label = 8
+  /// Path segment expansion (`/` operator) - slash-separated.
   case pathSegment = 16
+  /// Path parameter expansion (`;` operator) - semicolon-separated with name.
   case pathParameter = 32
+  /// Query expansion (`?` operator) - begins with `?`.
   case query = 64
+  /// Query continuation expansion (`&` operator) - begins with `&`.
   case queryContinuation = 128
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : Sendable { }
 extension URIValueExpansionType : Equatable { }
@@ -28,14 +35,12 @@ extension URIValueExpansionType : Hashable { }
 extension URIValueExpansionType : Codable { }
 extension URIValueExpansionType : CaseIterable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: Self,
     rhs: Self
   ) -> Bool {
@@ -44,14 +49,12 @@ extension URIValueExpansionType : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : CustomStringConvertible {
   
   @inlinable
-  internal var description: String {
+  package var description: String {
     switch self {
     case .simple:
       "simple"
@@ -73,14 +76,12 @@ extension URIValueExpansionType : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : CustomDebugStringConvertible {
   
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .simple:
       "URIValueExpansionType.simple"
@@ -103,14 +104,12 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType {
   
   @inlinable
-  internal var isQueryExpansionType: Bool {
+  package var isQueryExpansionType: Bool {
     switch self {
     case .query, .queryContinuation:
       true
@@ -120,7 +119,7 @@ extension URIValueExpansionType {
   }
   
   @inlinable
-  internal var formatString: String {
+  package var formatString: String {
     switch self {
     case .simple:
       .simpleFormatString
@@ -142,7 +141,7 @@ extension URIValueExpansionType {
   }
   
   @inlinable
-  internal var prefixForExpandedVariableList: String {
+  package var prefixForExpandedVariableList: String {
     switch self {
     case .simple:
       .simplePrefixForExpandedVariableList
@@ -164,7 +163,7 @@ extension URIValueExpansionType {
   }
   
   @inlinable
-  internal var separatorForExpandedVariableList: String {
+  package var separatorForExpandedVariableList: String {
     switch self {
     case .simple:
       .simpleSeparatorForExpandedVariableList
@@ -187,7 +186,7 @@ extension URIValueExpansionType {
   
   
   @inlinable
-  internal init?(formatString: String) {
+  package init?(formatString: String) {
     switch formatString {
     case .simpleFormatString:
       self = .simple

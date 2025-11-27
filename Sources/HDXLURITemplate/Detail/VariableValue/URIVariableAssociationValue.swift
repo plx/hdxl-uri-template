@@ -1,13 +1,11 @@
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableAssociationValue - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URIVariableAssociationValue
 
 @usableFromInline
-internal struct URIVariableAssociationValue {
+package struct URIVariableAssociationValue {
   
   @usableFromInline
-  internal var storage: [URIVariablePairValue]
+  package var storage: [URIVariablePairValue]
 
   @inlinable
   internal init() {
@@ -15,26 +13,19 @@ internal struct URIVariableAssociationValue {
   }
 
   @inlinable
-  internal init(value: URIVariablePairValue) {
-#if HEAVY_DEBUG
-    pedanticAssert(value.isValid)
-#endif
+  package init(value: URIVariablePairValue) {
     self.init(
       values: [value]
     )
   }
 
   @inlinable
-  internal init(values: [URIVariablePairValue]) {
-#if HEAVY_DEBUG
-    pedanticAssert(values.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid) }
-#endif
+  package init(values: [URIVariablePairValue]) {
     self.storage = values
   }
 
   @inlinable
-  internal init(key: String, value: String) {
+  package init(key: String, value: String) {
     self.init(
       value: URIVariablePairValue(
         key: URIVariableTextValue(rawValue: key),
@@ -44,7 +35,7 @@ internal struct URIVariableAssociationValue {
   }
 
   @inlinable
-  internal init(strings: [(String,String)]) {
+  package init(strings: [(String,String)]) {
     self.init(
       values: strings.map {
         URIVariablePairValue(
@@ -57,43 +48,33 @@ internal struct URIVariableAssociationValue {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue: Sendable { }
 extension URIVariableAssociationValue: Equatable { }
 extension URIVariableAssociationValue: Hashable { }
 extension URIVariableAssociationValue: Codable { }
 
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableAssociationValue - Comparable
-// -------------------------------------------------------------------------- //
+// MARK: - Comparable
 
 extension URIVariableAssociationValue : Comparable {
   
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URIVariableAssociationValue,
     rhs: URIVariableAssociationValue
   ) -> Bool {
-    #if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-    #endif
-    return lhs.storage.lexicographicallyPrecedes(rhs.storage)
+    lhs.storage.lexicographicallyPrecedes(rhs.storage)
   }
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue : CustomStringConvertible {
   
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     let variableDescriptions = storage
       .lazy
       .map { String(describing: $0) }
@@ -103,14 +84,12 @@ extension URIVariableAssociationValue : CustomStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue : CustomDebugStringConvertible {
   
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     let variableDescriptions = storage
       .lazy
       .map { String(reflecting: $0) }
@@ -119,34 +98,19 @@ extension URIVariableAssociationValue : CustomDebugStringConvertible {
   }
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
-
-extension URIVariableAssociationValue: ExpressibleByArrayLiteral {
-  
-  @inlinable
-  public init(arrayLiteral elements: URIVariablePairValue...) {
-    self.init(values: elements)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue {
   
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     storage.allSatisfy(\.isValid)
     &&
     allKeysAreDistinct
   }
   
   @inlinable
-  internal var allKeysAreDistinct: Bool {
+  package var allKeysAreDistinct: Bool {
     count == Set(
       storage.lazy.map(\.key)
     ).count
@@ -154,39 +118,37 @@ extension URIVariableAssociationValue {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue {
   
   @inlinable
-  internal var isEmpty: Bool {
+  package var isEmpty: Bool {
     storage.isEmpty
   }
   
   @inlinable
-  internal var count: Int {
+  package var count: Int {
     storage.count
   }
   
   @inlinable
-  internal subscript(index: Int) -> URIVariablePairValue {
+  package subscript(index: Int) -> URIVariablePairValue {
     storage[index]
   }
   
   @inlinable
-  internal subscript(key: String) -> URIVariableTextValue? {
+  package subscript(key: String) -> URIVariableTextValue? {
     self[URIVariableTextValue(rawValue: key)]
   }
   
   @inlinable
-  internal subscript(key: URIVariableTextValue) -> URIVariableTextValue? {
+  package subscript(key: URIVariableTextValue) -> URIVariableTextValue? {
     storage.first(where: { key == $0.key })?.value
   }
   
   @usableFromInline
-  internal var errorMessageRepresentation: String {
+  package var errorMessageRepresentation: String {
     let memberErrorRepresentation = storage.lazy.map { $0.errorMessageRepresentation }.joined(separator: ", ")
     return "[ \(memberErrorRepresentation) ]"
   }

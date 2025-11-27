@@ -6,42 +6,38 @@ extension Tag {
   static var uriTemplateVariable: Self
 }
 
-@Test(
-  "`URITemplateVariable` fixtures are sensible",
-  .tags(.uriTemplateVariable)
-)
-private func allCasesOrderedAscending() {
-  verifyOrderedAscending(probes)
-  verifyAllSatisfy(
-    probes,
-    explanation: "All probes should be valid.",
-    predicate: \.isValid
-  )
+@Suite(.tags(.uriTemplateVariable))
+struct URITemplateVariableTests {
+
+  @Test
+  private func `fixtures are sensible`() {
+    verifyOrderedAscending(probes)
+    verifyAllSatisfy(
+      probes,
+      explanation: "All probes should be valid.",
+      predicate: \.isValid
+    )
+  }
+  
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.debugDescription
+    )
+  }
+
 }
 
-@Test(
-  "`URITemplateVariable` has unique descriptions",
-  .tags(.uriTemplateVariable)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URIValueExpansionType` has unique debugDescriptions",
-  .tags(.uriTemplateVariable)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.debugDescription
-  )
-}
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let probeStrings: [String] = [
   "a",

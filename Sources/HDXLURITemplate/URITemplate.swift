@@ -1,8 +1,6 @@
 import Foundation
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplate
 
 /// Type representing an already-parsed, known-*valid* URI template.
 ///
@@ -22,22 +20,18 @@ import Foundation
 ///
 public struct URITemplate {
   
+  // MARK: - Stored Properties  
+
   @usableFromInline
   internal var storage: URITemplateStorage
+
+  // MARK: - Initialization
   
   @inlinable
   internal init(storage: URITemplateStorage) {
-#if HEAVY_DEBUG
-    pedanticAssert(storage.isValid)
-    defer { pedanticAssert(storage.isValid) }
-#endif
     self.storage = storage
   }
 
-  // ------------------------------------------------------------------------ //
-  // MARK: Initialization
-  // ------------------------------------------------------------------------ //
-  
   /// Public initializer, constructs a template by parsing a template string.
   ///
   /// - parameter template: A string containing a URI template.
@@ -62,21 +56,17 @@ public struct URITemplate {
   
 }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Equatable
-// -------------------------------------------------------------------------- //
+// MARK: - Synthesized Conformances
 
 extension URITemplate : Sendable { }
 extension URITemplate : Equatable { }
 extension URITemplate : Hashable { }
 extension URITemplate : Codable { }
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplate - Comparable
-// -------------------------------------------------------------------------- //
+// MARK: - Comparable
 
 extension URITemplate : Comparable {
-  
+
   @inlinable
   public static func <(
     lhs: URITemplate,
@@ -87,49 +77,43 @@ extension URITemplate : Comparable {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplate : CustomStringConvertible {
-  
+
   @inlinable
   public var description: String {
-    storage.description
+    templateRepresentation
   }
-  
+
 }
 
-
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplate : CustomDebugStringConvertible {
-  
+
   @inlinable
   public var debugDescription: String {
     "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplate {
-  
+
+  /// Indicates whether the template is structurally valid.
+  ///
+  /// - Invariant: A successfully-parsed template is always valid.
   @inlinable
   public var isValid: Bool {
     storage.isValid
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplate {
   

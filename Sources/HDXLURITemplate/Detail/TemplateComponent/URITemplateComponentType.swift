@@ -1,14 +1,17 @@
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponentType - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateComponentType
 
+/// Identifies the type of a template component.
 @usableFromInline
-internal enum URITemplateComponentType : UInt8 {
-  
+package enum URITemplateComponentType : UInt8 {
+
+  /// A literal text component.
   case literal = 1
+  /// An expression component containing variables.
   case expression = 2
-  
+
 }
+
+// MARK: - Synthesized Conformances
 
 extension URITemplateComponentType : Sendable { }
 extension URITemplateComponentType : Equatable { }
@@ -16,14 +19,12 @@ extension URITemplateComponentType : Hashable { }
 extension URITemplateComponentType : Codable { }
 extension URITemplateComponentType : CaseIterable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : Comparable {
 
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateComponentType,
     rhs: URITemplateComponentType
   ) -> Bool {
@@ -32,14 +33,12 @@ extension URITemplateComponentType : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : CustomStringConvertible {
 
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     switch self {
     case .literal:
       ".literal"
@@ -50,14 +49,12 @@ extension URITemplateComponentType : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponentType : CustomDebugStringConvertible {
-  
+
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .literal:
       "URITemplateComponentType.literal"

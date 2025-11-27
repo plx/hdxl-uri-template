@@ -6,49 +6,45 @@ extension Tag {
   static var uriTemplateExpressionComponent: Self
 }
 
-@Test(
-  "`URITemplateExpressionComponent` test-fixture validation",
-  .tags(.uriTemplateExpressionComponent)
-)
-private func textFixtureIsOk() {
-  #expect(variableNameSubsets.count == 8)
-  verifyOrderedAscending(probeStrings)
-  verifyOrderedAscending(variableNames)
-  verifyOrderedAscending(probes)
-  verifyPairwiseDistinct(variableNameSubsets)
-  verifyPairwiseDistinct(variableSubsets)
+@Suite(.tags(.uriTemplateExpressionComponent))
+struct URITemplateExpressionComponentTests {
 
-  verifyAllSatisfy(
-    probes,
-    explanation: "`URITemplateExpressionComponent.isValid` should be true for all test-fixture probes!",
-    predicate: \.isValid
-  )
-  verifyPairwiseDistinct(probes)
+  @Test
+  private func `fixtures are sensible`() {
+    #expect(variableNameSubsets.count == 8)
+    verifyOrderedAscending(probeStrings)
+    verifyOrderedAscending(variableNames)
+    verifyOrderedAscending(probes)
+    verifyPairwiseDistinct(variableNameSubsets)
+    verifyPairwiseDistinct(variableSubsets)
+    
+    verifyAllSatisfy(
+      probes,
+      explanation: "`URITemplateExpressionComponent.isValid` should be true for all test-fixture probes!",
+      predicate: \.isValid
+    )
+    verifyPairwiseDistinct(probes)
+  }
+  
+  @Test
+  private func `unique descriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.description
+    )
+  }
+  
+  @Test
+  private func `unique debugDescriptions`() {
+    verifyUniqueStringification(
+      probes,
+      using: \.debugDescription
+    )
+  }
+
 }
 
-@Test(
-  "`URITemplateExpressionComponent` has unique descriptions",
-  .tags(.uriTemplateExpressionComponent)
-)
-private func uniqueDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.description
-  )
-}
-
-@Test(
-  "`URITemplateExpressionComponent` has unique debugDescriptions",
-  .tags(.uriTemplateExpressionComponent)
-)
-private func uniqueDebugDescriptions() {
-  verifyUniqueStringification(
-    probes,
-    using: \.debugDescription
-  )
-}
-
-// MARK: Fixtures
+// MARK: - Fixtures
 
 private let probeStrings: [String] = [
   "a",

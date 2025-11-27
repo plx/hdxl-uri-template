@@ -1,40 +1,33 @@
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateComponent - Definition
-// -------------------------------------------------------------------------- //
+// MARK: URITemplateComponent
 
+/// Represents a single component of a URI template: either a literal string or an expression.
 @usableFromInline
-internal enum URITemplateComponent {
-  
+package enum URITemplateComponent {
+
+  /// A literal text component to be included verbatim in the expanded URI.
   case literal(URITemplateLiteralComponent)
+  /// An expression component containing variables to be substituted.
   case expression(URITemplateExpressionComponent)
-    
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Properties
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : Sendable {}
 extension URITemplateComponent : Equatable {}
 extension URITemplateComponent : Hashable {}
 extension URITemplateComponent : Codable {}
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : Comparable {
 
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateComponent,
     rhs: URITemplateComponent
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return switch (lhs,rhs) {
+    switch (lhs,rhs) {
     case (.literal(let l), .literal(let r)):
        l < r
     case (.literal(_), .expression(_)):
@@ -47,14 +40,12 @@ extension URITemplateComponent : Comparable {
   }
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : CustomStringConvertible {
-  
+
   @usableFromInline
-  internal var description: String {
+  package var description: String {
     switch self {
     case .literal(let literal):
       ".literal(\"\(literal.rawValue)\")"
@@ -65,32 +56,29 @@ extension URITemplateComponent : CustomStringConvertible {
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent : CustomDebugStringConvertible {
 
   @usableFromInline
-  internal var debugDescription: String {
+  package var debugDescription: String {
     switch self {
     case .literal(let literal):
       "URITemplateComponent.literal(\(literal.debugDescription)"
     case .expression(let expression):
-      "URITemplateComponent.expresssion(\(expression.debugDescription))"
+      "URITemplateComponent.expression(\(expression.debugDescription))"
     }
   }
   
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
-  
+
+  /// `true` if this is a literal component.
   @inlinable
-  internal var isLiteralComponent: Bool {
+  package var isLiteralComponent: Bool {
     switch self {
     case .literal:
       true
@@ -98,9 +86,10 @@ extension URITemplateComponent {
       false
     }
   }
-  
+
+  /// `true` if this is an expression component.
   @inlinable
-  internal var isExpressionComponent: Bool {
+  package var isExpressionComponent: Bool {
     switch self {
     case .literal:
       false
@@ -108,9 +97,10 @@ extension URITemplateComponent {
       true
     }
   }
-  
+
+  /// The template string representation of this component.
   @inlinable
-  internal var templateRepresentation: String {
+  package var templateRepresentation: String {
     switch self {
     case .literal(let literal):
       literal.rawValue
@@ -118,9 +108,10 @@ extension URITemplateComponent {
       "{\(expression.templateRepresentation)}"
     }
   }
-  
+
+  /// The type of this component (literal or expression).
   @inlinable
-  internal var templateComponentType: URITemplateComponentType {
+  package var templateComponentType: URITemplateComponentType {
     switch self {
     case .literal:
       .literal
@@ -128,9 +119,12 @@ extension URITemplateComponent {
       .expression
     }
   }
-  
+
+  /// Injects the variables from this component into the given set.
+  ///
+  /// - Parameter receiver: The set to receive the variables.
   @inlinable
-  internal func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
+  package func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     switch self {
     case .literal(_):
       (); // nothing
@@ -141,16 +135,25 @@ extension URITemplateComponent {
     }
   }
   
+  @inlinable
+  package var underestimatedExpansionLength: Int {
+    switch self {
+    case .literal(let literal):
+      literal.underestimatedExpansionLength
+    case .expression(let expression):
+      expression.underestimatedExpansionLength
+    }
+  }
+  
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
-  
+
+  /// Indicates whether this component is structurally valid.
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     switch self {
     case .literal(let literal):
       literal.isValid

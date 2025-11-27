@@ -1,70 +1,65 @@
+// MARK: URITemplateExpressionComponent
 
-// -------------------------------------------------------------------------- //
-// MARK: URITemplateExpressionComponent - Definition
-// -------------------------------------------------------------------------- //
-
+/// Represents an expression component in a URI template, containing variables and an expansion type.
 @usableFromInline
-internal struct URITemplateExpressionComponent {
-  
+package struct URITemplateExpressionComponent {
+
+  /// The expansion type determining how variables are expanded (simple, reserved, etc.).
   @usableFromInline
-  internal var expansionType: URIValueExpansionType
-  
+  package var expansionType: URIValueExpansionType
+
+  /// The variables contained in this expression.
   @usableFromInline
-  internal var variables: [URITemplateVariable]
-  
+  package var variables: [URITemplateVariable]
+
+  /// Creates an expression component with a single variable.
+  ///
+  /// - Parameters:
+  ///   - expansionType: The expansion type for the expression.
+  ///   - variable: The single variable in this expression.
   @inlinable
-  internal init(
+  package init(
     expansionType: URIValueExpansionType,
     variable: URITemplateVariable
   ) {
-    #if HEAVY_DEBUG
-    pedanticAssert(variable.isValid)
-    #endif
     self.init(
       expansionType: expansionType,
       variables: [variable]
     )
   }
 
+  /// Creates an expression component with multiple variables.
+  ///
+  /// - Parameters:
+  ///   - expansionType: The expansion type for the expression.
+  ///   - variables: The variables in this expression.
   @inlinable
-  internal init(
+  package init(
     expansionType: URIValueExpansionType,
     variables: [URITemplateVariable]
   ) {
-#if HEAVY_DEBUG
-    pedanticAssert(variables.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid)}
-#endif
     self.expansionType = expansionType
     self.variables = variables
   }
-  
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent: Sendable { }
 extension URITemplateExpressionComponent: Equatable { }
 extension URITemplateExpressionComponent: Hashable { }
 extension URITemplateExpressionComponent: Codable { }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Comparable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent : Comparable {
 
   @inlinable
-  internal static func <(
+  package static func <(
     lhs: URITemplateExpressionComponent,
     rhs: URITemplateExpressionComponent
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
     guard lhs.expansionType == rhs.expansionType else {
       return lhs.expansionType < rhs.expansionType
     }
@@ -73,14 +68,12 @@ extension URITemplateExpressionComponent : Comparable {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent : CustomStringConvertible {
-  
+
   @inlinable
-  internal var description: String {
+  package var description: String {
     let variables = variables
       .lazy
       .map(\.description)
@@ -90,14 +83,12 @@ extension URITemplateExpressionComponent : CustomStringConvertible {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent : CustomDebugStringConvertible {
-  
+
   @inlinable
-  internal var debugDescription: String {
+  package var debugDescription: String {
     let variables = variables
       .lazy
       .map(\.debugDescription)
@@ -108,24 +99,25 @@ extension URITemplateExpressionComponent : CustomDebugStringConvertible {
 
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Core API
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent {
-  
+
+  /// `true` if this expression contains no variables.
   @inlinable
-  internal var isEmpty: Bool {
+  package var isEmpty: Bool {
     variables.isEmpty
   }
-  
+
+  /// The number of variables in this expression.
   @inlinable
-  internal var count: Int {
+  package var count: Int {
     variables.count
   }
-  
+
+  /// The template string representation of this expression (without braces).
   @inlinable
-  internal var templateRepresentation: String {
+  package var templateRepresentation: String {
     let variables = variables
       .lazy
       .map(\.templateRepresentation)
@@ -133,22 +125,31 @@ extension URITemplateExpressionComponent {
     return "\(expansionType.formatString)\(variables)"
   }
   
+  /// Injects this expression's variables into the given set.
+  ///
+  /// - Parameter receiver: The set to receive the variables.
   @inlinable
-  internal func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
+  package func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     receiver.formUnion(variables)
   }
   
+  @inlinable
+  package var underestimatedExpansionLength: Int {
+    variables.reduce(0) { count, variable in
+      count + variable.underestimatedExpansionLength
+    }
+  }
+
 }
 
-// -------------------------------------------------------------------------- //
 // MARK: - Validatable
-// -------------------------------------------------------------------------- //
 
 extension URITemplateExpressionComponent {
-  
+
+  /// Indicates whether all variables in this expression are valid.
   @inlinable
-  internal var isValid: Bool {
+  package var isValid: Bool {
     variables.allSatisfy(\.isValid)
   }
-  
+
 }
