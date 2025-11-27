@@ -84,6 +84,7 @@ public final class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureC
   public required init?(coder: NSCoder) {
     guard
       let decoder = coder as? NSKeyedUnarchiver,
+      decoder.containsValue(forKey: "template"),
       let template = decoder.decodeDecodable(
         URITemplate.self,
         forKey: "template"
@@ -104,9 +105,9 @@ public final class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureC
           forKey: "template"
         )
       }
-      catch let e {
-        // TODO: what's a good way to handle this failure in 2025?
-        fatalError("Failed to encode our `template` \(template.debugDescription) due to error: \(String(reflecting: e))!")
+      catch {
+        // encode placeholder that will get ignored at decode
+        encoder.encode(nil, forKey: "template")
       }
     }
   }

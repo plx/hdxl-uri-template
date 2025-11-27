@@ -254,6 +254,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   public required init?(coder: NSCoder) {
     guard
       let decoder = coder as? NSKeyedUnarchiver,
+      decoder.containsValue(forKey: "variableValue"),
       let variableValue = decoder.decodeDecodable(
         URIVariableValue.self,
         forKey: "variableValue"
@@ -275,9 +276,11 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
           forKey: "variableValue"
         )
       }
-      catch let e {
-        // TODO: just fail quietly? What's best in 2025?
-        fatalError("Failed to encode our `variableValue` \(self.variableValue.debugDescription) due to error: \(String(reflecting: e))!")
+      catch {
+        encoder.encode(
+          nil,
+          forKey: "variableValue"
+        )
       }
     }
   }
