@@ -89,6 +89,11 @@ extension URITemplateVariable {
     "\(variableName.rawValue)\(expansionModifier.templateRepresentation)"
   }
 
+  @inlinable
+  package var underestimatedExpansionLength: Int {
+    0 // TODO: more-informed estimation
+  }
+
 }
 
 // MARK: - Validatable

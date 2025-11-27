@@ -55,6 +55,7 @@ extension URITemplate {
   public func evaluateAsString(parameters: [String: URIVariableValue]) throws -> String {
     do {
       var result: String = ""
+      result.reserveCapacity(storage.underestimatedExpansionLength)
       for component in storage.components {
         switch component {
         case .literal(let literal):

@@ -312,6 +312,20 @@ extension URITemplateStorage : Codable {
   
 }
 
+// MARK: - Core API
+
+extension URITemplateStorage {
+  
+  @inlinable
+  internal var underestimatedExpansionLength: Int {
+    // TODO: consider caching, but also consider *not* caching if we pass the expansion variables in, too
+    components.reduce(0) { length, component in
+      length + component.underestimatedExpansionLength
+    }
+  }
+  
+}
+
 // MARK: - Validatable
 
 extension URITemplateStorage {

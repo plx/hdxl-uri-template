@@ -178,6 +178,17 @@ extension URITemplateLiteralComponent {
 
 }
 
+// MARK: - Core API
+
+extension URITemplateLiteralComponent {
+  
+  @inlinable
+  package var underestimatedExpansionLength: Int {
+    rawValue.count
+  }
+  
+}
+
 // MARK: - Validatable
 
 extension URITemplateLiteralComponent {

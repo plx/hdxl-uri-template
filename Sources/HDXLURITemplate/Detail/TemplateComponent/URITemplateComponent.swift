@@ -66,7 +66,7 @@ extension URITemplateComponent : CustomDebugStringConvertible {
     case .literal(let literal):
       "URITemplateComponent.literal(\(literal.debugDescription)"
     case .expression(let expression):
-      "URITemplateComponent.expresssion(\(expression.debugDescription))"
+      "URITemplateComponent.expression(\(expression.debugDescription))"
     }
   }
   
@@ -132,6 +132,16 @@ extension URITemplateComponent {
       expression.injectTemplateVariables(
         into: &receiver
       )
+    }
+  }
+  
+  @inlinable
+  package var underestimatedExpansionLength: Int {
+    switch self {
+    case .literal(let literal):
+      literal.underestimatedExpansionLength
+    case .expression(let expression):
+      expression.underestimatedExpansionLength
     }
   }
   

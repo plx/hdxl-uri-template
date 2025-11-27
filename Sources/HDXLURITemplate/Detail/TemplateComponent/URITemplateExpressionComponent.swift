@@ -132,6 +132,13 @@ extension URITemplateExpressionComponent {
   package func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     receiver.formUnion(variables)
   }
+  
+  @inlinable
+  package var underestimatedExpansionLength: Int {
+    variables.reduce(0) { count, variable in
+      count + variable.underestimatedExpansionLength
+    }
+  }
 
 }
 
