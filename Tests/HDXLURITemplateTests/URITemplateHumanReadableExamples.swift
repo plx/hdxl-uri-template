@@ -77,18 +77,18 @@ struct RESTAPIEndpointTests {
     // Single filter
     #expect(
       try template.evaluateAsString(parameters: [
-        "filters": .association([("status", "active")])
+        "filters": ["status": "active"]
       ]) == "https://api.example.com/search?status=active"
     )
 
-    // Multiple filters
+    // Multiple filters (dictionary literal preserves source order)
     #expect(
       try template.evaluateAsString(parameters: [
-        "filters": .association([
-          ("status", "active"),
-          ("role", "admin"),
-          ("verified", "true")
-        ])
+        "filters": [
+          "status": "active",
+          "role": "admin",
+          "verified": "true"
+        ]
       ]) == "https://api.example.com/search?status=active&role=admin&verified=true"
     )
 
@@ -207,13 +207,13 @@ struct FileDownloadURLTests {
         "bucket": "my-bucket",
         "region": "us-east-1",
         "key": "uploads/2024/photo.jpg",
-        "aws_params": .association([
-          ("X-Amz-Algorithm", "AWS4-HMAC-SHA256"),
-          ("X-Amz-Credential", "AKIAIOSFODNN7EXAMPLE"),
-          ("X-Amz-Date", "20240115T120000Z"),
-          ("X-Amz-Expires", "3600"),
-          ("X-Amz-Signature", "abc123signature")
-        ])
+        "aws_params": [
+          "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
+          "X-Amz-Credential": "AKIAIOSFODNN7EXAMPLE",
+          "X-Amz-Date": "20240115T120000Z",
+          "X-Amz-Expires": "3600",
+          "X-Amz-Signature": "abc123signature"
+        ]
       ]) == "https://my-bucket.s3.us-east-1.amazonaws.com/uploads/2024/photo.jpg?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAIOSFODNN7EXAMPLE&X-Amz-Date=20240115T120000Z&X-Amz-Expires=3600&X-Amz-Signature=abc123signature"
     )
   }
@@ -280,7 +280,7 @@ struct SearchQueryURLTests {
     #expect(
       try template.evaluateAsString(parameters: [
         "category": "electronics",
-        "tags": .list(["sale", "featured", "new"])
+        "tags": ["sale", "featured", "new"]
       ]) == "https://shop.example.com/products?category=electronics&tags=sale,featured,new"
     )
   }
@@ -292,12 +292,12 @@ struct SearchQueryURLTests {
     #expect(
       try template.evaluateAsString(parameters: [
         "query": "laptop",
-        "filters": .association([
-          ("price_min", "500"),
-          ("price_max", "1500"),
-          ("brand", "apple"),
-          ("in_stock", "true")
-        ])
+        "filters": [
+          "price_min": "500",
+          "price_max": "1500",
+          "brand": "apple",
+          "in_stock": "true"
+        ]
       ]) == "https://api.example.com/search?query=laptop&price_min=500&price_max=1500&brand=apple&in_stock=true"
     )
   }
