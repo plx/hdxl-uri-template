@@ -81,9 +81,7 @@ internal let labelAllowedCharacterSet: CharacterSet = rfc_unreserved
  character and will be pct-encoded if found in a value.
  */
 @usableFromInline
-internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet.union(
-  CharacterSet(charactersIn: "/")
-)
+internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet
 
 /*
  o  perform variable expansion, as defined in Section 3.2.1, with the

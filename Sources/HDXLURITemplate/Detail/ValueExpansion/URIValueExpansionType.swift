@@ -6,7 +6,7 @@ import Foundation
 
 @usableFromInline
 internal enum URIValueExpansionType : UInt8 {
-    
+
   case simple = 1
   case reserved = 2
   case fragment = 4
@@ -15,7 +15,7 @@ internal enum URIValueExpansionType : UInt8 {
   case pathParameter = 32
   case query = 64
   case queryContinuation = 128
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -33,7 +33,7 @@ extension URIValueExpansionType : CaseIterable { }
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : Comparable {
-  
+
   @inlinable
   internal static func <(
     lhs: Self,
@@ -49,7 +49,7 @@ extension URIValueExpansionType : Comparable {
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : CustomStringConvertible {
-  
+
   @inlinable
   internal var description: String {
     switch self {
@@ -78,7 +78,7 @@ extension URIValueExpansionType : CustomStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType : CustomDebugStringConvertible {
-  
+
   @inlinable
   internal var debugDescription: String {
     switch self {
@@ -100,7 +100,7 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
       "URIValueExpansionType.queryContinuation"
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -108,7 +108,7 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionType {
-  
+
   @inlinable
   internal var isQueryExpansionType: Bool {
     switch self {
@@ -118,7 +118,27 @@ extension URIValueExpansionType {
       false
     }
   }
-  
+
+  @inlinable
+  internal var allowsPercentEncodedTriplets: Bool {
+    switch self {
+    case .reserved, .fragment:
+      true
+    default:
+      false
+    }
+  }
+
+  @inlinable
+  internal var emptyValueSuffix: String {
+    switch self {
+    case .query, .queryContinuation:
+      "="
+    default:
+      ""
+    }
+  }
+
   @inlinable
   internal var formatString: String {
     switch self {
@@ -140,7 +160,7 @@ extension URIValueExpansionType {
       .queryContinuationFormatString
     }
   }
-  
+
   @inlinable
   internal var prefixForExpandedVariableList: String {
     switch self {
@@ -162,7 +182,7 @@ extension URIValueExpansionType {
       .queryContinuationPrefixForExpandedVariableList
     }
   }
-  
+
   @inlinable
   internal var separatorForExpandedVariableList: String {
     switch self {
@@ -184,8 +204,8 @@ extension URIValueExpansionType {
       .queryContinuationSeparatorForExpandedVariableList
     }
   }
-  
-  
+
+
   @inlinable
   internal init?(formatString: String) {
     switch formatString {
@@ -210,5 +230,5 @@ extension URIValueExpansionType {
       return nil
     }
   }
-  
+
 }

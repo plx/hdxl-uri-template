@@ -77,7 +77,7 @@ extension URIVariableListValue {
     case .pathSegment:
       escapedText
     case .pathParameter:
-      "\(escapedVariableName)=\(escapedText)"
+      escapedText.isEmpty ? escapedVariableName : "\(escapedVariableName)=\(escapedText)"
     case .query:
       "\(escapedVariableName)=\(escapedText)"
     case .queryContinuation:
@@ -96,7 +96,7 @@ extension URIVariableListValue {
 #endif
     // we inline this logic instead of using `variableName.escapedVariableName`
     // because the code flow is a bit weird (despite originally intending to do it like that...)
-    guard let escapedName = variableName.rawValue.escaped(forValueExpansionType: expansionType) else {
+    guard let escapedName = variableName.escapedAsLiteral else {
       throw ExpansionError.unableToEscapeVariableName(
         variableName.rawValue,
         expansionType
@@ -153,4 +153,3 @@ extension URIVariableListValue {
   }
 
 }
-

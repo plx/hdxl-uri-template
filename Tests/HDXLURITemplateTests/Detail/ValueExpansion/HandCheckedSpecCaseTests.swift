@@ -17,12 +17,12 @@ private func variableAssocationValueHandCheckOnUserIDTokenTabKeys() throws {
     ]),
     "tab": .text("overview")
   ]
-  
+
   let expected: [String] = [
     "/user/admin?token=12345&tab=overview&key1=val1&key2=val2",
     "/user/admin?token=12345&tab=overview&key2=val2&key1=val1"
   ]
-  
+
   let observed = try template.evaluateAsString(parameters: parameters)
   #expect(expected.contains(observed))
 }
@@ -45,9 +45,9 @@ private func variableListValueHandCheckOnIDStar() throws {
     "geocode": .list(["37.76", "-122.427"]),
     "fields": .list(["id", "name", "picture"])
   ]
-  
+
   let expected: String = "/person/albums"
-  
+
   let observed = try template.evaluateAsString(parameters: parameters)
   #expect(expected == observed)
 }
@@ -69,9 +69,9 @@ private func variableListValueHandCheckOnIDStarFieldsToken() throws {
     "geocode": .list(["37.76", "-122.427"]),
     "fields": .list(["id", "name", "picture"])
   ]
-  
+
   let expected: String = "/person/albums?fields=id,name,picture&token=12345"
-  
+
   let observed = try template.evaluateAsString(parameters: parameters)
   #expect(expected == observed)
 }
@@ -95,11 +95,68 @@ private func textVariableOnReservedNotPct() throws {
       "blue"
     ])
   ]
-  
+
   let expected: String = "%25foo"
-  
+
   let observed = try template.evaluateAsString(parameters: parameters)
   #expect(expected == observed)
+}
+
+@Test(
+  "Undefined variables are skipped without swallowing empty strings",
+  .tags(.variableExpansion, .uriVariableTextValue, .takenFromSpecification)
+)
+private func undefinedVariablesAreSkippedWithoutSwallowingEmptyStrings() throws {
+  let parameters: [String:URIVariableValue] = [
+    "var": .text("value"),
+    "empty": .text("")
+  ]
+
+  let pathWithUndefined = try URITemplate(parsing: "{/var,undef}")
+  #expect(
+    try pathWithUndefined.evaluateAsString(parameters: parameters) == "/value"
+  )
+
+  let pathWithEmpty = try URITemplate(parsing: "{/var,empty}")
+  #expect(
+    try pathWithEmpty.evaluateAsString(parameters: parameters) == "/value/"
+  )
+}
+
+@Test(
+  "`{;empty}` omits the equals sign",
+  .tags(.variableExpansion, .uriVariableTextValue, .takenFromSpecification)
+)
+private func pathParameterEmptyStringOmitsEquals() throws {
+  let template = try URITemplate(parsing: "{;empty}")
+  let parameters: [String:URIVariableValue] = [
+    "empty": .text("")
+  ]
+
+  let expected: String = ";empty"
+
+  let observed = try template.evaluateAsString(parameters: parameters)
+  #expect(expected == observed)
+}
+
+@Test(
+  "Defined empty strings still emit operator prefixes",
+  .tags(.variableExpansion, .uriVariableTextValue, .takenFromSpecification)
+)
+private func emptyStringsStillEmitOperatorPrefixes() throws {
+  let parameters: [String:URIVariableValue] = [
+    "empty": .text("")
+  ]
+
+  let fragment = try URITemplate(parsing: "foo{#empty}")
+  #expect(
+    try fragment.evaluateAsString(parameters: parameters) == "foo#"
+  )
+
+  let label = try URITemplate(parsing: "X{.empty}")
+  #expect(
+    try label.evaluateAsString(parameters: parameters) == "X."
+  )
 }
 
 @Test(
@@ -113,10 +170,9 @@ private func textVariableQueryContinuationXYEmpty() throws {
     "y": .text("768"),
     "empty": .text("")
   ]
-  
+
   let expected: String = "&x=1024&y=768&empty="
-  
+
   let observed = try template.evaluateAsString(parameters: parameters)
   #expect(expected == observed)
 }
-

@@ -1,18 +1,18 @@
 
 extension URITemplateExpressionComponent {
-  
+
   @inlinable
   internal func evaluate(parameters: [String: URIVariableValue]) throws -> String {
-    let expansion = try variables
+    let expansions = try variables
       .lazy
-      .map { try $0.evaluate(parameters: parameters, expansionType: expansionType) }
-      .joined(separator: expansionType.separatorForExpandedVariableList)
-    
-    guard !expansion.isEmpty else {
+      .compactMap { try $0.evaluateIfDefined(parameters: parameters, expansionType: expansionType) }
+    guard !expansions.isEmpty else {
       return ""
     }
-    
+
+    let expansion = expansions.joined(separator: expansionType.separatorForExpandedVariableList)
+
     return "\(expansionType.prefixForExpandedVariableList)\(expansion)"
   }
-  
+
 }
