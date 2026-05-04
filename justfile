@@ -1,3 +1,7 @@
+set quiet := true
+
+default:
+    @just --list
 
 build-debug:
     swift build -c debug -q

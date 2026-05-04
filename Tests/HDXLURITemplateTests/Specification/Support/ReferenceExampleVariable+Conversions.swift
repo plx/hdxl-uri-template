@@ -28,15 +28,32 @@ extension ReferenceExampleVariable {
   
   var variableValue: URIVariableValue {
     switch self {
+    case .value(.null):
+      .undefined
     case .value(let value):
       .text(value.stringRepresentation)
     case .list(let values):
-      .list(values.map(\.stringRepresentation))
+      .list(
+        values.compactMap { value in
+          switch value {
+          case .null:
+            nil
+          default:
+            value.stringRepresentation
+          }
+        }
+      )
     case .association(let association):
       .association(
-        association.lazy.map { key, value in
-          (key, value.stringRepresentation)
-        }.sorted(by: { $0.0 < $1.0 })
+        association.lazy.compactMap { key, value in
+          switch value {
+          case .null:
+            nil
+          default:
+            (key, value.stringRepresentation)
+          }
+        }
+        .sorted(by: { $0.0 < $1.0 })
       )
     }
   }

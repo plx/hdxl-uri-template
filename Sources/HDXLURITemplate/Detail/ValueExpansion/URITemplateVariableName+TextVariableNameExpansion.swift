@@ -1,7 +1,7 @@
 import Foundation
 
 extension URITemplateVariableName {
-  
+
   @usableFromInline
   internal enum TextVariableNameEscapeResult {
     case unnecessary
@@ -20,12 +20,17 @@ extension URITemplateVariableName {
     guard forced || shouldEscapeName(forExpansionType: expansionType) else {
       return .unnecessary
     }
-    guard let escapedName = rawValue.escaped(forValueExpansionType: expansionType) else {
+    guard let escapedName = escapedAsLiteral else {
       return .failure
     }
     return .escaped(escapedName)
   }
-  
+
+  @inlinable
+  internal var escapedAsLiteral: String? {
+    rawValue.escaped(forValueExpansionType: .reserved)
+  }
+
   @inlinable
   internal func shouldEscapeName(
     forExpansionType expansionType: URIValueExpansionType
@@ -49,6 +54,5 @@ extension URITemplateVariableName {
       true
     }
   }
-  
-}
 
+}

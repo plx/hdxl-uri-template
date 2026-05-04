@@ -85,7 +85,7 @@ extension URIVariableTextValue {
     case .escaped(let variableName):
       return switch escapedVariableValue.isEmpty {
       case true:
-        "\(variableName)="
+        "\(variableName)\(expansionType.emptyValueSuffix)"
       case false:
         "\(variableName)=\(escapedVariableValue)"
       }

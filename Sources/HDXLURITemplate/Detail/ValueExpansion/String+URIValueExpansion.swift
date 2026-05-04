@@ -6,7 +6,7 @@ extension CharacterSet {
 }
 
 extension String.UnicodeScalarView {
-  
+
   @inlinable
   internal func hasPercentEscape(at position: Index) -> Bool {
     self[position] == "%"
@@ -27,12 +27,12 @@ enum EscapedStringDecomposition {
 }
 
 extension String.UnicodeScalarView {
-  
+
   @inlinable
   internal var decomposedIntoEscapedAndUnescapedParts: [EscapedStringDecomposition] {
     var result: [EscapedStringDecomposition] = []
     var currentString: String = ""
-    
+
     var currentPosition: Index = startIndex
     while currentPosition < endIndex {
       switch hasPercentEscape(at: currentPosition) {
@@ -41,7 +41,7 @@ extension String.UnicodeScalarView {
           result.append(.unescaped(currentString))
           currentString = ""
         }
-        
+
         result.append(
           .escaped(
             String(self[currentPosition..<index(currentPosition, offsetBy: 3)])
@@ -64,48 +64,42 @@ extension String.UnicodeScalarView {
 }
 
 extension String {
-  
-  
+
   @inlinable
   internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
     guard !isEmpty else { return self }
-    
-    guard
-      let withoutPercentEncoding = removingPercentEncoding,
-      let restoringPercentEncoding = withoutPercentEncoding.addingPercentEncoding(
-        withAllowedCharacters: .allowedCharacters(
-          forValueExpansionType: valueExpansionType
-        )
+
+    let allowedCharacters = CharacterSet.allowedCharacters(
+      forValueExpansionType: valueExpansionType
+    )
+
+    guard valueExpansionType.allowsPercentEncodedTriplets else {
+      return addingPercentEncoding(
+        withAllowedCharacters: allowedCharacters
       )
-    else {
-      return nil
     }
-    
-    print("\(valueExpansionType) @ (original: \(self) -> \(withoutPercentEncoding) -> \(restoringPercentEncoding))")
-    return restoringPercentEncoding
-    
-//    let decomposition = unicodeScalars.decomposedIntoEscapedAndUnescapedParts
-//    var chunks: [String] = []
-//    chunks.reserveCapacity(decomposition.count)
-//    for decompositionElement in decomposition {
-//      switch decompositionElement {
-//      case .escaped(let percentEscapedString):
-//        chunks.append(percentEscapedString)
-//      case .unescaped(let unescapedString):
-//        guard
-//          let escapedString = unescapedString.addingPercentEncoding(
-//            withAllowedCharacters: .allowedCharacters(
-//              forValueExpansionType: valueExpansionType
-//            )
-//          )
-//        else {
-//          return nil
-//        }
-//        chunks.append(escapedString)
-//      }
-//    }
-//    
-//    return chunks.joined()
+
+    let unescapedAllowedCharacters = allowedCharacters.subtracting(rfc_pct_encode)
+    let decomposition = unicodeScalars.decomposedIntoEscapedAndUnescapedParts
+    var chunks: [String] = []
+    chunks.reserveCapacity(decomposition.count)
+    for decompositionElement in decomposition {
+      switch decompositionElement {
+      case .escaped(let percentEscapedString):
+        chunks.append(percentEscapedString)
+      case .unescaped(let unescapedString):
+        guard
+          let escapedString = unescapedString.addingPercentEncoding(
+            withAllowedCharacters: unescapedAllowedCharacters
+          )
+        else {
+          return nil
+        }
+        chunks.append(escapedString)
+      }
+    }
+
+    return chunks.joined()
   }
-    
+
 }
