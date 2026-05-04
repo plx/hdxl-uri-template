@@ -194,8 +194,8 @@ internal let rfc_ucschar_uint32_ranges: [ClosedRange<UInt32>] = [
   0xC0000...0xCFFFD,
   
   //  %xD0000-DFFFD / %xE1000-EFFFD
-  0xD0000...0xEFFFD,
-  0xE0000...0xDFFFD
+  0xD0000...0xDFFFD,
+  0xE1000...0xEFFFD
 ]
 
 @usableFromInline

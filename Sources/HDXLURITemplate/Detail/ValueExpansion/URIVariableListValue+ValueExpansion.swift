@@ -94,8 +94,6 @@ extension URIVariableListValue {
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
 #endif
-    // we inline this logic instead of using `variableName.escapedVariableName`
-    // because the code flow is a bit weird (despite originally intending to do it like that...)
     guard let escapedName = variableName.escapedAsLiteral else {
       throw ExpansionError.unableToEscapeVariableName(
         variableName.rawValue,

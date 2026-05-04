@@ -65,7 +65,6 @@ extension String.UnicodeScalarView {
 
 extension String {
 
-
   @inlinable
   internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
     guard !isEmpty else { return self }

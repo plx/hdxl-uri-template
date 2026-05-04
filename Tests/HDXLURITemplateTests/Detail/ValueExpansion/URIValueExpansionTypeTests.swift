@@ -52,3 +52,19 @@ private func formatStringRoundTrip(expansionType: URIValueExpansionType) throws 
     """
   )
 }
+
+@Test(
+  "`ucschar` scalar ranges match RFC 6570",
+  .tags(.uriValueExpansionType)
+)
+private func ucscharScalarRangesMatchRFC6570() throws {
+  let finalDPlaneScalar = try #require(UnicodeScalar(0xDFFFD))
+  let excludedEPlaneScalar = try #require(UnicodeScalar(0xE0000))
+  let firstIncludedEPlaneScalar = try #require(UnicodeScalar(0xE1000))
+  let finalEPlaneScalar = try #require(UnicodeScalar(0xEFFFD))
+
+  #expect(rfc_ucschar.contains(finalDPlaneScalar))
+  #expect(!rfc_ucschar.contains(excludedEPlaneScalar))
+  #expect(rfc_ucschar.contains(firstIncludedEPlaneScalar))
+  #expect(rfc_ucschar.contains(finalEPlaneScalar))
+}

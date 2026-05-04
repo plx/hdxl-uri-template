@@ -25,6 +25,7 @@ extension URITemplateVariable {
     guard
       let value = parameters[variableName.rawValue],
       value.isDefined,
+      // Empty text values still expand (e.g. "?empty="); empty lists and associations do not.
       value.isTextValue || !value.isEmpty
     else {
       return nil
