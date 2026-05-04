@@ -2,10 +2,6 @@ import Foundation
 
 extension URITemplateVariable {
 
-  public enum ExpansionError: Error, LocalizedError {
-    case variableNotFound(String)
-  }
-
   @inlinable
   internal func evaluate(
     parameters: [String: URIVariableValue],
@@ -28,7 +24,8 @@ extension URITemplateVariable {
   ) throws -> String? {
     guard
       let value = parameters[variableName.rawValue],
-      value.count > 0
+      value.isDefined,
+      value.isTextValue || !value.isEmpty
     else {
       return nil
     }

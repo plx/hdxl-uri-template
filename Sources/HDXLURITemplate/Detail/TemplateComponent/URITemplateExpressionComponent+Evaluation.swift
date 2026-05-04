@@ -4,7 +4,6 @@ extension URITemplateExpressionComponent {
   @inlinable
   internal func evaluate(parameters: [String: URIVariableValue]) throws -> String {
     let expansions = try variables
-      .lazy
       .compactMap { try $0.evaluateIfDefined(parameters: parameters, expansionType: expansionType) }
     guard !expansions.isEmpty else {
       return ""

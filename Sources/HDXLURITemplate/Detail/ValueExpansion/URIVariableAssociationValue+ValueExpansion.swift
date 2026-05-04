@@ -113,23 +113,7 @@ extension URIVariableAssociationValue {
         pair
         in
         let escapedKey = try pair.key.escapedContents(expansionType: expansionType)
-        /*else {
-          throw ExpansionError.internalAssociationKeyFailedToEscape(
-            storage.map({ ($0.key.rawValue, $0.value.rawValue) }),
-            pair.key.rawValue,
-            variableName.rawValue,
-            expansionType
-          )
-        }*/
         let escapedValue = try pair.value.escapedContents(expansionType: expansionType)
-        /*else {
-          throw ExpansionError.internalAssociationValueFailedToEscape(
-            storage.map({ ($0.key.rawValue, $0.value.rawValue) }),
-            pair.key.rawValue,
-            variableName.rawValue,
-            expansionType
-          )
-        }*/
         return "\(escapedKey),\(escapedValue)"
       }
       .joined(separator: ",")

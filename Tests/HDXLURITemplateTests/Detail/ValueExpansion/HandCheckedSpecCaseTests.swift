@@ -27,6 +27,29 @@ private func variableAssocationValueHandCheckOnUserIDTokenTabKeys() throws {
   #expect(expected.contains(observed))
 }
 
+@Test(
+  "`{keys}` with an unexploded associative array",
+  .tags(.variableExpansion, .uriVariableAssociationValue, .takenFromSpecification)
+)
+private func unexplodedAssociativeArrayUsesCommaDelimitedPairs() throws {
+  let parameters: [String:URIVariableValue] = [
+    "keys": .association([
+      ("a", "1"),
+      ("b", "2")
+    ])
+  ]
+
+  let simple = try URITemplate(parsing: "{keys}")
+  #expect(
+    try simple.evaluateAsString(parameters: parameters) == "a,1,b,2"
+  )
+
+  let query = try URITemplate(parsing: "{?keys}")
+  #expect(
+    try query.evaluateAsString(parameters: parameters) == "?keys=a,1,b,2"
+  )
+}
+
 
 @Test(
   "`{/id*}` (from spec)",
