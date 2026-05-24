@@ -114,16 +114,10 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   @objc
   public func encode(with coder: NSCoder) {
     if let encoder = coder as? NSKeyedArchiver {
-      do {
-        try encoder.encodeEncodable(
-          template,
-          forKey: "template"
-        )
-      }
-      catch let e {
-        // TODO: what's a good way to handle this failure in 2025?
-        fatalError("Failed to encode our `template` \(template.debugDescription) due to error: \(String(reflecting: e))!")
-      }
+      try? encoder.encodeEncodable(
+        template,
+        forKey: "template"
+      )
     }
   }
   

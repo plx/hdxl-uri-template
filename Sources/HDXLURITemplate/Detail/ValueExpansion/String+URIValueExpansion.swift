@@ -66,7 +66,7 @@ extension String.UnicodeScalarView {
 extension String {
 
   @inlinable
-  internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
+  internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String {
     guard !isEmpty else { return self }
 
     let allowedCharacters = CharacterSet.allowedCharacters(
@@ -76,7 +76,7 @@ extension String {
     guard valueExpansionType.allowsPercentEncodedTriplets else {
       return addingPercentEncoding(
         withAllowedCharacters: allowedCharacters
-      )
+      )!
     }
 
     let unescapedAllowedCharacters = allowedCharacters.subtracting(rfc_pct_encode)
@@ -88,13 +88,9 @@ extension String {
       case .escaped(let percentEscapedString):
         chunks.append(percentEscapedString)
       case .unescaped(let unescapedString):
-        guard
-          let escapedString = unescapedString.addingPercentEncoding(
-            withAllowedCharacters: unescapedAllowedCharacters
-          )
-        else {
-          return nil
-        }
+        let escapedString = unescapedString.addingPercentEncoding(
+          withAllowedCharacters: unescapedAllowedCharacters
+        )!
         chunks.append(escapedString)
       }
     }

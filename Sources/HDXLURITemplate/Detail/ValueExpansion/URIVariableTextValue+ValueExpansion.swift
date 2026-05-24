@@ -32,11 +32,7 @@ extension URIVariableTextValue {
   internal func escapedContents(
     expansionType: URIValueExpansionType
   ) throws -> String {
-    guard let result = rawValue.escaped(forValueExpansionType: expansionType) else {
-      throw ExpansionError.unableToEscapeTextValue(rawValue, expansionType)
-    }
-    
-    return result
+    rawValue.escaped(forValueExpansionType: expansionType)
   }
   
   @inlinable
@@ -66,19 +62,10 @@ extension URIVariableTextValue {
     pedanticAssert(expansionModifier.isValid)
     pedanticAssert(isValid)
 #endif
-    guard
-      let escapedVariableValue = escapedVariableValue(
-        expansionType: expansionType,
-        expansionModifier: expansionModifier
-      )
-    else {
-      throw ExpansionError.unableToEscapeVariableValue(
-        rawValue,
-        variableName.rawValue,
-        expansionType,
-        expansionModifier
-      )
-    }
+    let escapedVariableValue = escapedVariableValue(
+      expansionType: expansionType,
+      expansionModifier: expansionModifier
+    )
     switch variableName.escapedVariableName(forExpansionType: expansionType) {
     case .unnecessary:
       return escapedVariableValue
@@ -89,11 +76,6 @@ extension URIVariableTextValue {
       case false:
         "\(variableName)=\(escapedVariableValue)"
       }
-    case .failure:
-      throw ExpansionError.unableToEscapeVariableName(
-        variableName.rawValue,
-        expansionType
-      )
     }
   }
   
@@ -101,7 +83,7 @@ extension URIVariableTextValue {
   func escapedVariableValue(
     expansionType: URIValueExpansionType,
     expansionModifier: URIValueExpansionModifier
-  ) -> String? {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(expansionModifier.isValid)
     pedanticAssert(isValid)

@@ -50,7 +50,7 @@ func verifyUniqueStringification<Element>(
   }
   
   let duplicateMappings = elementStringifications.filter { $1 > 1 }
-  guard duplicateMappings.isEmpty else {
+  guard !duplicateMappings.isEmpty else {
     return
   }
   

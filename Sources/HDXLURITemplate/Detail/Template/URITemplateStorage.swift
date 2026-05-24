@@ -85,7 +85,7 @@ internal final class URITemplateStorage {
       _templateRepresentation = nil
       _templateVariables = nil
       _templateVariableNames = nil
-      _templateRepresentation = nil
+      _variableNames = nil
     }
   }
   
@@ -160,7 +160,16 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal var templateVariablesNames: Set<URITemplateVariableName> {
-    _templateVariableNames.obtainAssuredValue(
+    cachedFieldLock.precondition(.notOwner)
+    return cachedFieldLock.withLock {
+      withLockTemplateVariableNames
+    }
+  }
+
+  @inlinable
+  internal var withLockTemplateVariableNames: Set<URITemplateVariableName> {
+    cachedFieldLock.precondition(.owner)
+    return _templateVariableNames.obtainAssuredValue(
       guaranteedBy: Set(
         _withLockTemplateVariables
           .lazy
@@ -189,7 +198,7 @@ internal final class URITemplateStorage {
     cachedFieldLock.precondition(.owner)
     return _variableNames.obtainAssuredValue(
       guaranteedBy: Set(
-        templateVariables
+        _withLockTemplateVariables
           .lazy
           .map(\.variableName.rawValue)
       )
@@ -310,14 +319,6 @@ extension URITemplateStorage : Codable {
   internal convenience init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
     let components = try container.decode([URITemplateComponent].self)
-    guard components.allSatisfy(\.isValid) else {
-      throw DataValidationError(
-        forType: URITemplateStorage.self,
-        problemDescription: "Decoded invalid `components` \(components.debugDescription)!",
-        repairDescription: nil,
-        repairSuggestion: nil
-      )
-    }
     self.init(components: components)
   }
   

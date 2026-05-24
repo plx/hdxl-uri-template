@@ -61,7 +61,7 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
 
   @objc
   public var isUndefinedVariableValue: Bool {
-    variableValue.isDefined
+    variableValue.isUndefined
   }
 
   @objc
@@ -258,16 +258,10 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   @objc
   public func encode(with coder: NSCoder) {
     if let encoder = coder as? NSKeyedArchiver {
-      do {
-        try encoder.encodeEncodable(
-          self.variableValue,
-          forKey: "variableValue"
-        )
-      }
-      catch let e {
-        // TODO: just fail quietly? What's best in 2025?
-        fatalError("Failed to encode our `variableValue` \(self.variableValue.debugDescription) due to error: \(String(reflecting: e))!")
-      }
+      try? encoder.encodeEncodable(
+        self.variableValue,
+        forKey: "variableValue"
+      )
     }
   }
 

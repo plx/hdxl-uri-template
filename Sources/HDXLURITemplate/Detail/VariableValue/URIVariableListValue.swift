@@ -90,7 +90,7 @@ extension URIVariableListValue : CustomStringConvertible {
   internal var description: String {
     let values = storage
       .lazy
-      .map(\.description)
+      .map { "\"\($0.description)\"" }
       .joined(separator: ", ")
     
     return "[ \(values) ]"
@@ -187,4 +187,3 @@ extension URIVariableListValue {
   }
   
 }
-

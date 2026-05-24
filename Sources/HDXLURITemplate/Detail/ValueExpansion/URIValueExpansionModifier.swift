@@ -155,17 +155,15 @@ extension URIValueExpansionModifier : Codable {
             forType: URIValueExpansionModifier.self,
             problemDescription: problemDescription,
             repairDescription: "Could replace with minimum `codePointCount` of \(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.lowerBound)",
-            repairSuggestion: .prefix(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.upperBound)
+            repairSuggestion: .prefix(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.lowerBound)
           )
-        } else if codePointCount > URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.upperBound {
+        } else {
           throw DataValidationError(
             forType: URIValueExpansionModifier.self,
             problemDescription: problemDescription,
             repairDescription: "Could replace with maximum `codePointCount` of \(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.upperBound)",
             repairSuggestion: .prefix(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.upperBound)
           )
-        } else {
-          fatalError("Reached highly-unexpected code point count.")
         }
       }
       self = .prefix(codePointCount)

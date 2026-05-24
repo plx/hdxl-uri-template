@@ -40,26 +40,17 @@ extension URITemplate {
   
   @inlinable
   public func evaluateAsString(parameters: [String: URIVariableValue]) throws -> String {
-    do {
-      var result: String = ""
-      for component in storage.components {
-        switch component {
-        case .literal(let literal):
-          result.append(contentsOf: literal.rawValue)
-        case .expression(let expression):
-          result.append(contentsOf: try expression.evaluate(parameters: parameters))
-        }
+    var result: String = ""
+    for component in storage.components {
+      switch component {
+      case .literal(let literal):
+        result.append(contentsOf: literal.rawValue)
+      case .expression(let expression):
+        result.append(contentsOf: try expression.evaluate(parameters: parameters))
       }
-      
-      return result
     }
-    catch let error {
-      throw EvaluationError(
-        template: self,
-        parameters: parameters,
-        underlyingError: error
-      )
-    }
+    
+    return result
   }
 
   @inlinable

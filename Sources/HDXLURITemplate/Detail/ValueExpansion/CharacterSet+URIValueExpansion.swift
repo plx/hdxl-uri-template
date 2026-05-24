@@ -200,12 +200,8 @@ internal let rfc_ucschar_uint32_ranges: [ClosedRange<UInt32>] = [
 
 @usableFromInline
 internal let rfc_ucschar_ranges: [ClosedRange<UnicodeScalar>] = rfc_ucschar_uint32_ranges.map() {
-  guard let lowerBound = UnicodeScalar($0.lowerBound) else {
-    fatalError("Lower-bound \($0.lowerBound) of `UInt32` range \($0) couldn't be converted to `UnicodeScalar`!")
-  }
-  guard let upperBound = UnicodeScalar($0.upperBound) else {
-    fatalError("Upper-bound \($0.upperBound) of `UInt32` range \($0) couldn't be converted to `UnicodeScalar`!")
-  }
+  let lowerBound = UnicodeScalar($0.lowerBound)!
+  let upperBound = UnicodeScalar($0.upperBound)!
   return lowerBound...upperBound
 }
 
@@ -226,12 +222,8 @@ internal let rfc_iprivate_uint32_ranges: [ClosedRange<UInt32>] = [
 
 @usableFromInline
 internal let rfc_iprivate_ranges: [ClosedRange<UnicodeScalar>] = rfc_iprivate_uint32_ranges.map() {
-  guard let lowerBound = UnicodeScalar($0.lowerBound) else {
-    fatalError("Lower-bound \($0.lowerBound) of `UInt32` range \($0) couldn't be converted to `UnicodeScalar`!")
-  }
-  guard let upperBound = UnicodeScalar($0.upperBound) else {
-    fatalError("Upper-bound \($0.upperBound) of `UInt32` range \($0) couldn't be converted to `UnicodeScalar`!")
-  }
+  let lowerBound = UnicodeScalar($0.lowerBound)!
+  let upperBound = UnicodeScalar($0.upperBound)!
   return lowerBound...upperBound
 }
 
