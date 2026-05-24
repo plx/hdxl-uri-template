@@ -200,8 +200,28 @@ internal let rfc_ucschar_uint32_ranges: [ClosedRange<UInt32>] = [
 
 @usableFromInline
 internal let rfc_ucschar_ranges: [ClosedRange<UnicodeScalar>] = rfc_ucschar_uint32_ranges.map() {
-  let lowerBound = UnicodeScalar($0.lowerBound)!
-  let upperBound = UnicodeScalar($0.upperBound)!
+  let lowerBound = infalliblyUnwrap(
+    UnicodeScalar($0.lowerBound),
+    explanation: """
+      `rfc_ucschar_uint32_ranges` is a hardcoded transcription of the \
+      `ucschar` production from RFC 3987 §2.2. Every value in that table \
+      lies in `0x00A0...0xD7FF` or `0xE000...0x10FFFD`, which sits outside \
+      the UTF-16 surrogate gap (`0xD800...0xDFFF`) and at or below the \
+      Unicode maximum (`0x10FFFF`). Those two cases are the only reasons \
+      `UnicodeScalar.init(_: UInt32)` returns `nil`, so the conversion \
+      cannot fail for any value drawn from this table.
+      """
+  )
+  let upperBound = infalliblyUnwrap(
+    UnicodeScalar($0.upperBound),
+    explanation: """
+      Same rationale as the lower bound above: every upper bound in \
+      `rfc_ucschar_uint32_ranges` is a hand-audited value from the \
+      RFC 3987 §2.2 `ucschar` table, lying outside the UTF-16 surrogate \
+      gap and at or below the Unicode maximum. `UnicodeScalar.init(_: UInt32)` \
+      only returns `nil` for those two cases, neither of which can occur here.
+      """
+  )
   return lowerBound...upperBound
 }
 
@@ -222,8 +242,27 @@ internal let rfc_iprivate_uint32_ranges: [ClosedRange<UInt32>] = [
 
 @usableFromInline
 internal let rfc_iprivate_ranges: [ClosedRange<UnicodeScalar>] = rfc_iprivate_uint32_ranges.map() {
-  let lowerBound = UnicodeScalar($0.lowerBound)!
-  let upperBound = UnicodeScalar($0.upperBound)!
+  let lowerBound = infalliblyUnwrap(
+    UnicodeScalar($0.lowerBound),
+    explanation: """
+      `rfc_iprivate_uint32_ranges` is a hardcoded transcription of the \
+      `iprivate` production from RFC 3987 §2.2. Every value in that table \
+      sits inside one of Unicode's private-use planes (`0xE000...0xF8FF`, \
+      `0xF0000...0xFFFFD`, or `0x100000...0x10FFFD`) — well above the \
+      UTF-16 surrogate gap and at or below the Unicode maximum. \
+      `UnicodeScalar.init(_: UInt32)` only returns `nil` for surrogate \
+      values or values above `0x10FFFF`, so the conversion cannot fail here.
+      """
+  )
+  let upperBound = infalliblyUnwrap(
+    UnicodeScalar($0.upperBound),
+    explanation: """
+      Same rationale as the lower bound above: every upper bound in \
+      `rfc_iprivate_uint32_ranges` lies inside a Unicode private-use plane, \
+      outside the surrogate gap, and at or below the Unicode maximum, so \
+      `UnicodeScalar.init(_: UInt32)` cannot fail for any value in this table.
+      """
+  )
   return lowerBound...upperBound
 }
 

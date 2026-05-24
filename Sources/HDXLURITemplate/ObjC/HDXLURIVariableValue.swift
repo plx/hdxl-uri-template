@@ -257,11 +257,14 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   
   @objc
   public func encode(with coder: NSCoder) {
-    if let encoder = coder as? NSKeyedArchiver {
-      try? encoder.encodeEncodable(
+    guard let encoder = coder as? NSKeyedArchiver else { return }
+    do {
+      try encoder.encodeEncodable(
         self.variableValue,
         forKey: "variableValue"
       )
+    } catch {
+      coder.failWithError(error)
     }
   }
 
