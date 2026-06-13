@@ -40,32 +40,56 @@ extension URITemplate {
   
   @inlinable
   public func evaluateAsString(parameters: [String: URIVariableValue]) throws -> String {
-    var result: String = ""
-    for component in storage.components {
-      switch component {
-      case .literal(let literal):
-        result.append(contentsOf: literal.rawValue)
-      case .expression(let expression):
-        result.append(contentsOf: try expression.evaluate(parameters: parameters))
+    // This `do`/`catch` is the public failure boundary for evaluation: any
+    // error surfaced while expanding a component is re-thrown as an
+    // `EvaluationError` carrying the template and parameters, so callers get
+    // a uniform error type with diagnostic context (see `SpecificationTests`'
+    // `.evaluationFailure` expectation). The escape/expansion simplification
+    // currently leaves the expansion pipeline non-throwing in practice, so
+    // this is a defensive boundary that preserves the contract should any
+    // downstream step regain a throwing path.
+    do {
+      var result: String = ""
+      for component in storage.components {
+        switch component {
+        case .literal(let literal):
+          result.append(contentsOf: literal.rawValue)
+        case .expression(let expression):
+          result.append(contentsOf: try expression.evaluate(parameters: parameters))
+        }
       }
+
+      return result
     }
-    
-    return result
+    catch let error {
+      throw EvaluationError(
+        template: self,
+        parameters: parameters,
+        underlyingError: error
+      )
+    }
   }
 
   @inlinable
   public func evaluate(parameters: [String: URIVariableValue]) throws -> URL {
     let stringResult = try evaluateAsString(parameters: parameters)
     guard let url = URL(string: stringResult) else {
-      // TODO:
-      throw URLError(
-        .badURL,
-        userInfo: [
-          NSLocalizedDescriptionKey :
-          """
-          Rendered template `\(templateRepresentation)` succeeded-as `\(stringResult)`, but failed to produce a valid URL! 
-          """
-        ]
+      // A successfully-rendered template can still fail to produce a valid
+      // `URL` (e.g. an empty expansion, or literal text `URL` rejects). Wrap
+      // this as an `EvaluationError` — like expansion failures — so the
+      // public `evaluate(parameters:)` surfaces one consistent error type.
+      throw EvaluationError(
+        template: self,
+        parameters: parameters,
+        underlyingError: URLError(
+          .badURL,
+          userInfo: [
+            NSLocalizedDescriptionKey :
+            """
+            Rendered template `\(templateRepresentation)` succeeded-as `\(stringResult)`, but failed to produce a valid URL!
+            """
+          ]
+        )
       )
     }
     return url

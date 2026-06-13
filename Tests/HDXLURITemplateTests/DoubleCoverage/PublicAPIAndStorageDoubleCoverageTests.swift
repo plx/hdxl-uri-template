@@ -27,8 +27,14 @@ private func manualPublicTemplateAPICoverage() throws {
   #expect(template.debugDescription.contains("URITemplate"))
   #expect(try template.evaluateAsString(parameters: parameters) == "https://example.com/users?q=uri%20templates&empty=")
   #expect(try template.evaluate(parameters: parameters) == URL(string: "https://example.com/users?q=uri%20templates&empty="))
-  #expect(throws: URLError.self) {
+  // A rendered string that `URL` rejects surfaces as `EvaluationError` (with the
+  // underlying `URLError` preserved), matching the uniform evaluation-failure contract.
+  do {
     _ = try URITemplate(parsing: "https://[").evaluate(parameters: [:])
+    Issue.record("Expected an unrepresentable-URL evaluation to throw.")
+  } catch let error as URITemplate.EvaluationError {
+    #expect(error.template.templateRepresentation == "https://[")
+    #expect(error.underlyingError is URLError)
   }
 
   // Codable and comparison are part of the package's public value semantics, so this checks they preserve the parsed structure rather than object identity.
