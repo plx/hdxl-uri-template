@@ -75,9 +75,9 @@ extension URITemplateComponent : CustomDebugStringConvertible {
   internal var debugDescription: String {
     switch self {
     case .literal(let literal):
-      "URITemplateComponent.literal(\(literal.debugDescription)"
+      "URITemplateComponent.literal(\(literal.debugDescription))"
     case .expression(let expression):
-      "URITemplateComponent.expresssion(\(expression.debugDescription))"
+      "URITemplateComponent.expression(\(expression.debugDescription))"
     }
   }
   

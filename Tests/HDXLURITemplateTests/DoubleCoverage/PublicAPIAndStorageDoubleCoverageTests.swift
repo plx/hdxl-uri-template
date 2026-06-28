@@ -151,7 +151,7 @@ private func manualStorageAndComponentCoverage() throws {
   #expect(expressionComponent.templateComponentType == .expression)
   #expect(expressionComponent.templateRepresentation == "{/id}")
   #expect(expressionComponent.description.contains(".expression"))
-  #expect(expressionComponent.debugDescription.contains("expresssion"))
+  #expect(expressionComponent.debugDescription.contains("expression"))
   #expect(expressionComponent.isValid)
   #expect(!(expressionComponent < literalComponent))
   #expect(expression.isEmpty == false)

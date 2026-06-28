@@ -113,11 +113,14 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   
   @objc
   public func encode(with coder: NSCoder) {
-    if let encoder = coder as? NSKeyedArchiver {
-      try? encoder.encodeEncodable(
+    guard let encoder = coder as? NSKeyedArchiver else { return }
+    do {
+      try encoder.encodeEncodable(
         template,
         forKey: "template"
       )
+    } catch {
+      coder.failWithError(error)
     }
   }
   

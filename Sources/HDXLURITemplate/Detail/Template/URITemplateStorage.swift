@@ -317,6 +317,11 @@ extension URITemplateStorage : Codable {
   
   @inlinable
   internal convenience init(from decoder: Decoder) throws {
+    // No storage-level `allSatisfy(\.isValid)` re-check is needed here: every
+    // `URITemplateComponent`'s own `init(from:)` rejects invalid data — the
+    // literal- and variable-name regexes and the prefix-count range each throw
+    // a `DataValidationError` on decode — so a successfully decoded
+    // `[URITemplateComponent]` is already guaranteed to be valid.
     let container = try decoder.singleValueContainer()
     let components = try container.decode([URITemplateComponent].self)
     self.init(components: components)
