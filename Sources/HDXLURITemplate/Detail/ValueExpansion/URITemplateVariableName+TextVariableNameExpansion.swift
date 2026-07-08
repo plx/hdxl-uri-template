@@ -6,7 +6,6 @@ extension URITemplateVariableName {
   internal enum TextVariableNameEscapeResult {
     case unnecessary
     case escaped(String)
-    case failure
   }
 
   @inlinable
@@ -20,14 +19,11 @@ extension URITemplateVariableName {
     guard forced || shouldEscapeName(forExpansionType: expansionType) else {
       return .unnecessary
     }
-    guard let escapedName = escapedAsLiteral else {
-      return .failure
-    }
-    return .escaped(escapedName)
+    return .escaped(escapedAsLiteral)
   }
 
   @inlinable
-  internal var escapedAsLiteral: String? {
+  internal var escapedAsLiteral: String {
     rawValue.escaped(forValueExpansionType: .reserved)
   }
 

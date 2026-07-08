@@ -66,7 +66,7 @@ extension String.UnicodeScalarView {
 extension String {
 
   @inlinable
-  internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String? {
+  internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String {
     guard !isEmpty else { return self }
 
     let allowedCharacters = CharacterSet.allowedCharacters(
@@ -74,8 +74,20 @@ extension String {
     )
 
     guard valueExpansionType.allowsPercentEncodedTriplets else {
-      return addingPercentEncoding(
-        withAllowedCharacters: allowedCharacters
+      return infalliblyUnwrap(
+        addingPercentEncoding(
+          withAllowedCharacters: allowedCharacters
+        ),
+        explanation: """
+          `String.addingPercentEncoding(withAllowedCharacters:)` returns \
+          `String?` purely as a holdover from its Objective-C bridge: the \
+          underlying `NSString` API treats unpaired UTF-16 surrogates in \
+          the receiver as an encode-failure and reports them by returning \
+          `nil`. Swift's `String` type guarantees structurally well-formed \
+          Unicode at construction time — no unpaired surrogates ever — so \
+          for any Swift-`String` receiver the operation cannot fail, \
+          regardless of the supplied `CharacterSet`.
+          """
       )
     }
 
@@ -88,13 +100,21 @@ extension String {
       case .escaped(let percentEscapedString):
         chunks.append(percentEscapedString)
       case .unescaped(let unescapedString):
-        guard
-          let escapedString = unescapedString.addingPercentEncoding(
+        let escapedString = infalliblyUnwrap(
+          unescapedString.addingPercentEncoding(
             withAllowedCharacters: unescapedAllowedCharacters
-          )
-        else {
-          return nil
-        }
+          ),
+          explanation: """
+            `unescapedString` was carved out of `self` (a Swift `String`) by \
+            `decomposedIntoEscapedAndUnescapedParts`, which slices on \
+            `UnicodeScalarView` indices. Slicing a Swift `String` always \
+            yields well-formed Unicode — no unpaired UTF-16 surrogates — and \
+            `addingPercentEncoding(withAllowedCharacters:)` only returns \
+            `nil` to surface that exact Objective-C-bridge failure mode. \
+            So the operation cannot fail for any chunk produced here, \
+            regardless of the supplied `CharacterSet`.
+            """
+        )
         chunks.append(escapedString)
       }
     }

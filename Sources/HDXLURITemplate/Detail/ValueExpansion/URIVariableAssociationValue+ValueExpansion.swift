@@ -66,27 +66,13 @@ extension URIVariableAssociationValue {
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
 #endif
-    return try storage
+    return storage
       .lazy
       .map {
         pair
         in
-        guard let escapedKey = pair.key.rawValue.escaped(forValueExpansionType: expansionType) else {
-          throw ExpansionError.internalAssociationKeyFailedToEscape(
-            storage.map({ ($0.key.rawValue, $0.value.rawValue) }),
-            pair.key.rawValue,
-            variableName.rawValue,
-            expansionType
-          )
-        }
-        guard let escapedValue = pair.value.rawValue.escaped(forValueExpansionType: expansionType) else {
-          throw ExpansionError.internalAssociationValueFailedToEscape(
-            storage.map({ ($0.key.rawValue, $0.value.rawValue) }),
-            pair.key.rawValue,
-            variableName.rawValue,
-            expansionType
-          )
-        }
+        let escapedKey = pair.key.rawValue.escaped(forValueExpansionType: expansionType)
+        let escapedValue = pair.value.rawValue.escaped(forValueExpansionType: expansionType)
 
         switch escapedValue.isEmpty {
         case true:
@@ -123,11 +109,6 @@ extension URIVariableAssociationValue {
       return joinedPairs
     case .escaped(let escapedName):
       return "\(escapedName)=\(joinedPairs)"
-    case .failure:
-      throw URIVariableTextValue.ExpansionError.unableToEscapeVariableName(
-        variableName.rawValue,
-        expansionType
-      )
     }
   }
 

@@ -184,43 +184,12 @@ extension URIVariableValue : Codable {
     let container = try decoder.singleValueContainer()
     let storage = try container.decode(Storage.self)
     guard storage.isValid else {
-      switch storage {
-      case .undefined:
-        // ^ shouldn't actually get to this branch
-        throw DataValidationError(
-          forType: URIVariableValue.self,
-          problemDescription: "Unexpectedly discovered an invalid `.undefined`-style storage \(storage.debugDescription)",
-          repairDescription: ".undefined shouldn't ever be invalid thus no suggestion is available.",
-          repairSuggestion: nil
-        )
-      case .text(let text):
-        throw DataValidationError(
-          forType: URIVariableValue.self,
-          problemDescription: "Unexpectedly discovered an invalid `.text` payload \(text.debugDescription)",
-          repairDescription: "Supplying an empty-string .text as a repair suggestion",
-          repairSuggestion: URIVariableValue(
-            storage: .text(URIVariableTextValue(rawValue: ""))
-          )
-        )
-      case .list(let list):
-        throw DataValidationError(
-          forType: URIVariableValue.self,
-          problemDescription: "Unexpectedly discovered an invalid `.list` payload \(list.debugDescription)",
-          repairDescription: "Supplying a .list with an empty payload as a repair suggestion",
-          repairSuggestion: URIVariableValue(
-            storage: .list(URIVariableListValue())
-          )
-        )
-      case .association(let association):
-        throw DataValidationError(
-          forType: URIVariableValue.self,
-          problemDescription: "Unexpectedly discovered an invalid `.association` payload \(association.debugDescription)",
-          repairDescription: "Supplying a .list with an empty payload as a repair suggestion",
-          repairSuggestion: URIVariableValue(
-            storage: .association(URIVariableAssociationValue())
-          )
-        )
-      }
+      throw DataValidationError(
+        forType: URIVariableValue.self,
+        problemDescription: "Unexpectedly discovered invalid storage \(storage.debugDescription)",
+        repairDescription: "Supplying an undefined value as a repair suggestion",
+        repairSuggestion: .undefined
+      )
     }
     self.init(storage: storage)
   }

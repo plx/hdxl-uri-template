@@ -85,7 +85,7 @@ internal final class URITemplateStorage {
       _templateRepresentation = nil
       _templateVariables = nil
       _templateVariableNames = nil
-      _templateRepresentation = nil
+      _variableNames = nil
     }
   }
   
@@ -160,7 +160,16 @@ internal final class URITemplateStorage {
   
   @inlinable
   internal var templateVariablesNames: Set<URITemplateVariableName> {
-    _templateVariableNames.obtainAssuredValue(
+    cachedFieldLock.precondition(.notOwner)
+    return cachedFieldLock.withLock {
+      withLockTemplateVariableNames
+    }
+  }
+
+  @inlinable
+  internal var withLockTemplateVariableNames: Set<URITemplateVariableName> {
+    cachedFieldLock.precondition(.owner)
+    return _templateVariableNames.obtainAssuredValue(
       guaranteedBy: Set(
         _withLockTemplateVariables
           .lazy
@@ -189,7 +198,7 @@ internal final class URITemplateStorage {
     cachedFieldLock.precondition(.owner)
     return _variableNames.obtainAssuredValue(
       guaranteedBy: Set(
-        templateVariables
+        _withLockTemplateVariables
           .lazy
           .map(\.variableName.rawValue)
       )
@@ -308,16 +317,13 @@ extension URITemplateStorage : Codable {
   
   @inlinable
   internal convenience init(from decoder: Decoder) throws {
+    // No storage-level `allSatisfy(\.isValid)` re-check is needed here: every
+    // `URITemplateComponent`'s own `init(from:)` rejects invalid data — the
+    // literal- and variable-name regexes and the prefix-count range each throw
+    // a `DataValidationError` on decode — so a successfully decoded
+    // `[URITemplateComponent]` is already guaranteed to be valid.
     let container = try decoder.singleValueContainer()
     let components = try container.decode([URITemplateComponent].self)
-    guard components.allSatisfy(\.isValid) else {
-      throw DataValidationError(
-        forType: URITemplateStorage.self,
-        problemDescription: "Decoded invalid `components` \(components.debugDescription)!",
-        repairDescription: nil,
-        repairSuggestion: nil
-      )
-    }
     self.init(components: components)
   }
   

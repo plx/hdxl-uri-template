@@ -94,12 +94,7 @@ extension URIVariableListValue {
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
 #endif
-    guard let escapedName = variableName.escapedAsLiteral else {
-      throw ExpansionError.unableToEscapeVariableName(
-        variableName.rawValue,
-        expansionType
-      )
-    }
+    let escapedName = variableName.escapedAsLiteral
     return try storage
       .lazy
       .map { text in
@@ -122,18 +117,10 @@ extension URIVariableListValue {
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
 #endif
-    let joinedValues = try storage
+    let joinedValues = storage
       .lazy
       .map { text in
-        guard let escaped = text.rawValue.escaped(forValueExpansionType: expansionType) else {
-          throw ExpansionError.internalValueFailedToEscape(
-            storage.map({$0.rawValue}),
-            text.rawValue,
-            variableName.rawValue,
-            expansionType
-          )
-        }
-        return escaped
+        text.rawValue.escaped(forValueExpansionType: expansionType)
     }.joined(
       separator: ","
     )
@@ -142,11 +129,6 @@ extension URIVariableListValue {
       return joinedValues
     case .escaped(let escapedName):
       return "\(escapedName)=\(joinedValues)"
-    case .failure:
-      throw ExpansionError.unableToEscapeVariableName(
-        variableName.rawValue,
-        expansionType
-      )
     }
   }
 
