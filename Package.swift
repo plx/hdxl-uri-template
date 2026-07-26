@@ -32,6 +32,9 @@ let package = Package(
       dependencies: [
         "HDXLURITemplate", 
       ],
+      exclude: [
+        "Resources/README.md"
+      ],
       resources: [
         Resource.copy(
           "Resources/extended-tests.json"
@@ -52,4 +55,3 @@ let package = Package(
     .v6
   ]
 )
-
