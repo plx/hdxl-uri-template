@@ -1,64 +1,40 @@
 import Foundation
 
-extension CharacterSet {
-  @usableFromInline
-  static let hexadecimalDigits: CharacterSet = .init(charactersIn: "0123456789ABCDEFabcdef")
-}
-
-extension String.UnicodeScalarView {
+extension UInt8 {
 
   @inlinable
-  internal func hasPercentEscape(at position: Index) -> Bool {
-    self[position] == "%"
-    &&
-    distance(from: position, to: endIndex) >= 3
-    &&
-    CharacterSet.hexadecimalDigits.contains(self[index(position, offsetBy: 1)])
-    &&
-    CharacterSet.hexadecimalDigits.contains(self[index(position, offsetBy: 2)])
+  internal var isASCIIHexadecimalDigit: Bool {
+    switch self {
+    case 0x30...0x39, 0x41...0x46, 0x61...0x66:
+      true
+    default:
+      false
+    }
   }
 
 }
 
-@usableFromInline
-enum EscapedStringDecomposition {
-  case escaped(String)
-  case unescaped(String)
-}
-
-extension String.UnicodeScalarView {
+extension String.UTF8View {
 
   @inlinable
-  internal var decomposedIntoEscapedAndUnescapedParts: [EscapedStringDecomposition] {
-    var result: [EscapedStringDecomposition] = []
-    var currentString: String = ""
+  internal func indexAfterPercentEncodedTriplet(
+    startingAt position: Index
+  ) -> Index? {
+    guard position != endIndex, self[position] == 0x25 else { return nil }
 
-    var currentPosition: Index = startIndex
-    while currentPosition < endIndex {
-      switch hasPercentEscape(at: currentPosition) {
-      case true:
-        if !currentString.isEmpty {
-          result.append(.unescaped(currentString))
-          currentString = ""
-        }
+    let firstDigitPosition = index(after: position)
+    guard firstDigitPosition != endIndex else { return nil }
 
-        result.append(
-          .escaped(
-            String(self[currentPosition..<index(currentPosition, offsetBy: 3)])
-          )
-        )
-        currentPosition = index(currentPosition, offsetBy: 3)
-      case false:
-        currentString.append(String(self[currentPosition]))
-        currentPosition = index(after: currentPosition)
-      }
+    let secondDigitPosition = index(after: firstDigitPosition)
+    guard secondDigitPosition != endIndex else { return nil }
+    guard
+      self[firstDigitPosition].isASCIIHexadecimalDigit,
+      self[secondDigitPosition].isASCIIHexadecimalDigit
+    else {
+      return nil
     }
-    if !currentString.isEmpty {
-      result.append(.unescaped(currentString))
-      currentString = ""
-    }
-    return result
 
+    return index(after: secondDigitPosition)
   }
 
 }
@@ -91,35 +67,57 @@ extension String {
       )
     }
 
+    return escapedPreservingPercentEncodedTriplets(
+      allowedCharacters: allowedCharacters
+    )
+  }
+
+  @inlinable
+  internal func escapedPreservingPercentEncodedTriplets(
+    allowedCharacters: CharacterSet
+  ) -> String {
     let unescapedAllowedCharacters = allowedCharacters.subtracting(rfc_pct_encode)
-    let decomposition = unicodeScalars.decomposedIntoEscapedAndUnescapedParts
-    var chunks: [String] = []
-    chunks.reserveCapacity(decomposition.count)
-    for decompositionElement in decomposition {
-      switch decompositionElement {
-      case .escaped(let percentEscapedString):
-        chunks.append(percentEscapedString)
-      case .unescaped(let unescapedString):
-        let escapedString = infalliblyUnwrap(
-          unescapedString.addingPercentEncoding(
-            withAllowedCharacters: unescapedAllowedCharacters
-          ),
-          explanation: """
-            `unescapedString` was carved out of `self` (a Swift `String`) by \
-            `decomposedIntoEscapedAndUnescapedParts`, which slices on \
-            `UnicodeScalarView` indices. Slicing a Swift `String` always \
-            yields well-formed Unicode — no unpaired UTF-16 surrogates — and \
-            `addingPercentEncoding(withAllowedCharacters:)` only returns \
-            `nil` to surface that exact Objective-C-bridge failure mode. \
-            So the operation cannot fail for any chunk produced here, \
-            regardless of the supplied `CharacterSet`.
-            """
-        )
-        chunks.append(escapedString)
+    let input = utf8
+    var result: [UInt8] = []
+    result.reserveCapacity(input.count)
+
+    var position = input.startIndex
+    while position != input.endIndex {
+      let byte = input[position]
+      let nextPosition = input.index(after: position)
+
+      if let positionAfterTriplet = input.indexAfterPercentEncodedTriplet(
+        startingAt: position
+      ) {
+        result.append(contentsOf: input[position..<positionAfterTriplet])
+        position = positionAfterTriplet
+        continue
       }
+
+      if byte < 0x80 && unescapedAllowedCharacters.contains(UnicodeScalar(byte)) {
+        result.append(byte)
+      } else {
+        result.append(0x25)
+        let highNibble = byte >> 4
+        let lowNibble = byte & 0x0F
+        result.append(
+          highNibble < 10
+            ? highNibble + 0x30
+            : highNibble + 0x37
+        )
+        result.append(
+          lowNibble < 10
+            ? lowNibble + 0x30
+            : lowNibble + 0x37
+        )
+      }
+
+      position = nextPosition
     }
 
-    return chunks.joined()
+    // The scanner emits only ASCII bytes, and therefore always valid UTF-8.
+    // swiftlint:disable:next optional_data_string_conversion
+    return String(decoding: result, as: UTF8.self)
   }
 
 }
