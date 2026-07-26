@@ -18,6 +18,7 @@ private func validateFixtures() {
   verifyOrderedAscending(values)
   verifyOrderedAscending(pairs)
   verifyOrderedAscending(probes)
+  #expect(associations.count == associationPairSubsets.count)
   
   verifyAllSatisfy(
     probes,
@@ -158,13 +159,18 @@ private let pairs: [URIVariablePairValue] = cartesianProduct(keys,values)
   .dropLast()
   .sorted()
 
-private let associations: [URIVariableValue] = pairs
+private let associationPairSubsets = pairs
   .smallPowerSet
   .filter { subset in
     Set(subset.lazy.map(\.key)).count == subset.count
   }
+
+private let associations: [URIVariableValue] = associationPairSubsets
+  .compactMap {
+    try? URIVariableAssociationValue(validating: $0)
+  }
   .map {
-    URIVariableValue(storage: .association(URIVariableAssociationValue(values: $0)))
+    URIVariableValue(storage: .association($0))
   }
   .sorted()
 

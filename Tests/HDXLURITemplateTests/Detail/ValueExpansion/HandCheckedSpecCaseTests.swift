@@ -11,7 +11,7 @@ private func variableAssocationValueHandCheckOnUserIDTokenTabKeys() throws {
   let parameters: [String:URIVariableValue] = [
     "id": .text("admin"),
     "token": .text("12345"),
-    "keys": .association([
+    "keys": try .association([
       ("key1", "val1"),
       ("key2", "val2")
     ]),
@@ -33,7 +33,7 @@ private func variableAssocationValueHandCheckOnUserIDTokenTabKeys() throws {
 )
 private func unexplodedAssociativeArrayUsesCommaDelimitedPairs() throws {
   let parameters: [String:URIVariableValue] = [
-    "keys": .association([
+    "keys": try .association([
       ("a", "1"),
       ("b", "2")
     ])
@@ -106,7 +106,7 @@ private func variableListValueHandCheckOnIDStarFieldsToken() throws {
 private func textVariableOnReservedNotPct() throws {
   let template = try URITemplate(parsing: "{+not_pct}")
   let parameters: [String:URIVariableValue] = [
-    "keys": .association([
+    "keys": try .association([
       ("key1", "val1%2F"),
       ("key2", "val2%2F"),
     ]),

@@ -20,7 +20,7 @@ func allReferenceExamples(
         named: filename
       )
       result.append(
-        contentsOf: suite.captionedTestCases(source: filename)
+        contentsOf: try suite.captionedTestCases(source: filename)
       )
     }
     return result

@@ -11,7 +11,7 @@ import Foundation
 /// - `undefined`: an *explicit* `nil`-like value
 /// - `text`: a simple string
 /// - `list`: a list of strings
-/// - `association`: an *ordered* list of key-value pairs of strings
+/// - `association`: an *ordered* list of unique-key pairs of strings
 ///
 /// ...and the public API has (a) constructors for each of those types as well
 /// as (b) some very-limited inspection (you can verify the value's flavor).
@@ -20,7 +20,8 @@ import Foundation
 /// Sure, the write-mostly API also limits the potential for misuse, but that's a fringe benefit--it's really about keeping the `newtype`s out of the public-facing API.
 ///
 /// - note: This conforms to `Comparable`, but the sort is *structural* (by flavor, then content) rather than "semantic" (e.g. by textual representation).
-/// - note: When deserializing this throws `DataValidationError` if the deserialized value is somehow invalid. That error gives you a chance to "repair" the value in some circumstances.
+/// - note: Deserialization throws `AssociationError` for duplicate association
+///   keys and `DataValidationError` for other invalid stored values.
 ///
 public struct URIVariableValue {
 
@@ -96,10 +97,44 @@ public struct URIVariableValue {
   }
 
   /// Constructs an `.association`-flavored `URIVariableValue` wrapping `pairs`.
+  ///
+  /// - Throws: `AssociationError.duplicateKey(firstIndex:duplicateIndex:)`
+  ///   when a key repeats.
   @inlinable
-  public static func association(_ pairs: some Sequence<(String, String)>) -> Self {
+  public static func association(
+    _ pairs: some Sequence<(String, String)>
+  ) throws -> Self {
     Self(
-      storage: Storage(from: pairs)
+      storage: try Storage(validating: pairs)
+    )
+  }
+
+  /// Constructs an association from `dictionary` in ascending key order.
+  @inlinable
+  public static func association(
+    _ dictionary: [String: String]
+  ) -> Self {
+    association(
+      dictionary,
+      orderingKeysWith: <
+    )
+  }
+
+  /// Constructs an association from `dictionary` in the supplied key order.
+  ///
+  /// The predicate should define a stable strict ordering. Distinct keys for
+  /// which it returns the same result in both directions use ascending lexical
+  /// order as a deterministic tie-breaker.
+  @inlinable
+  public static func association(
+    _ dictionary: [String: String],
+    orderingKeysWith areInIncreasingOrder: (String, String) -> Bool
+  ) -> Self {
+    Self(
+      storage: Storage(
+        dictionary: dictionary,
+        orderingKeysWith: areInIncreasingOrder
+      )
     )
   }
 

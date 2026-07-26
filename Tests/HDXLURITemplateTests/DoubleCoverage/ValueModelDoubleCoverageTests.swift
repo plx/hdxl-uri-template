@@ -21,8 +21,13 @@ private func manualVariableValueModelCoverage() throws {
   let listLiteral: URIVariableListValue = ["a", "b"]
   let singletonList = URIVariableListValue(string: "solo")
   let pair = URIVariablePairValue(key: "key", value: "value")
-  let association = URIVariableAssociationValue(values: [pair])
-  let associationLiteral: URIVariableAssociationValue = [["a", "1"], ["b", "2"]]
+  let association = try URIVariableAssociationValue(validating: [pair])
+  let associationLiteral = try URIVariableAssociationValue(
+    validating: [
+      URIVariablePairValue(key: "a", value: "1"),
+      URIVariablePairValue(key: "b", value: "2")
+    ]
+  )
   let singletonAssociation = URIVariableAssociationValue(key: "single", value: "1")
 
   #expect(text.rawValue == "hello")
@@ -59,7 +64,11 @@ private func manualVariableValueModelCoverage() throws {
   #expect(associationLiteral.storage.map(\.key.rawValue) == ["a", "b"])
   #expect(associationLiteral.storage.map(\.value.rawValue) == ["1", "2"])
   #expect(singletonAssociation.storage == [["single", "1"]])
-  #expect(URIVariableAssociationValue(strings: [("a", "1"), ("b", "2")]).count == 2)
+  #expect(
+    try URIVariableAssociationValue(
+      validatingStrings: [("a", "1"), ("b", "2")]
+    ).count == 2
+  )
   #expect(association[0] == pair)
   #expect(association["key"] == "value")
   #expect(association[URIVariableTextValue(rawValue: "missing")] == nil)
@@ -71,7 +80,7 @@ private func manualVariableValueModelCoverage() throws {
   #expect(!URITemplateVariableName(rawValue: "").isValid)
   #expect(!(URIVariableValueData.undefined < .undefined))
 
-  let values: [URIVariableValue] = [
+  let values: [URIVariableValue] = try [
     .undefined,
     .emptyString,
     .emptyList,
@@ -117,8 +126,10 @@ private func propertyVariableValueModelCoverage() throws {
       value: URIVariableTextValue(rawValue: $1)
     )
   }
-  let associations = pairs.indices.map { index in
-    URIVariableAssociationValue(values: Array(pairs.prefix(index + 1)))
+  let associations = try pairs.indices.map { index in
+    try URIVariableAssociationValue(
+      validating: pairs.prefix(index + 1)
+    )
   }
 
   for text in textValues {
@@ -211,24 +222,38 @@ private func manualCodableValidationErrorCoverage() throws {
     _ = try JSONDecoder().decode(URITemplateStorage.self, from: JSONEncoder().encode(invalidStorage))
   }
 
-  let duplicateAssociation = URIVariableValue(
-    storage: .association(
-      URIVariableAssociationValue(
-        values: [
-          URIVariablePairValue(key: "dup", value: "1"),
-          URIVariablePairValue(key: "dup", value: "2")
+  try verifyDuplicateAssociationDecodeFailure()
+}
+
+private func verifyDuplicateAssociationDecodeFailure() throws {
+  let duplicateAssociationJSON = Data(
+    """
+    {
+      "type": 8,
+      "data": {
+        "storage": [
+          { "key": "private-key", "value": "private-first-value" },
+          { "key": "private-key", "value": "private-second-value" }
         ]
+      }
+    }
+    """.utf8
+  )
+  do {
+    _ = try JSONDecoder().decode(
+      URIVariableValue.self,
+      from: duplicateAssociationJSON
+    )
+    Issue.record("Expected duplicate association storage to throw.")
+  } catch let error as URIVariableValue.AssociationError {
+    #expect(
+      error == .duplicateKey(
+        firstIndex: 0,
+        duplicateIndex: 1
       )
     )
-  )
-  #expect(throws: DataValidationError<URIVariableValue>.self) {
-    _ = try JSONDecoder().decode(URIVariableValue.self, from: JSONEncoder().encode(duplicateAssociation))
-  }
-  do {
-    _ = try JSONDecoder().decode(URIVariableValue.self, from: JSONEncoder().encode(duplicateAssociation))
-    Issue.record("Expected duplicate association storage to throw.")
-  } catch let error as DataValidationError<URIVariableValue> {
-    #expect(error.repairSuggestion == .undefined)
+    #expect(!String(reflecting: error).contains("private"))
+    #expect(!(error as NSError).userInfo.description.contains("private"))
   }
 }
 

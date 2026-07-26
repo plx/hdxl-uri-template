@@ -7,11 +7,11 @@
 internal struct URIVariableAssociationValue {
   
   @usableFromInline
-  internal var storage: [URIVariablePairValue]
+  internal let storage: [URIVariablePairValue]
 
   @inlinable
   internal init() {
-    self.init(values: [])
+    self.storage = []
   }
 
   @inlinable
@@ -19,18 +19,39 @@ internal struct URIVariableAssociationValue {
 #if HEAVY_DEBUG
     pedanticAssert(value.isValid)
 #endif
-    self.init(
-      values: [value]
-    )
+    self.storage = [value]
   }
 
   @inlinable
-  internal init(values: [URIVariablePairValue]) {
+  internal init<Values>(
+    validating values: Values
+  ) throws where
+    Values: Sequence,
+    Values.Element == URIVariablePairValue {
+    var storage: [URIVariablePairValue] = []
+    storage.reserveCapacity(values.underestimatedCount)
+
+    var firstIndicesByKey: [URIVariableTextValue: Int] = [:]
+    firstIndicesByKey.reserveCapacity(values.underestimatedCount)
+
+    for (index, value) in values.enumerated() {
 #if HEAVY_DEBUG
-    pedanticAssert(values.allSatisfy(\.isValid))
-    defer { pedanticAssert(isValid) }
+      pedanticAssert(value.isValid)
 #endif
-    self.storage = values
+      if let firstIndex = firstIndicesByKey[value.key] {
+        throw URIVariableValue.AssociationError.duplicateKey(
+          firstIndex: firstIndex,
+          duplicateIndex: index
+        )
+      }
+      firstIndicesByKey[value.key] = index
+      storage.append(value)
+    }
+
+    self.storage = storage
+#if HEAVY_DEBUG
+    pedanticAssert(isValid)
+#endif
   }
 
   @inlinable
@@ -44,15 +65,48 @@ internal struct URIVariableAssociationValue {
   }
 
   @inlinable
-  internal init(strings: [(String,String)]) {
-    self.init(
-      values: strings.map {
+  internal init<Strings>(
+    validatingStrings strings: Strings
+  ) throws where
+    Strings: Sequence,
+    Strings.Element == (String, String) {
+    try self.init(
+      validating: strings.lazy.map {
         URIVariablePairValue(
           key: URIVariableTextValue(rawValue: $0),
           value: URIVariableTextValue(rawValue: $1)
         )
       }
     )
+  }
+
+  @inlinable
+  internal init(
+    dictionary: [String: String],
+    orderingKeysWith areInIncreasingOrder: (String, String) -> Bool
+  ) {
+    self.storage = dictionary
+      .sorted { lhs, rhs in
+        let lhsPrecedesRhs = areInIncreasingOrder(lhs.key, rhs.key)
+        let rhsPrecedesLhs = areInIncreasingOrder(rhs.key, lhs.key)
+        return switch (lhsPrecedesRhs, rhsPrecedesLhs) {
+        case (true, false):
+          true
+        case (false, true):
+          false
+        default:
+          lhs.key < rhs.key
+        }
+      }
+      .map {
+        URIVariablePairValue(
+          key: URIVariableTextValue(rawValue: $0.key),
+          value: URIVariableTextValue(rawValue: $0.value)
+        )
+      }
+#if HEAVY_DEBUG
+    pedanticAssert(isValid)
+#endif
   }
 
 }
@@ -64,7 +118,35 @@ internal struct URIVariableAssociationValue {
 extension URIVariableAssociationValue: Sendable { }
 extension URIVariableAssociationValue: Equatable { }
 extension URIVariableAssociationValue: Hashable { }
-extension URIVariableAssociationValue: Codable { }
+
+// -------------------------------------------------------------------------- //
+// MARK: - Codable
+// -------------------------------------------------------------------------- //
+
+extension URIVariableAssociationValue: Codable {
+
+  @usableFromInline
+  internal enum CodingKeys: String, CodingKey {
+    case storage
+  }
+
+  @usableFromInline
+  internal func encode(to encoder: Encoder) throws {
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(storage, forKey: .storage)
+  }
+
+  @usableFromInline
+  internal init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    try self.init(
+      validating: container.decode(
+        [URIVariablePairValue].self,
+        forKey: .storage
+      )
+    )
+  }
+}
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableAssociationValue - Comparable
@@ -117,19 +199,6 @@ extension URIVariableAssociationValue : CustomDebugStringConvertible {
       .joined(separator: ", ")
     return "URIVariableAssociationValue(values: [ \(variableDescriptions) ])"
   }
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: - CustomDebugStringConvertible
-// -------------------------------------------------------------------------- //
-
-extension URIVariableAssociationValue: ExpressibleByArrayLiteral {
-  
-  @inlinable
-  public init(arrayLiteral elements: URIVariablePairValue...) {
-    self.init(values: elements)
-  }
-  
 }
 
 // -------------------------------------------------------------------------- //
@@ -192,4 +261,3 @@ extension URIVariableAssociationValue {
   }
 
 }
-

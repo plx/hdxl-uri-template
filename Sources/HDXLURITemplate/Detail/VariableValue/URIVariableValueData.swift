@@ -77,20 +77,33 @@ internal enum URIVariableValueData {
   }
 
   @inlinable
-  internal init<S:Sequence>(from pairs: S) where S.Element == (String,String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+  internal init<S:Sequence>(
+    validating pairs: S
+  ) throws where S.Element == (String,String) {
     self = .association(
-      URIVariableAssociationValue(
-        values: pairs.map() {
-          URIVariablePairValue(
-            key: URIVariableTextValue(rawValue: $0),
-            value: URIVariableTextValue(rawValue: $1)
-          )
-        }
+      try URIVariableAssociationValue(
+        validatingStrings: pairs
       )
     )
+#if HEAVY_DEBUG
+    pedanticAssert(isValid)
+#endif
+  }
+
+  @inlinable
+  internal init(
+    dictionary: [String: String],
+    orderingKeysWith areInIncreasingOrder: (String, String) -> Bool
+  ) {
+    self = .association(
+      URIVariableAssociationValue(
+        dictionary: dictionary,
+        orderingKeysWith: areInIncreasingOrder
+      )
+    )
+#if HEAVY_DEBUG
+    pedanticAssert(isValid)
+#endif
   }
   
 }
