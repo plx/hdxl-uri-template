@@ -13,20 +13,21 @@ extension URIValueExpansionModifier {
       self = .explode
       string.conditionallyRemove(suffix: "*")
     } else if let colonIndex = string.lastIndex(of: ":") {
-      guard (2...5).contains(
-        string.distance(
-          from: colonIndex,
-          to: string.endIndex
-        )
-      ),
-      let prefixLength = Int(
-        string[
-          string.index(after: colonIndex)
-            ..<
-          string.endIndex
-        ]
-      ),
-      Self.rangeOfValidPrefixCodePointCounts.contains(prefixLength) else {
+      let prefixSpecification = string[
+        string.index(after: colonIndex)
+          ..<
+        string.endIndex
+      ]
+      let prefixBytes = prefixSpecification.utf8
+      guard
+        (1...4).contains(prefixBytes.count),
+        let firstByte = prefixBytes.first,
+        (0x31...0x39).contains(firstByte),
+        prefixBytes.dropFirst().allSatisfy({
+          (0x30...0x39).contains($0)
+        }),
+        let prefixLength = Int(prefixSpecification),
+        Self.rangeOfValidPrefixCodePointCounts.contains(prefixLength) else {
         throw ParseError.invalidPrefixSpecification(
           String(
             string[

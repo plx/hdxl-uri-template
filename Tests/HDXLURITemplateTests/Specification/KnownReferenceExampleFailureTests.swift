@@ -2,22 +2,22 @@ import Testing
 
 @testable import HDXLURITemplate
 
-@Test("Temporary conformance ledger is exactly the three audited cases")
+@Test("Temporary conformance ledger is exactly the two audited cases")
 private func temporaryConformanceLedgerIsExactAndUnique() {
   let entries = temporaryKnownReferenceExampleFailures
   let caseIdentities = Set(entries.map(\.caseIdentity))
   let signatures = Set(entries.map(FailureSignature.init))
 
-  #expect(entries.count == 3)
+  #expect(entries.count == 2)
   #expect(caseIdentities.count == entries.count)
   #expect(signatures == expectedFailureSignatures)
   #expect(
     Dictionary(grouping: entries, by: \.issueNumber).mapValues(\.count)
-      == [29: 1, 33: 2]
+      == [33: 2]
   )
   #expect(
     Set(entries.map(\.backlogIdentifier))
-      == ["CONF-08", "CONF-09"]
+      == ["CONF-09"]
   )
   #expect(
     entries.allSatisfy {
@@ -350,25 +350,25 @@ private func knownExpansionMatcherIsExact() throws {
 private func knownNegativeMatcherIsExact() throws {
   let entry = try #require(
     temporaryKnownReferenceExampleFailures.first {
-      $0.caseIdentity.template == "{var:01}"
+      $0.caseIdentity.template == "{keys:1}"
     }
   )
   let example = try pinnedExample(matching: entry.caseIdentity)
   let context = ReferenceExampleCaseContext(example: example)
   let exactFailure = ReferenceExampleUnexpectedSuccess(
     context: context,
-    parsedTemplateRepresentation: "{var:1}",
-    observedExpansion: "v"
+    parsedTemplateRepresentation: "{keys:1}",
+    observedExpansion: "comma,%2C,dot,.,semi,%3B"
   )
   let changedRepresentation = ReferenceExampleUnexpectedSuccess(
     context: context,
-    parsedTemplateRepresentation: "{var:01}",
-    observedExpansion: "v"
+    parsedTemplateRepresentation: "{keys:01}",
+    observedExpansion: "comma,%2C,dot,.,semi,%3B"
   )
   let changedExpansion = ReferenceExampleUnexpectedSuccess(
     context: context,
-    parsedTemplateRepresentation: "{var:1}",
-    observedExpansion: "va"
+    parsedTemplateRepresentation: "{keys:1}",
+    observedExpansion: "comma,%2C,dot,.,semi,;"
   )
 
   #expect(
