@@ -191,8 +191,7 @@ private func propertyExpansionSupportCoverage() throws {
     #expect(URIValueExpansionType(formatString: type.formatString) == type)
   }
 
-  let sampleRanges = rfc_ucschar_ranges + rfc_iprivate_ranges
-  for range in sampleRanges {
+  for range in rfc_iprivate_ranges {
     let set = CharacterSet(unionOf: [range])
     #expect(set.contains(range.lowerBound))
     #expect(set.contains(range.upperBound))

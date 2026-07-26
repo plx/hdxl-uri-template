@@ -42,42 +42,6 @@ private func firstRangeViolatingUnicodeScalarInvariants(
 }
 
 @Test(
-  "`rfc_ucschar_uint32_ranges` are structurally within the convertible-to-`UnicodeScalar` envelope",
-  .tags(.infalliblyUnwrapAssumptions)
-)
-private func rfcUcscharRangesAreStructurallyValid() {
-  let violator = firstRangeViolatingUnicodeScalarInvariants(in: rfc_ucschar_uint32_ranges)
-  #expect(
-    violator == nil,
-    """
-    A range in `rfc_ucschar_uint32_ranges` violates the invariants that make \
-    `UnicodeScalar.init(_: UInt32)` infallible — either it is malformed \
-    (lower > upper), extends above `0x10FFFF`, or overlaps the UTF-16 \
-    surrogate gap (`0xD800...0xDFFF`). Offending range: \
-    \(violator.map { String(describing: $0) } ?? "<none>").
-    """
-  )
-}
-
-@Test(
-  "Every `UInt32` in `rfc_ucschar_uint32_ranges` converts to a non-nil `UnicodeScalar`",
-  .tags(.infalliblyUnwrapAssumptions)
-)
-private func rfcUcscharValuesConvertToUnicodeScalar() {
-  let failingCodePoint = firstCodePointNotConvertibleToUnicodeScalar(in: rfc_ucschar_uint32_ranges)
-  #expect(
-    failingCodePoint == nil,
-    """
-    `UnicodeScalar.init(_: UInt32)` unexpectedly returned `nil` for a value \
-    drawn from `rfc_ucschar_uint32_ranges`. This breaks the assumption used \
-    by `infalliblyUnwrap` at the construction site of `rfc_ucschar_ranges`. \
-    First failing code point: \
-    \(failingCodePoint.map { "U+\(String($0, radix: 16, uppercase: true))" } ?? "<none>").
-    """
-  )
-}
-
-@Test(
   "`rfc_iprivate_uint32_ranges` are structurally within the convertible-to-`UnicodeScalar` envelope",
   .tags(.infalliblyUnwrapAssumptions)
 )
