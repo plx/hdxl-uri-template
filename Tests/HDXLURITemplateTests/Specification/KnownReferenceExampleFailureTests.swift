@@ -2,22 +2,20 @@ import Testing
 
 @testable import HDXLURITemplate
 
-@Test("Temporary conformance ledger is exactly the two audited cases")
+@Test("Temporary conformance ledger is empty")
 private func temporaryConformanceLedgerIsExactAndUnique() {
   let entries = temporaryKnownReferenceExampleFailures
   let caseIdentities = Set(entries.map(\.caseIdentity))
   let signatures = Set(entries.map(FailureSignature.init))
 
-  #expect(entries.count == 2)
+  #expect(entries.isEmpty)
   #expect(caseIdentities.count == entries.count)
   #expect(signatures == expectedFailureSignatures)
   #expect(
-    Dictionary(grouping: entries, by: \.issueNumber).mapValues(\.count)
-      == [33: 2]
+    Dictionary(grouping: entries, by: \.issueNumber).isEmpty
   )
   #expect(
-    Set(entries.map(\.backlogIdentifier))
-      == ["CONF-09"]
+    Set(entries.map(\.backlogIdentifier)).isEmpty
   )
   #expect(
     entries.allSatisfy {
@@ -132,118 +130,6 @@ private func strictModeIsCommandSelectable() {
   )
 }
 
-@Test("Strict mode selects no temporary failures and exposes known errors")
-private func strictModeBypassesTemporaryLedger() {
-  let examples = allReferenceExamples()
-
-  for entry in temporaryKnownReferenceExampleFailures {
-    guard let example = examples.first(where: entry.matches) else {
-      Issue.record("Missing pinned case for \(entry.caseIdentity)")
-      continue
-    }
-    #expect(
-      temporaryKnownReferenceExampleFailure(
-        for: example,
-        mode: .strict
-      ) == nil
-    )
-  }
-
-  let entry = temporaryKnownReferenceExampleFailures[0]
-  guard let example = examples.first(where: entry.matches) else {
-    Issue.record("Missing pinned case for \(entry.caseIdentity)")
-    return
-  }
-
-  do {
-    try withTemporaryKnownReferenceExampleFailure(
-      for: example,
-      mode: .strict
-    ) {
-      try verifyReferenceExampleBehavior(example)
-    }
-    Issue.record("Strict mode hid a ledgered failure.")
-  } catch {
-    #expect(
-      entry.expectedIssueKind.matches(
-        error,
-        caseIdentity: entry.caseIdentity
-      )
-    )
-  }
-}
-
-@Test("Temporary ledger fails when a known failure unexpectedly passes")
-private func temporaryLedgerRejectsUnexpectedPass() async throws {
-  let entry = temporaryKnownReferenceExampleFailures[0]
-  let example = try pinnedExample(matching: entry.caseIdentity)
-  let currentTest = try #require(Test.current)
-  let currentTestCase = Test.Case.current
-
-  try await confirmation("Captured fail-closed known-issue signal") { capturedSignal in
-    let issueHandler = IssueHandlingTrait.compactMapIssues { issue in
-      guard
-        case .knownIssueNotRecorded = issue.kind,
-        issue.comments.map(\.rawValue) == [entry.comment]
-      else {
-        return issue
-      }
-      capturedSignal()
-      return nil
-    }
-
-    try await issueHandler.provideScope(
-      for: currentTest,
-      testCase: currentTestCase
-    ) {
-      withTemporaryKnownReferenceExampleFailure(
-        for: example,
-        mode: .temporaryLedger
-      ) { }
-    }
-  }
-}
-
-@Test("Temporary ledger rejects an unrelated failure")
-private func temporaryLedgerRejectsUnrelatedFailure() async throws {
-  let entry = temporaryKnownReferenceExampleFailures[0]
-  let example = try pinnedExample(matching: entry.caseIdentity)
-  let currentTest = try #require(Test.current)
-  let currentTestCase = Test.Case.current
-
-  await confirmation("Captured fail-closed known-issue signal") { capturedSignal in
-    let issueHandler = IssueHandlingTrait.compactMapIssues { issue in
-      guard
-        case .knownIssueNotRecorded = issue.kind,
-        issue.comments.map(\.rawValue) == [entry.comment]
-      else {
-        return issue
-      }
-      capturedSignal()
-      return nil
-    }
-
-    do {
-      try await issueHandler.provideScope(
-        for: currentTest,
-        testCase: currentTestCase
-      ) {
-        try withTemporaryKnownReferenceExampleFailure(
-          for: example,
-          mode: .temporaryLedger
-        ) {
-          throw KnownFailureMatcherProbeError()
-        }
-      }
-      Issue.record("An unrelated failure was hidden by the ledger.")
-    } catch is KnownFailureMatcherProbeError {
-      // The unmatched error must escape the known-issue scope.
-    } catch {
-      Issue.record("Unexpected failure type: \(error)")
-    }
-  }
-}
-
 @Test("Known parse matcher rejects different failures")
 private func knownParseMatcherIsExact() throws {
   let caseIdentity = try #require(resolvedCONF03CaseIdentities.first)
@@ -348,12 +234,18 @@ private func knownExpansionMatcherIsExact() throws {
 
 @Test("Known negative matcher rejects changed success evidence")
 private func knownNegativeMatcherIsExact() throws {
-  let entry = try #require(
-    temporaryKnownReferenceExampleFailures.first {
-      $0.caseIdentity.template == "{keys:1}"
-    }
+  let caseIdentity = ReferenceExampleCaseIdentity(
+    source: "negative-tests",
+    caption: "Failure Tests",
+    template: "{keys:1}",
+    expectation: .evaluationFailure
   )
-  let example = try pinnedExample(matching: entry.caseIdentity)
+  let expectedIssueKind = ExpectedReferenceExampleIssueKind
+    .expectedFailureUnexpectedSuccess(
+      parsedTemplateRepresentation: "{keys:1}",
+      observedExpansion: "comma,%2C,dot,.,semi,%3B"
+  )
+  let example = try pinnedExample(matching: caseIdentity)
   let context = ReferenceExampleCaseContext(example: example)
   let exactFailure = ReferenceExampleUnexpectedSuccess(
     context: context,
@@ -372,21 +264,21 @@ private func knownNegativeMatcherIsExact() throws {
   )
 
   #expect(
-    entry.expectedIssueKind.matches(
+    expectedIssueKind.matches(
       exactFailure,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: caseIdentity
     )
   )
   #expect(
-    !entry.expectedIssueKind.matches(
+    !expectedIssueKind.matches(
       changedRepresentation,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: caseIdentity
     )
   )
   #expect(
-    !entry.expectedIssueKind.matches(
+    !expectedIssueKind.matches(
       changedExpansion,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: caseIdentity
     )
   )
 }

@@ -1,12 +1,48 @@
 
+import Foundation
+
 extension URIVariableValue {
+
+  @usableFromInline
+  internal enum ExpansionError: Error, LocalizedError {
+    case prefixModifierNotApplicable(
+      variableName: String,
+      expansionModifier: URIValueExpansionModifier,
+      valueType: URIVariableValueType
+    )
+
+    @usableFromInline
+    internal var errorDescription: String? {
+      switch self {
+      case .prefixModifierNotApplicable(
+        let variableName,
+        let expansionModifier,
+        let valueType
+      ):
+        """
+        Prefix modifier `\(expansionModifier.templateRepresentation)` is not \
+        applicable to \(valueType) value for variable `\(variableName)`.
+        """
+      }
+    }
+  }
   
   @inlinable
   internal func evaluate(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) throws -> String {
-    switch storage {
+    if
+      templateVariable.expansionModifier.isPrefixType,
+      storage.isListValue || storage.isAssociationValue {
+      throw ExpansionError.prefixModifierNotApplicable(
+        variableName: templateVariable.variableName.rawValue,
+        expansionModifier: templateVariable.expansionModifier,
+        valueType: storage.valueType
+      )
+    }
+
+    return switch storage {
     case .undefined:
       ""
     case .text(let textValue):

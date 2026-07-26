@@ -276,17 +276,32 @@ private func propertyVariableExpansionCoverage() throws {
     }
 
     let list = URIVariableListValue(strings: values)
-    let unexploded = try list.expansion(expansionType: expansionType, variableName: name, expansionModifier: .unmodified)
-    let prefixedList = try list.expansion(expansionType: expansionType, variableName: name, expansionModifier: .prefix(2))
-    #expect(unexploded == prefixedList)
     #expect(try list.expansion(expansionType: expansionType, templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)).isEmpty == false)
+    #expect(throws: URIVariableValue.ExpansionError.self) {
+      _ = try URIVariableValue.list(values).evaluate(
+        expansionType: expansionType,
+        templateVariable: URITemplateVariable(
+          variableName: name,
+          expansionModifier: .prefix(2)
+        )
+      )
+    }
 
     let association = try URIVariableAssociationValue(
       validatingStrings: [("a", "1"), ("b", "2")]
     )
-    let prefixedAssociation = try association.expansion(expansionType: expansionType, variableName: name, expansionModifier: .prefix(2))
-    let unexplodedAssociation = try association.expansion(expansionType: expansionType, variableName: name, expansionModifier: .unmodified)
-    #expect(prefixedAssociation == unexplodedAssociation)
     #expect(try association.expansion(expansionType: expansionType, templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)).isEmpty == false)
+    #expect(throws: URIVariableValue.ExpansionError.self) {
+      _ = try URIVariableValue.association(
+        key: "a",
+        value: "1"
+      ).evaluate(
+        expansionType: expansionType,
+        templateVariable: URITemplateVariable(
+          variableName: name,
+          expansionModifier: .prefix(2)
+        )
+      )
+    }
   }
 }
