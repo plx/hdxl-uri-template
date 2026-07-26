@@ -128,20 +128,6 @@ let temporaryKnownReferenceExampleFailures:
       caseIdentity: ReferenceExampleCaseIdentity(
         source: "negative-tests",
         caption: "Failure Tests",
-        template: "{var:01}",
-        expectation: .evaluationFailure
-      ),
-      backlogIdentifier: "CONF-08",
-      issueNumber: 29,
-      expectedIssueKind: .expectedFailureUnexpectedSuccess(
-        parsedTemplateRepresentation: "{var:1}",
-        observedExpansion: "v"
-      )
-    ),
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
-        source: "negative-tests",
-        caption: "Failure Tests",
         template: "{keys:1}",
         expectation: .evaluationFailure
       ),

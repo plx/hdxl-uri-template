@@ -11,7 +11,7 @@ internal enum URIValueExpansionModifier {
   case explode
   case prefix(Int)
   
-  /// - todo: Verify my interpretation of "positive integer < 10000" as excluding `0`
+  /// RFC 6570 `max-length` values are the integers `1...9999`.
   @usableFromInline
   internal static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
   
