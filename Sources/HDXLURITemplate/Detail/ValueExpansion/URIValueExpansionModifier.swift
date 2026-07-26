@@ -1,5 +1,8 @@
 import Foundation
 
+// RFC-derived Code Components in this file are attributed in
+// THIRD_PARTY_NOTICES.md.
+
 // -------------------------------------------------------------------------- //
 // MARK: URIValueExpansionModifier - Definition
 // -------------------------------------------------------------------------- //

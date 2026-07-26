@@ -1,5 +1,8 @@
 import Foundation
 
+// RFC-derived Code Components in this file are attributed in
+// THIRD_PARTY_NOTICES.md.
+
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateLiteralComponent - Definition
 // -------------------------------------------------------------------------- //
@@ -116,12 +119,10 @@ extension URITemplateLiteralComponent {
   @inlinable
   internal static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     /*
-     The characters outside of expressions in a URI Template string are
-     intended to be copied literally to the URI reference if the character
-     is allowed in a URI (reserved / unreserved / pct-encoded) or, if not
-     allowed, copied to the URI reference as the sequence of pct-encoded
-     triplets corresponding to that character's encoding in UTF-8
-     [RFC3629].
+     This regex implements the RFC 6570 section 2.1 `literals` production,
+     including verified erratum 6937. Valid URI characters and valid
+     percent-encoded triplets remain literal; other allowed Unicode scalars
+     are encoded during expansion.
      
      literals      =  %x21 / %x23-24 / %x26-3B / %x3D / %x3F-5B
      /  %x5D / %x5F / %x61-7A / %x7E / ucschar / iprivate
@@ -129,8 +130,6 @@ extension URITemplateLiteralComponent {
      ; any Unicode character except: CTL, SP,
      ;  DQUOTE, "%" (aside from pct-encoded),
      ;  "<", ">", "\", "^", "`", "{", "|", "}"
-
-     Corrected by verified RFC 6570 erratum 6937.
      */
     return try NSRegularExpression(
       pattern:

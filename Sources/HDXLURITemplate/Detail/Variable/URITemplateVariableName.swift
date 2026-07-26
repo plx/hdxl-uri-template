@@ -1,5 +1,8 @@
 import Foundation
 
+// RFC-derived Code Components in this file are attributed in
+// THIRD_PARTY_NOTICES.md.
+
 // -------------------------------------------------------------------------- //
 // MARK: URITemplateVariableName - Definition
 // -------------------------------------------------------------------------- //
@@ -118,30 +121,14 @@ extension URITemplateVariableName {
     
   @inlinable
   static func prepareValidationRegularExpression() throws -> NSRegularExpression {
-    // NOTE: `varname       =  varchar *( ["."] varchar )`
-    // *appears* nonsensical and is *probably* a mistake...
-    // ...IMHO it *should* be `varname = varchar *( ["."] varname )`.
-    //
-    // As such, I've tentatively implemented it as:
-    //
-    // - a non-empty varchar
-    // - optionally followed by one or more sequences like "`.`, non-empty varchar"
-    //
-    // here's the original RFC text:
+    // RFC 6570 section 2.3 defines a nonempty `varchar` sequence followed by
+    // zero or more dot-separated `varchar` sequences. Percent-encoded
+    // triplets are lexical name content and are not decoded here.
     /*
-
      variable-list =  varspec *( "," varspec )
      varspec       =  varname [ modifier-level4 ]
      varname       =  varchar *( ["."] varchar )
      varchar       =  ALPHA / DIGIT / "_" / pct-encoded
-     
-     A varname MAY contain one or more pct-encoded triplets.  These
-     triplets are considered an essential part of the variable name and
-     are not decoded during processing.  A varname containing pct-encoded
-     characters is not the same variable as a varname with those same
-     characters decoded.  Applications that provide URI Templates are
-     expected to be consistent in their use of pct-encoding within
-     variable names.
      */
     
 //    let singleVariableMention: String =

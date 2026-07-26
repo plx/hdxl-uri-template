@@ -1191,7 +1191,9 @@ Confirm:
 - The root license matches the intended project license.
 - Vendored `uritemplate-test` fixtures retain their Apache-2.0 license and
   source/commit attribution.
-- A third-party notices file identifies every copied fixture or asset.
+- The
+  [third-party notices file](../../THIRD_PARTY_NOTICES.md)
+  identifies every copied fixture or asset.
 - RFC-derived Code Components carry any notice required by the RFC Trust legal
   provisions, including the applicable Simplified BSD text where required.
 - Copyright years and holders are accurate.
@@ -1238,7 +1240,7 @@ Required project documents:
 - Contribution guide.
 - Security policy and private reporting route.
 - Code of conduct if desired by project governance.
-- Third-party notices.
+- [Third-party notices](../../THIRD_PARTY_NOTICES.md).
 - Release process.
 
 Compile every documentation code sample as a test or documentation build.
