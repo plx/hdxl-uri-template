@@ -17,16 +17,17 @@ extension URITemplateExpressionComponent {
     let expansionType = try URIValueExpansionType(
       parsing: &variableListString
     )
-    let variables = try variableListString
-      .split(separator: ",")
-      .map { segment in
-        let trimmed = segment.trimmingCharacters(in: .whitespaces)
-        
-        return try URITemplateVariable(parsing: String(trimmed))
-      }
-    guard !variables.isEmpty else {
+    guard !variableListString.isEmpty else {
       throw ParseError.noVariablesFound(string)
     }
+    let variables = try variableListString
+      .split(
+        separator: ",",
+        omittingEmptySubsequences: false
+      )
+      .map { segment in
+        try URITemplateVariable(parsing: String(segment))
+      }
     self.init(
       expansionType: expansionType,
       variables: variables

@@ -128,48 +128,6 @@ let temporaryKnownReferenceExampleFailures:
       caseIdentity: ReferenceExampleCaseIdentity(
         source: "negative-tests",
         caption: "Failure Tests",
-        template: "{ leading_space}",
-        expectation: .evaluationFailure
-      ),
-      backlogIdentifier: "CONF-06",
-      issueNumber: 27,
-      expectedIssueKind: .expectedFailureUnexpectedSuccess(
-        parsedTemplateRepresentation: "{leading_space}",
-        observedExpansion: ""
-      )
-    ),
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
-        source: "negative-tests",
-        caption: "Failure Tests",
-        template: "{trailing_space }",
-        expectation: .evaluationFailure
-      ),
-      backlogIdentifier: "CONF-06",
-      issueNumber: 27,
-      expectedIssueKind: .expectedFailureUnexpectedSuccess(
-        parsedTemplateRepresentation: "{trailing_space}",
-        observedExpansion: ""
-      )
-    ),
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
-        source: "negative-tests",
-        caption: "Failure Tests",
-        template: "/resolution{?x, y}",
-        expectation: .evaluationFailure
-      ),
-      backlogIdentifier: "CONF-06",
-      issueNumber: 27,
-      expectedIssueKind: .expectedFailureUnexpectedSuccess(
-        parsedTemplateRepresentation: "/resolution{?x, y}",
-        observedExpansion: "/resolution?x=1024&y=768"
-      )
-    ),
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
-        source: "negative-tests",
-        caption: "Failure Tests",
         template: "{var:01}",
         expectation: .evaluationFailure
       ),

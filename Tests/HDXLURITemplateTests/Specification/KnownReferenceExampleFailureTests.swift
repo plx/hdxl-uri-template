@@ -2,22 +2,22 @@ import Testing
 
 @testable import HDXLURITemplate
 
-@Test("Temporary conformance ledger is exactly the six audited cases")
+@Test("Temporary conformance ledger is exactly the three audited cases")
 private func temporaryConformanceLedgerIsExactAndUnique() {
   let entries = temporaryKnownReferenceExampleFailures
   let caseIdentities = Set(entries.map(\.caseIdentity))
   let signatures = Set(entries.map(FailureSignature.init))
 
-  #expect(entries.count == 6)
+  #expect(entries.count == 3)
   #expect(caseIdentities.count == entries.count)
   #expect(signatures == expectedFailureSignatures)
   #expect(
     Dictionary(grouping: entries, by: \.issueNumber).mapValues(\.count)
-      == [27: 3, 29: 1, 33: 2]
+      == [29: 1, 33: 2]
   )
   #expect(
     Set(entries.map(\.backlogIdentifier))
-      == ["CONF-06", "CONF-08", "CONF-09"]
+      == ["CONF-08", "CONF-09"]
   )
   #expect(
     entries.allSatisfy {
@@ -93,6 +93,21 @@ private func resolvedCONF04ExampleIsAnOrdinaryPass() throws {
     ) == nil
   )
   try verifyReferenceExampleBehavior(example)
+}
+
+@Test("Resolved CONF-06 examples pass without temporary ledger entries")
+private func resolvedCONF06ExamplesAreOrdinaryPasses() throws {
+  for caseIdentity in resolvedCONF06CaseIdentities {
+    let example = try pinnedExample(matching: caseIdentity)
+
+    #expect(
+      temporaryKnownReferenceExampleFailure(
+        for: example,
+        mode: .temporaryLedger
+      ) == nil
+    )
+    try verifyReferenceExampleBehavior(example)
+  }
 }
 
 @Test("Strict mode is command-selectable")
