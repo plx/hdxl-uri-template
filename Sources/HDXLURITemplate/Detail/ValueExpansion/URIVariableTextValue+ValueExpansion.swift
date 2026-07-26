@@ -8,24 +8,6 @@ extension URIVariableTextValue {
     case unableToEscapeVariableValue(String, String, URIValueExpansionType, URIValueExpansionModifier)
     case unableToEscapeVariableName(String, URIValueExpansionType)
     case unableToEscapeTextValue(String, URIValueExpansionType)
-    
-    @usableFromInline
-    internal var localizedDescription: String {
-      switch self {
-      case .unableToEscapeVariableValue(let textValue, let variableName, let expansionType, let expansionModifier):
-        """
-        Unable to escape "\(textValue)" with expansion-type \(expansionType.debugDescription), expansion-modifier \(expansionModifier.debugDescription) (as variable "\(variableName)").
-        """
-      case .unableToEscapeVariableName(let variableName, let expansionType):
-        """
-        Unable to escape variable-name "\(variableName)" with expansion-type \(expansionType.debugDescription).
-        """
-      case .unableToEscapeTextValue(let textContent, let expansionType):
-        """
-        Unable to escape text "\(textContent)" with expansion-type \(expansionType.debugDescription).
-        """
-      }
-    }
   }
   
   @inlinable

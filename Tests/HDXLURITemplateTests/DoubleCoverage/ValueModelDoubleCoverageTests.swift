@@ -38,7 +38,7 @@ private func manualVariableValueModelCoverage() throws {
   #expect(text.isValid)
   #expect(!text.isEmpty)
   #expect(emptyText.isEmpty)
-  #expect(text.errorMessageRepresentation == "hello")
+  #expect(text.fixtureDiagnosticRepresentation == "hello")
   #expect(try JSONDecoder().decode(URIVariableTextValue.self, from: JSONEncoder().encode(text)) == text)
 
   #expect(list.storage == [text, emptyText])
@@ -51,14 +51,14 @@ private func manualVariableValueModelCoverage() throws {
   #expect(!list.isEmpty)
   #expect(list.description == "[ \"hello\", \"\" ]")
   #expect(list.debugDescription.contains("URIVariableListValue"))
-  #expect(list.errorMessageRepresentation == "[ hello,  ]")
+  #expect(list.fixtureDiagnosticRepresentation == "[ hello,  ]")
   #expect(try JSONDecoder().decode(URIVariableListValue.self, from: JSONEncoder().encode(list)) == list)
 
   #expect(pair.key == "key")
   #expect(pair.value == "value")
   #expect(pair.description == "\"key\":\"value\"")
   #expect(pair.debugDescription.contains("URIVariablePairValue"))
-  #expect(pair.errorMessageRepresentation == "key: value")
+  #expect(pair.fixtureDiagnosticRepresentation == "key: value")
 
   #expect(association.storage == [pair])
   #expect(associationLiteral.storage.map(\.key.rawValue) == ["a", "b"])
@@ -76,7 +76,7 @@ private func manualVariableValueModelCoverage() throws {
   #expect(association.isValid)
   #expect(association.description == "[ \"key\":\"value\" ]")
   #expect(association.debugDescription.contains("URIVariableAssociationValue"))
-  #expect(association.errorMessageRepresentation == "[ key: value ]")
+  #expect(association.fixtureDiagnosticRepresentation == "[ key: value ]")
   // This invalid raw value intentionally violates the HEAVY_DEBUG invariant.
   #if !HEAVY_DEBUG
     #expect(!URITemplateVariableName(rawValue: "").isValid)
@@ -136,7 +136,7 @@ private func propertyVariableValueModelCoverage() throws {
 
   for text in textValues {
     #expect(text.isEmpty == text.rawValue.isEmpty)
-    #expect(text.errorMessageRepresentation == text.rawValue)
+    #expect(text.fixtureDiagnosticRepresentation == text.rawValue)
     #expect(try JSONDecoder().decode(URIVariableTextValue.self, from: JSONEncoder().encode(text)) == text)
   }
 
@@ -149,7 +149,7 @@ private func propertyVariableValueModelCoverage() throws {
 
   for pair in pairs {
     #expect(pair.isValid == (pair.key.isValid && pair.value.isValid))
-    #expect(pair.errorMessageRepresentation == "\(pair.key.rawValue): \(pair.value.rawValue)")
+    #expect(pair.fixtureDiagnosticRepresentation == "\(pair.key.rawValue): \(pair.value.rawValue)")
   }
 
   for association in associations {
@@ -179,7 +179,7 @@ private func propertyVariableValueModelCoverage() throws {
     #expect(publicValue.isTextValue == data.isTextValue)
     #expect(publicValue.isListValue == data.isListValue)
     #expect(publicValue.isAssociationValue == data.isAssociationValue)
-    #expect(publicValue.errorMessageRepresentation == data.errorMessageRepresentation)
+    #expect(publicValue.fixtureDiagnosticRepresentation == data.fixtureDiagnosticRepresentation)
     #expect(try JSONDecoder().decode(URIVariableValueData.self, from: JSONEncoder().encode(data)) == data)
     #expect(try JSONDecoder().decode(URIVariableValue.self, from: JSONEncoder().encode(publicValue)) == publicValue)
   }

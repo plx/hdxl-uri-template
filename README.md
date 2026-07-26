@@ -26,3 +26,31 @@ Project-authored material is available under the
 [MIT License](LICENSE). Vendored test fixtures and standards-derived Code
 Components have separate attribution and redistribution terms in
 [Third-party notices](THIRD_PARTY_NOTICES.md).
+
+## Diagnostic privacy
+
+`URITemplate.ParseError` and `URITemplate.EvaluationError` use bounded,
+privacy-safe default text. Their Swift descriptions, localized descriptions,
+debug descriptions, and bridged `NSError` diagnostics omit template source,
+literal content, parameter names and values, rendered URIs, variable names,
+and nested-error payloads.
+
+The errors still retain complete recovery context in explicit properties such
+as `template`, `parameters`, and `underlyingError`. Those properties—and the
+descriptions of `URITemplate` and `URIVariableValue` themselves—can contain
+sensitive data. Variable names can also be sensitive; they are omitted from
+default text and exposed only through deliberate structured access such as
+`failingVariableName`.
+
+For routine logging, use the localized description or the payload-free
+evaluation category:
+
+```swift
+do {
+  _ = try template.evaluate(parameters: parameters)
+} catch let error as URITemplate.EvaluationError {
+  logger.error(
+    "URI template evaluation failed: \(error.kind.description, privacy: .public)"
+  )
+}
+```

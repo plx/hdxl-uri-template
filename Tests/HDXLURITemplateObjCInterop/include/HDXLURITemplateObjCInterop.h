@@ -23,4 +23,11 @@ HDXLObjCAssociationEnumerationStopsEarly(void);
 FOUNDATION_EXPORT BOOL
 HDXLObjCAssociationSecureCodingRoundTrips(void);
 
+FOUNDATION_EXPORT BOOL
+HDXLObjCErrorDiagnosticsAreSafe(
+  NSError *error,
+  NSArray<NSString *> *excludedStrings,
+  NSUInteger maximumUTF8Length
+);
+
 NS_ASSUME_NONNULL_END

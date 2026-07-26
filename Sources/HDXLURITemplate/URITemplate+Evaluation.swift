@@ -1,31 +1,235 @@
 import Foundation
 
 extension URITemplate {
-  
-  public struct EvaluationError: Error, LocalizedError {
-    public internal(set) var template: URITemplate
-    public internal(set) var parameters: [String: URIVariableValue]
-    
-    public internal(set) var underlyingError: Error?
-    
+
+  /// A failure encountered while evaluating a parsed URI template.
+  ///
+  /// Default textual and Foundation diagnostics are bounded and omit the
+  /// template, parameters, variable names, rendered output, and nested error
+  /// details. The stored recovery context remains available through explicit
+  /// properties and can contain sensitive application data.
+  public struct EvaluationError:
+    Error,
+    LocalizedError,
+    CustomStringConvertible,
+    CustomDebugStringConvertible
+  {
+    /// A payload-free evaluation-failure category that is safe to log.
+    public enum Kind:
+      Sendable,
+      Equatable,
+      CustomStringConvertible,
+      CustomDebugStringConvertible
+    {
+      case prefixModifierNotApplicable
+      case invalidURL
+      case other
+
+      public var description: String {
+        switch self {
+        case .prefixModifierNotApplicable:
+          "prefixModifierNotApplicable"
+        case .invalidURL:
+          "invalidURL"
+        case .other:
+          "other"
+        }
+      }
+
+      public var debugDescription: String {
+        "URITemplate.EvaluationError.Kind.\(description)"
+      }
+    }
+
+    @usableFromInline
+    internal struct DiagnosticContext: Sendable {
+      @usableFromInline
+      internal let kind: Kind
+
+      @usableFromInline
+      internal let failingVariableName: String?
+
+      @usableFromInline
+      internal let expressionOperatorToken: String?
+
+      @usableFromInline
+      internal let expressionTypeName: String?
+
+      @usableFromInline
+      internal let prefixModifierCodePointCount: Int?
+
+      @usableFromInline
+      internal let failingValueType: URIVariableValueType?
+
+      @usableFromInline
+      internal static let other = DiagnosticContext(kind: .other)
+
+      @usableFromInline
+      internal static let invalidURL = DiagnosticContext(kind: .invalidURL)
+
+      @usableFromInline
+      internal init(
+        kind: Kind,
+        failingVariableName: String? = nil,
+        expressionOperatorToken: String? = nil,
+        expressionTypeName: String? = nil,
+        prefixModifierCodePointCount: Int? = nil,
+        failingValueType: URIVariableValueType? = nil
+      ) {
+        self.kind = kind
+        self.failingVariableName = failingVariableName
+        self.expressionOperatorToken = expressionOperatorToken
+        self.expressionTypeName = expressionTypeName
+        self.prefixModifierCodePointCount = prefixModifierCodePointCount
+        self.failingValueType = failingValueType
+      }
+    }
+
+    /// The template being evaluated.
+    ///
+    /// This explicit recovery context can contain sensitive source text. Do
+    /// not log or reflect it without applying an application-specific policy.
+    public let template: URITemplate
+
+    /// The parameters supplied to evaluation.
+    ///
+    /// Parameter names and text, list, and association values can all be
+    /// sensitive. Do not log or reflect this explicit recovery context without
+    /// applying an application-specific policy.
+    public let parameters: [String: URIVariableValue]
+
+    /// The original failure retained for structured inspection.
+    ///
+    /// Its default diagnostics are redacted for failures produced by this
+    /// package, but callers should not assume arbitrary nested errors are safe
+    /// to log.
+    public let underlyingError: Error?
+
+    @usableFromInline
+    internal let diagnosticContext: DiagnosticContext
+
     @usableFromInline
     internal init(
       template: URITemplate,
-      parameters: [String : URIVariableValue],
-      underlyingError: Error? = nil
+      parameters: [String: URIVariableValue],
+      underlyingError: Error? = nil,
+      diagnosticContext: DiagnosticContext = .other
     ) {
       self.template = template
       self.parameters = parameters
       self.underlyingError = underlyingError
+      self.diagnosticContext = diagnosticContext
     }
-    
+
+    /// The payload-free category for this failure.
+    public var kind: Kind {
+      diagnosticContext.kind
+    }
+
+    /// The variable involved in a known expansion failure, when available.
+    ///
+    /// Variable names are application-controlled and may themselves be
+    /// sensitive. This property is deliberate recovery context and is never
+    /// included in this error's default diagnostics.
+    public var failingVariableName: String? {
+      diagnosticContext.failingVariableName
+    }
+
+    /// The exact URI-template expression-operator token, when available.
+    ///
+    /// The empty string represents simple expansion; `nil` means no expression
+    /// context applies to this failure.
+    public var expressionOperatorToken: String? {
+      diagnosticContext.expressionOperatorToken
+    }
+
+    /// The RFC 6570 prefix modifier's requested Unicode code-point count.
+    public var prefixModifierCodePointCount: Int? {
+      diagnosticContext.prefixModifierCodePointCount
+    }
+
+    /// The variable-value flavor involved in a known expansion failure.
+    public var failingValueType: URIVariableValueType? {
+      diagnosticContext.failingValueType
+    }
+
     public var errorDescription: String? {
       "The URI template could not be evaluated."
     }
+
+    /// A bounded, payload-free explanation of the failure category.
+    public var failureReason: String? {
+      switch diagnosticContext.kind {
+      case .prefixModifierNotApplicable:
+        guard
+          let prefixModifierCodePointCount =
+            diagnosticContext.prefixModifierCodePointCount,
+          let expressionTypeName = diagnosticContext.expressionTypeName,
+          let failingValueType = diagnosticContext.failingValueType
+        else {
+          return "A prefix modifier is not applicable to a composite value."
+        }
+        return """
+          Prefix modifier `:\(prefixModifierCodePointCount)` is not applicable \
+          to a \(failingValueType) value for \(expressionTypeName) expansion.
+          """
+      case .invalidURL:
+        return "The rendered URI template is not a valid URL."
+      case .other:
+        return "No more specific evaluation failure category is available."
+      }
+    }
+
+    public var description: String {
+      let headline =
+        errorDescription ?? "The URI template could not be evaluated."
+      guard let failureReason else {
+        return headline
+      }
+      return "\(headline) \(failureReason)"
+    }
+
+    public var debugDescription: String {
+      description
+    }
+
+    @usableFromInline
+    internal static func makeExpansionDiagnosticContext(
+      for underlyingError: Error?
+    ) -> DiagnosticContext {
+      if let expansionError =
+        underlyingError as? URIVariableValue.ExpansionError,
+        case .prefixModifierNotApplicable(
+          let variableName,
+          let expansionType,
+          let expansionModifier,
+          let valueType
+        ) = expansionError
+      {
+        let prefixModifierCodePointCount: Int? =
+          switch expansionModifier {
+          case .prefix(let prefixLength):
+            prefixLength
+          case .unmodified, .explode:
+            nil
+          }
+        return DiagnosticContext(
+          kind: .prefixModifierNotApplicable,
+          failingVariableName: variableName,
+          expressionOperatorToken: expansionType.formatString,
+          expressionTypeName: expansionType.description,
+          prefixModifierCodePointCount: prefixModifierCodePointCount,
+          failingValueType: valueType
+        )
+      }
+      return .other
+    }
   }
-  
+
   @inlinable
-  public func evaluateAsString(parameters: [String: URIVariableValue]) throws -> String {
+  public func evaluateAsString(
+    parameters: [String: URIVariableValue]
+  ) throws -> String {
     // This `do`/`catch` is the public failure boundary for evaluation: any
     // error surfaced while expanding a component is re-thrown as an
     // `EvaluationError` carrying the template and parameters, so callers get
@@ -46,12 +250,13 @@ extension URITemplate {
       }
 
       return result
-    }
-    catch let error {
+    } catch let error {
       throw EvaluationError(
         template: self,
         parameters: parameters,
-        underlyingError: error
+        underlyingError: error,
+        diagnosticContext:
+          EvaluationError.makeExpansionDiagnosticContext(for: error)
       )
     }
   }
@@ -70,12 +275,11 @@ extension URITemplate {
         underlyingError: URLError(
           .badURL,
           userInfo: [
-            NSLocalizedDescriptionKey :
-            """
-            Rendered template `\(templateRepresentation)` succeeded-as `\(stringResult)`, but failed to produce a valid URL!
-            """
+            NSLocalizedDescriptionKey:
+              "The rendered URI template is not a valid URL."
           ]
-        )
+        ),
+        diagnosticContext: .invalidURL
       )
     }
     return url
