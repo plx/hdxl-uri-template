@@ -72,8 +72,6 @@ private func manualParsingCoverage() throws {
 
   #expect(URIValueExpansionModifier.unmodified < .prefix(1))
   #expect(!(URIValueExpansionModifier.prefix(1) < .unmodified))
-  #expect(try JSONDecoder().decode(URIValueExpansionModifier.self, from: #"{"type":2}"#.data(using: .utf8)!) == .explode)
-  #expect(try JSONDecoder().decode(URIValueExpansionModifier.self, from: #"{"type":4,"data":42}"#.data(using: .utf8)!) == .prefix(42))
 }
 
 @Test(

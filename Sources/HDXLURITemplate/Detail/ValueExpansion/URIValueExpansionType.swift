@@ -28,7 +28,6 @@ internal enum URIValueExpansionType : UInt8 {
 extension URIValueExpansionType : Sendable { }
 extension URIValueExpansionType : Equatable { }
 extension URIValueExpansionType : Hashable { }
-extension URIValueExpansionType : Codable { }
 extension URIValueExpansionType : CaseIterable { }
 
 // -------------------------------------------------------------------------- //

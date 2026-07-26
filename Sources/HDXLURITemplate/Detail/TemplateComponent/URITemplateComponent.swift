@@ -17,7 +17,6 @@ internal enum URITemplateComponent {
 extension URITemplateComponent : Sendable {}
 extension URITemplateComponent : Equatable {}
 extension URITemplateComponent : Hashable {}
-extension URITemplateComponent : Codable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable

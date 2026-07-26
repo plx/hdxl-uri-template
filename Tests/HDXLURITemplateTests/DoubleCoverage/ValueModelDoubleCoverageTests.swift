@@ -186,47 +186,11 @@ private func propertyVariableValueModelCoverage() throws {
 }
 
 @Test(
-  "Manual Codable validation errors coverage",
+  "Manual value-model Codable validation errors coverage",
   .tags(.doubleCoverageValueModel)
 )
 private func manualCodableValidationErrorCoverage() throws {
-  // Decoding validation is the package's repair hook, so these examples use encoded invalid payloads rather than direct parsing errors.
-  let tooSmallModifierJSON = #"{"type":4,"data":0}"#.data(using: .utf8)!
-  do {
-    _ = try JSONDecoder().decode(URIValueExpansionModifier.self, from: tooSmallModifierJSON)
-    Issue.record("Expected an out-of-range prefix modifier to throw.")
-  } catch let error as DataValidationError<URIValueExpansionModifier> {
-    #expect(error.repairSuggestion == .prefix(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.lowerBound))
-  }
-
-  let tooLargeModifierJSON = #"{"type":4,"data":10000}"#.data(using: .utf8)!
-  do {
-    _ = try JSONDecoder().decode(URIValueExpansionModifier.self, from: tooLargeModifierJSON)
-    Issue.record("Expected an out-of-range prefix modifier to throw.")
-  } catch let error as DataValidationError<URIValueExpansionModifier> {
-    #expect(error.repairSuggestion == .prefix(URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.upperBound))
-  }
-
-  let invalidVariableNameJSON = #""not valid""#.data(using: .utf8)!
-  #expect(throws: DataValidationError<URITemplateVariableName>.self) {
-    _ = try JSONDecoder().decode(URITemplateVariableName.self, from: invalidVariableNameJSON)
-  }
-
-  let invalidLiteralJSON = #""{bad}""#.data(using: .utf8)!
-  #expect(throws: DataValidationError<URITemplateLiteralComponent>.self) {
-    _ = try JSONDecoder().decode(URITemplateLiteralComponent.self, from: invalidLiteralJSON)
-  }
-
-  let invalidStorageJSON = Data(
-    #"[{"literal":{"_0":"{bad}"}}]"#.utf8
-  )
-  #expect(throws: DataValidationError<URITemplateLiteralComponent>.self) {
-    _ = try JSONDecoder().decode(
-      URITemplateStorage.self,
-      from: invalidStorageJSON
-    )
-  }
-
+  // Public value-model decoding still validates duplicate association keys.
   try verifyDuplicateAssociationDecodeFailure()
 }
 
@@ -259,37 +223,5 @@ private func verifyDuplicateAssociationDecodeFailure() throws {
     )
     #expect(!String(reflecting: error).contains("private"))
     #expect(!(error as NSError).userInfo.description.contains("private"))
-  }
-}
-
-@Test(
-  "Property Codable validation errors coverage",
-  .tags(.doubleCoverageValueModel)
-)
-private func propertyCodableValidationErrorCoverage() throws {
-  let invalidPrefixCounts = [
-    URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.lowerBound - 1,
-    URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.upperBound + 1
-  ]
-
-  for count in invalidPrefixCounts {
-    let json = #"{"type":4,"data":\#(count)}"#.data(using: .utf8)!
-    #expect(throws: DataValidationError<URIValueExpansionModifier>.self) {
-      _ = try JSONDecoder().decode(URIValueExpansionModifier.self, from: json)
-    }
-  }
-
-  for invalidName in ["", "with space", "bad!", ".leading"] {
-    let json = try JSONEncoder().encode(invalidName)
-    #expect(throws: DataValidationError<URITemplateVariableName>.self) {
-      _ = try JSONDecoder().decode(URITemplateVariableName.self, from: json)
-    }
-  }
-
-  for invalidLiteral in ["", "{", "}", "has space"] {
-    let json = try JSONEncoder().encode(invalidLiteral)
-    #expect(throws: DataValidationError<URITemplateLiteralComponent>.self) {
-      _ = try JSONDecoder().decode(URITemplateLiteralComponent.self, from: json)
-    }
   }
 }

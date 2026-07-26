@@ -21,7 +21,6 @@ extension URIValueExpansionModifierType : Sendable { }
 extension URIValueExpansionModifierType : Equatable { }
 extension URIValueExpansionModifierType : Hashable { }
 extension URIValueExpansionModifierType : CaseIterable { }
-extension URIValueExpansionModifierType : Codable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable

@@ -49,7 +49,6 @@ internal struct URITemplateExpressionComponent {
 extension URITemplateExpressionComponent: Sendable { }
 extension URITemplateExpressionComponent: Equatable { }
 extension URITemplateExpressionComponent: Hashable { }
-extension URITemplateExpressionComponent: Codable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable
