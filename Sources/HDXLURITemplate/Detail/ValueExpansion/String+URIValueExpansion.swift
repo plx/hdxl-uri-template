@@ -3,12 +3,44 @@ import Foundation
 extension UInt8 {
 
   @inlinable
-  internal var isASCIIHexadecimalDigit: Bool {
+  internal var asciiHexadecimalDigitValue: UInt8? {
     switch self {
-    case 0x30...0x39, 0x41...0x46, 0x61...0x66:
-      true
+    case 0x30...0x39:
+      self - 0x30
+    case 0x41...0x46:
+      self - 0x41 + 10
+    case 0x61...0x66:
+      self - 0x61 + 10
     default:
-      false
+      nil
+    }
+  }
+
+  @inlinable
+  internal var isASCIIHexadecimalDigit: Bool {
+    asciiHexadecimalDigitValue != nil
+  }
+
+  @inlinable
+  internal var isUTF8ContinuationByte: Bool {
+    (0x80...0xBF).contains(self)
+  }
+
+  @inlinable
+  internal func isValidUTF8SecondByte(
+    after leadingByte: UInt8
+  ) -> Bool {
+    switch leadingByte {
+    case 0xE0:
+      (0xA0...0xBF).contains(self)
+    case 0xED:
+      (0x80...0x9F).contains(self)
+    case 0xF0:
+      (0x90...0xBF).contains(self)
+    case 0xF4:
+      (0x80...0x8F).contains(self)
+    default:
+      isUTF8ContinuationByte
     }
   }
 
@@ -17,9 +49,9 @@ extension UInt8 {
 extension String.UTF8View {
 
   @inlinable
-  internal func indexAfterPercentEncodedTriplet(
+  internal func percentEncodedByte(
     startingAt position: Index
-  ) -> Index? {
+  ) -> (value: UInt8, endIndex: Index)? {
     guard position != endIndex, self[position] == 0x25 else { return nil }
 
     let firstDigitPosition = index(after: position)
@@ -28,13 +60,151 @@ extension String.UTF8View {
     let secondDigitPosition = index(after: firstDigitPosition)
     guard secondDigitPosition != endIndex else { return nil }
     guard
-      self[firstDigitPosition].isASCIIHexadecimalDigit,
-      self[secondDigitPosition].isASCIIHexadecimalDigit
+      let highNibble = self[firstDigitPosition].asciiHexadecimalDigitValue,
+      let lowNibble = self[secondDigitPosition].asciiHexadecimalDigitValue
     else {
       return nil
     }
 
-    return index(after: secondDigitPosition)
+    return (
+      value: highNibble << 4 | lowNibble,
+      endIndex: index(after: secondDigitPosition)
+    )
+  }
+
+  @inlinable
+  internal func indexAfterPercentEncodedTriplet(
+    startingAt position: Index
+  ) -> Index? {
+    percentEncodedByte(startingAt: position)?.endIndex
+  }
+
+  /// Returns the boundary after one URI-value code point beginning at a
+  /// syntactically-valid percent triplet.
+  ///
+  /// A well-formed percent-encoded UTF-8 scalar consumes all of its triplets.
+  /// A triplet that cannot begin such a scalar is an opaque one-unit fallback;
+  /// this preserves the established reserved-expansion behavior for arbitrary
+  /// `%HH` input without joining it to unrelated following triplets.
+  @inlinable
+  internal func indexAfterPercentEncodedURIValueCodePoint(
+    startingAt position: Index
+  ) -> Index? {
+    guard
+      let firstByte = percentEncodedByte(startingAt: position)
+    else {
+      return nil
+    }
+
+    switch firstByte.value {
+    case 0x00...0x7F:
+      return firstByte.endIndex
+
+    case 0xC2...0xDF:
+      guard
+        let secondByte = percentEncodedByte(
+          startingAt: firstByte.endIndex
+        ),
+        secondByte.value.isUTF8ContinuationByte
+      else {
+        return firstByte.endIndex
+      }
+      return secondByte.endIndex
+
+    case 0xE0...0xEF:
+      return indexAfterThreeBytePercentEncodedScalar(
+        startingWith: firstByte
+      )
+
+    case 0xF0...0xF4:
+      return indexAfterFourBytePercentEncodedScalar(
+        startingWith: firstByte
+      )
+
+    default:
+      return firstByte.endIndex
+    }
+  }
+
+  @inlinable
+  internal func indexAfterThreeBytePercentEncodedScalar(
+    startingWith firstByte: (value: UInt8, endIndex: Index)
+  ) -> Index {
+    guard
+      let secondByte = percentEncodedByte(
+        startingAt: firstByte.endIndex
+      ),
+      secondByte.value.isValidUTF8SecondByte(after: firstByte.value),
+      let thirdByte = percentEncodedByte(
+        startingAt: secondByte.endIndex
+      ),
+      thirdByte.value.isUTF8ContinuationByte
+    else {
+      return firstByte.endIndex
+    }
+    return thirdByte.endIndex
+  }
+
+  @inlinable
+  internal func indexAfterFourBytePercentEncodedScalar(
+    startingWith firstByte: (value: UInt8, endIndex: Index)
+  ) -> Index {
+    guard
+      let secondByte = percentEncodedByte(
+        startingAt: firstByte.endIndex
+      ),
+      secondByte.value.isValidUTF8SecondByte(after: firstByte.value),
+      let thirdByte = percentEncodedByte(
+        startingAt: secondByte.endIndex
+      ),
+      thirdByte.value.isUTF8ContinuationByte,
+      let fourthByte = percentEncodedByte(
+        startingAt: thirdByte.endIndex
+      ),
+      fourthByte.value.isUTF8ContinuationByte
+    else {
+      return firstByte.endIndex
+    }
+    return fourthByte.endIndex
+  }
+
+  /// Returns the boundary after one literal scalar in a valid Swift string.
+  @inlinable
+  internal func indexAfterLiteralUnicodeScalar(
+    startingAt position: Index
+  ) -> Index {
+    let scalarByteCount =
+      switch self[position] {
+      case 0x00...0x7F:
+        1
+      case 0xC2...0xDF:
+        2
+      case 0xE0...0xEF:
+        3
+      default:
+        4
+      }
+    var result = position
+    for _ in 0..<scalarByteCount {
+      result = index(after: result)
+    }
+    return result
+  }
+
+  /// Returns the source boundary and representation of one URI-value unit.
+  @inlinable
+  internal func uriValueCodePoint(
+    startingAt position: Index
+  ) -> (endIndex: Index, isPercentEncoded: Bool) {
+    if let endIndex = indexAfterPercentEncodedURIValueCodePoint(
+      startingAt: position
+    ) {
+      return (endIndex: endIndex, isPercentEncoded: true)
+    }
+    return (
+      endIndex: indexAfterLiteralUnicodeScalar(startingAt: position),
+      isPercentEncoded: false
+    )
   }
 
 }
@@ -42,7 +212,9 @@ extension String.UTF8View {
 extension String {
 
   @inlinable
-  internal func escaped(forValueExpansionType valueExpansionType: URIValueExpansionType) -> String {
+  internal func escaped(
+    forValueExpansionType valueExpansionType: URIValueExpansionType
+  ) -> String {
     guard !isEmpty else { return self }
 
     let allowedCharacters = CharacterSet.allowedCharacters(
@@ -67,8 +239,27 @@ extension String {
       )
     }
 
-    return escapedPreservingPercentEncodedTriplets(
-      allowedCharacters: allowedCharacters
+    return escapedScanningURIValueCodePoints(
+      allowedCharacters: allowedCharacters,
+      preservesPercentEncodedTriplets: true,
+      maximumDecodedCodePointCount: nil
+    )
+  }
+
+  @inlinable
+  internal func escaped(
+    forValueExpansionType valueExpansionType: URIValueExpansionType,
+    maximumDecodedCodePointCount: Int
+  ) -> String {
+    guard !isEmpty else { return self }
+
+    return escapedScanningURIValueCodePoints(
+      allowedCharacters: CharacterSet.allowedCharacters(
+        forValueExpansionType: valueExpansionType
+      ),
+      preservesPercentEncodedTriplets:
+        valueExpansionType.allowsPercentEncodedTriplets,
+      maximumDecodedCodePointCount: maximumDecodedCodePointCount
     )
   }
 
@@ -76,43 +267,55 @@ extension String {
   internal func escapedPreservingPercentEncodedTriplets(
     allowedCharacters: CharacterSet
   ) -> String {
+    escapedScanningURIValueCodePoints(
+      allowedCharacters: allowedCharacters,
+      preservesPercentEncodedTriplets: true,
+      maximumDecodedCodePointCount: nil
+    )
+  }
+
+  @inlinable
+  internal func escapedScanningURIValueCodePoints(
+    allowedCharacters: CharacterSet,
+    preservesPercentEncodedTriplets: Bool,
+    maximumDecodedCodePointCount: Int?
+  ) -> String {
+    if let maximumDecodedCodePointCount {
+      guard maximumDecodedCodePointCount > 0 else { return "" }
+    }
+
     let unescapedAllowedCharacters = allowedCharacters.subtracting(rfc_pct_encode)
     let input = utf8
     var result: [UInt8] = []
-    result.reserveCapacity(input.count)
+    if maximumDecodedCodePointCount == nil {
+      result.reserveCapacity(input.count)
+    }
 
     var position = input.startIndex
+    var decodedCodePointCount = 0
     while position != input.endIndex {
-      let byte = input[position]
-      let nextPosition = input.index(after: position)
-
-      if let positionAfterTriplet = input.indexAfterPercentEncodedTriplet(
-        startingAt: position
-      ) {
-        result.append(contentsOf: input[position..<positionAfterTriplet])
-        position = positionAfterTriplet
-        continue
+      if let maximumDecodedCodePointCount {
+        guard
+          decodedCodePointCount < maximumDecodedCodePointCount
+        else {
+          break
+        }
       }
+      decodedCodePointCount += 1
 
-      if byte < 0x80 && unescapedAllowedCharacters.contains(UnicodeScalar(byte)) {
-        result.append(byte)
+      let codePoint = input.uriValueCodePoint(startingAt: position)
+      if codePoint.isPercentEncoded, preservesPercentEncodedTriplets {
+        result.append(
+          contentsOf: input[position..<codePoint.endIndex]
+        )
       } else {
-        result.append(0x25)
-        let highNibble = byte >> 4
-        let lowNibble = byte & 0x0F
-        result.append(
-          highNibble < 10
-            ? highNibble + 0x30
-            : highNibble + 0x37
-        )
-        result.append(
-          lowNibble < 10
-            ? lowNibble + 0x30
-            : lowNibble + 0x37
+        appendEscapedURIValueBytes(
+          input[position..<codePoint.endIndex],
+          allowedCharacters: unescapedAllowedCharacters,
+          to: &result
         )
       }
-
-      position = nextPosition
+      position = codePoint.endIndex
     }
 
     // The scanner emits only ASCII bytes, and therefore always valid UTF-8.
@@ -120,4 +323,54 @@ extension String {
     return String(decoding: result, as: UTF8.self)
   }
 
+  @inlinable
+  internal func constrained(
+    toDecodedURIValueCodePointCount maximumCodePointCount: Int
+  ) -> String {
+    guard maximumCodePointCount > 0 else { return "" }
+
+    let input = utf8
+    var position = input.startIndex
+    var decodedCodePointCount = 0
+    while position != input.endIndex {
+      guard decodedCodePointCount < maximumCodePointCount else { break }
+      decodedCodePointCount += 1
+      position = input.uriValueCodePoint(startingAt: position).endIndex
+    }
+    guard position != input.endIndex else { return self }
+    // The boundary never divides a literal scalar or percent triplet.
+    // swiftlint:disable:next optional_data_string_conversion
+    return String(decoding: input[..<position], as: UTF8.self)
+  }
+
+}
+
+@inlinable
+internal func appendEscapedURIValueBytes(
+  _ bytes: some Sequence<UInt8>,
+  allowedCharacters: CharacterSet,
+  to result: inout [UInt8]
+) {
+  for byte in bytes {
+    let isAllowedASCII =
+      byte < 0x80 && allowedCharacters.contains(UnicodeScalar(byte))
+    if isAllowedASCII {
+      result.append(byte)
+      continue
+    }
+
+    result.append(0x25)
+    let highNibble = byte >> 4
+    let lowNibble = byte & 0x0F
+    result.append(
+      highNibble < 10
+        ? highNibble + 0x30
+        : highNibble + 0x37
+    )
+    result.append(
+      lowNibble < 10
+        ? lowNibble + 0x30
+        : lowNibble + 0x37
+    )
+  }
 }
