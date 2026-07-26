@@ -113,12 +113,6 @@ private func resolvedPinnedCompositePrefixCasesAreOrdinaryPasses() throws {
       allReferenceExamples().first(where: caseIdentity.matches)
     )
 
-    #expect(
-      temporaryKnownReferenceExampleFailure(
-        for: example,
-        mode: .temporaryLedger
-      ) == nil
-    )
     try verifyReferenceExampleBehavior(example)
   }
 }

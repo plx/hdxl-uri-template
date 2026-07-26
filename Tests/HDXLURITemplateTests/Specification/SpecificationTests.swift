@@ -8,10 +8,5 @@ import Testing
 private func uriTemplateMatchesReferenceExample(
   example: CaptionedTestCase
 ) throws {
-  try withTemporaryKnownReferenceExampleFailure(
-    for: example,
-    mode: referenceExampleKnownFailureMode
-  ) {
-    try verifyReferenceExampleBehavior(example)
-  }
+  try verifyReferenceExampleBehavior(example)
 }

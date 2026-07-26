@@ -2,6 +2,38 @@ import Foundation
 
 @testable import HDXLURITemplate
 
+struct ReferenceExampleCaseIdentity: Hashable, Sendable {
+  let source: String
+  let caption: String
+  let template: String
+  let expectation: ReferenceExampleExpectation
+
+  init(example: CaptionedTestCase) {
+    self.init(
+      source: example.source,
+      caption: example.caption,
+      template: example.testCase.template,
+      expectation: example.testCase.expectation
+    )
+  }
+
+  init(
+    source: String,
+    caption: String,
+    template: String,
+    expectation: ReferenceExampleExpectation
+  ) {
+    self.source = source
+    self.caption = caption
+    self.template = template
+    self.expectation = expectation
+  }
+
+  func matches(_ example: CaptionedTestCase) -> Bool {
+    self == ReferenceExampleCaseIdentity(example: example)
+  }
+}
+
 struct ReferenceExampleCaseContext: Hashable, Sendable {
   let source: String
   let caption: String

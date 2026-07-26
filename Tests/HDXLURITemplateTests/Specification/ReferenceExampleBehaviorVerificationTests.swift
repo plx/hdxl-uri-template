@@ -41,6 +41,49 @@ private func completeRunnerLoadsEveryPinnedCaseInstance() {
   #expect(identities.count == examples.count)
 }
 
+@Test("Runner contracts lock every pinned suite count")
+private func runnerContractsLockEveryPinnedSuiteCount() {
+  #expect(
+    referenceExampleSuiteContracts
+      == [
+        ReferenceExampleSuiteContract(
+          name: "spec-examples",
+          expectedCaseCount: 64
+        ),
+        ReferenceExampleSuiteContract(
+          name: "spec-examples-by-section",
+          expectedCaseCount: 117
+        ),
+        ReferenceExampleSuiteContract(
+          name: "extended-tests",
+          expectedCaseCount: 53
+        ),
+        ReferenceExampleSuiteContract(
+          name: "negative-tests",
+          expectedCaseCount: 36
+        )
+      ]
+  )
+}
+
+@Test("Duplicated examples retain suite-qualified identities")
+private func duplicatedExamplesRetainSuiteQualifiedIdentities() {
+  let duplicatedExamples = allReferenceExamples().filter {
+    $0.testCase.template == "{var}"
+      && $0.testCase.expectation == .exactMatch("value")
+  }
+
+  #expect(duplicatedExamples.count == 2)
+  #expect(
+    Set(duplicatedExamples.map(\.source))
+      == ["spec-examples", "spec-examples-by-section"]
+  )
+  #expect(
+    Set(duplicatedExamples.map(ReferenceExampleCaseIdentity.init)).count
+      == 2
+  )
+}
+
 @Test("Exact string expectations require exact expansion")
 private func exactStringExpectationRequiresExactExpansion() throws {
   try verifyReferenceExampleBehavior(
@@ -136,20 +179,8 @@ private func falseExpectationRejectsUnexpectedSuccess() {
     expectation: .evaluationFailure
   )
 
-  #expect(
-    temporaryKnownReferenceExampleFailure(
-      for: example,
-      mode: .temporaryLedger
-    ) == nil
-  )
-
   do {
-    try withTemporaryKnownReferenceExampleFailure(
-      for: example,
-      mode: .temporaryLedger
-    ) {
-      try verifyReferenceExampleBehavior(example)
-    }
+    try verifyReferenceExampleBehavior(example)
     Issue.record("An unlisted successful `false` case passed.")
   } catch let failure as ReferenceExampleUnexpectedSuccess {
     #expect(failure.parsedTemplateRepresentation == "{var}")
