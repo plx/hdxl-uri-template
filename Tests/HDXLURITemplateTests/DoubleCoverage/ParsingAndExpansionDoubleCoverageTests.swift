@@ -103,7 +103,7 @@ private func propertyParsingCoverage() throws {
 
   for expression in ["a", "+a,b", "#a:2", "/a*", "?a,b:3"] {
     let parsed = try URITemplateExpressionComponent(parsing: expression)
-    #expect(parsed.templateRepresentation == expression.replacingOccurrences(of: ",", with: ", "))
+    #expect(parsed.templateRepresentation == expression)
     #expect(parsed.isValid)
   }
 }

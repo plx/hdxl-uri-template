@@ -11,14 +11,9 @@ import Foundation
 /// 1. to make it trivial to preserve the internal state (e.g. maintain the invariants)
 /// 2. to keep the internal types internal (implementation uses `newtype`-like types--making them public would be "noisy")
 ///
-/// Despite being immutable, it's still implemented as a struct-wrapping-a-class.
-/// Using this COW-like implementation approach is also for two reasons:
-///
-/// 1. to have a place to cache frequently-used derived properties
-/// 2. to provide value semantics for an internal-use-only mutable API
-///
-/// Note that (2) exists primarily for testing. I'm not opposed in principle to
-/// including mutable methods on the public API, but it doesn't seem necessary.
+/// Despite being immutable, it is currently implemented as a struct wrapping
+/// class-backed storage. The parsed source and components are immutable; the
+/// storage class coordinates lazy caches for frequently-used derived values.
 ///
 public struct URITemplate {
   
@@ -133,9 +128,11 @@ extension URITemplate {
 
 extension URITemplate {
   
-  /// Returns a URI template string *equivalent* to this template.
-  /// In general should be identical to the template from-which it was parsed,
-  /// but at present I don't guarantee that it's identical.
+  /// Returns the exact validated source string from which this template was
+  /// parsed.
+  ///
+  /// The returned source is syntactically valid and reparses to an equivalent
+  /// `URITemplate`.
   @inlinable
   public var templateRepresentation: String {
     storage.templateRepresentation

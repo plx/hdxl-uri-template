@@ -21,7 +21,7 @@ private func manualPublicTemplateAPICoverage() throws {
   ]
 
   #expect(template.isValid)
-  #expect(template.templateRepresentation == "https://example.com{/id}{?q, empty}")
+  #expect(template.templateRepresentation == "https://example.com{/id}{?q,empty}")
   #expect(template.variableNames == ["id", "q", "empty"])
   #expect(template.description.contains("https://example.com"))
   #expect(template.debugDescription.contains("URITemplate"))
@@ -97,8 +97,9 @@ private func propertyPublicTemplateAPICoverage() throws {
   .tags(.doubleCoveragePublicAPI)
 )
 private func manualStorageAndComponentCoverage() throws {
-  // The storage object owns the cache invalidation path, so this exercises empty storage, component storage, cache reads, mutation, and Codable validation explicitly.
-  let emptyStorage = URITemplateStorage()
+  // Exercise parsed storage, cache reads, exact source retention, and Codable
+  // validation explicitly.
+  let emptyStorage = try URITemplateStorage(parsing: "")
   #expect(emptyStorage.templateRepresentation == "")
   #expect(emptyStorage.templateVariables.isEmpty)
   #expect(emptyStorage.templateVariablesNames.isEmpty)
@@ -109,7 +110,7 @@ private func manualStorageAndComponentCoverage() throws {
   let variable = try URITemplateVariable(parsing: "id")
   let expression = URITemplateExpressionComponent(expansionType: .pathSegment, variable: variable)
   let expressionComponent = URITemplateComponent.expression(expression)
-  let storage = URITemplateStorage(components: [literalComponent, expressionComponent])
+  let storage = try URITemplateStorage(parsing: "prefix{/id}")
 
   #expect(storage.templateRepresentation == "prefix{/id}")
   #expect(storage.templateVariables == [variable])
@@ -118,23 +119,15 @@ private func manualStorageAndComponentCoverage() throws {
   #expect(storage.description.contains("prefix{/id}"))
   #expect(storage.debugDescription.contains("URITemplateStorage"))
   #expect(storage == storage)
-  #expect(storage == URITemplateStorage(components: [literalComponent, expressionComponent]))
-  #expect(storage < URITemplateStorage(component: .literal(try URITemplateLiteralComponent(parsing: "z"))))
+  #expect(storage == (try URITemplateStorage(parsing: "prefix{/id}")))
+  #expect(storage < (try URITemplateStorage(parsing: "z")))
   #expect(!(storage < storage))
-  #expect(Set([storage, URITemplateStorage(components: [literalComponent, expressionComponent])]).count == 1)
+  #expect(Set([storage, try URITemplateStorage(parsing: "prefix{/id}")]).count == 1)
 
   let encoded = try JSONEncoder().encode(storage)
   let decoded = try JSONDecoder().decode(URITemplateStorage.self, from: encoded)
   #expect(decoded.components == storage.components)
-
-  // Assigning equal components should leave caches intact; assigning different components must invalidate and rebuild them.
-  let cachedRepresentation = storage.templateRepresentation
-  let sameComponents = storage.components
-  storage.components = sameComponents
-  #expect(storage.templateRepresentation == cachedRepresentation)
-  storage.components = [literalComponent]
-  #expect(storage.templateRepresentation == "prefix")
-  #expect(storage.variableNames.isEmpty)
+  #expect(decoded.templateRepresentation == storage.templateRepresentation)
 
   // Component APIs are small discriminators, but both cases matter because storage delegates rendering and variable injection through them.
   #expect(literalComponent.isLiteralComponent)
@@ -188,8 +181,11 @@ private func propertyStorageAndComponentCoverage() throws {
   }
 
   for component in components {
-    let storage = URITemplateStorage(component: component)
+    let storage = try URITemplateStorage(
+      parsing: component.templateRepresentation
+    )
     #expect(storage.templateRepresentation == component.templateRepresentation)
+    #expect(storage.components == [component])
     #expect(storage.isValid == component.isValid)
 
     var injected: Set<URITemplateVariable> = []
@@ -200,7 +196,7 @@ private func propertyStorageAndComponentCoverage() throws {
 
   for template in ["", "literal", "{a}", "pre{?a,b}post"] {
     let storage = try URITemplateStorage(parsing: template)
-    #expect(storage.templateRepresentation == (template == "{?a,b}" ? "{?a, b}" : storage.components.map(\.templateRepresentation).joined()))
+    #expect(storage.templateRepresentation == template)
     let allComponentsValid = storage.components.allSatisfy(\.isValid)
     #expect(allComponentsValid)
   }
