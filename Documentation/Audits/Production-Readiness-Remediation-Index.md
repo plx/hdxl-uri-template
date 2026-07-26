@@ -3,9 +3,10 @@
 This document is the durable navigation index for the production-readiness
 program created from the 2026-07-25 due-diligence audit of HDXLURITemplate.
 
-The program comprises **seven epics and 42 leaf tickets** in GitHub issues
-[#5](https://github.com/plx/hdxl-uri-template/issues/5) through
-[#53](https://github.com/plx/hdxl-uri-template/issues/53). Each leaf has a
+The current program comprises **seven epics and 43 leaf tickets**: the original
+GitHub issues [#5](https://github.com/plx/hdxl-uri-template/issues/5) through
+[#53](https://github.com/plx/hdxl-uri-template/issues/53), plus later finding
+[#55](https://github.com/plx/hdxl-uri-template/issues/55). Each leaf has a
 stable backlog identifier, such as `CONF-05` or `API-02`, in addition to its
 GitHub issue number. The stable identifier should continue to be used in
 remediation notes, audit evidence, and release traceability even if an issue is
@@ -151,7 +152,7 @@ feature implementation.
 | Issue | Epic | Scope |
 | --- | --- | --- |
 | [#5](https://github.com/plx/hdxl-uri-template/issues/5) | Bring HDXLURITemplate to production readiness | Top-level program; owns the six topic epics and `AUDIT-01` |
-| [#6](https://github.com/plx/hdxl-uri-template/issues/6) | Complete RFC 6570 conformance and shared-suite coverage | `CONF-01` through `CONF-11` |
+| [#6](https://github.com/plx/hdxl-uri-template/issues/6) | Complete RFC 6570 conformance and shared-suite coverage | `CONF-01` through `CONF-12` |
 | [#7](https://github.com/plx/hdxl-uri-template/issues/7) | Harden security, robustness, and adversarial performance | `HARD-01` through `HARD-03` |
 | [#8](https://github.com/plx/hdxl-uri-template/issues/8) | Stabilize the public API, serialization, and Objective-C contract | `API-01` through `API-09` |
 | [#9](https://github.com/plx/hdxl-uri-template/issues/9) | Simplify internal architecture and maintainability | `ARCH-01` through `ARCH-04` |
@@ -175,6 +176,7 @@ feature implementation.
 | `CONF-09` | [#33 — Fail expansion when a prefix modifier is applied to a composite value](https://github.com/plx/hdxl-uri-template/issues/33) | P0 bug |
 | `CONF-10` | [#34 — Count decoded Unicode characters without splitting percent-encoded sequences](https://github.com/plx/hdxl-uri-template/issues/34) | P0 bug |
 | `CONF-11` | [#35 — Enforce zero known shared-suite failures](https://github.com/plx/hdxl-uri-template/issues/35) | P0 task |
+| `CONF-12` | [#55 — Bootstrap fail-closed known-failure accounting before fixture activation](https://github.com/plx/hdxl-uri-template/issues/55) | P0 task |
 
 ### Security, robustness, and performance
 
@@ -244,7 +246,12 @@ applies.
 Start with work that defines the supported environment, validation boundaries,
 and early policy decisions:
 
-- `CONF-01` pins the test oracle.
+- `CONF-12` adds strict, issue-linked accounting for the two positive cases
+  that become active when the exact fixture snapshot lands. It blocks
+  `CONF-01`, changes no production behavior, and is temporary scaffolding for
+  the complete `CONF-02` ledger.
+- `CONF-01` pins the test oracle after `CONF-12` makes fixture activation
+  fail-closed and independently mergeable.
 - `QA-01` repairs heavy-debug compilation.
 - `PKG-01` establishes Swift 6.3 and the Apple 26 floor.
 - `WORKFLOW-01` hardens existing automation.
@@ -258,7 +265,8 @@ and early policy decisions:
 
 ### Phase 1: establish the oracle and primary gate
 
-- Land `CONF-02` after `CONF-01`.
+- Land `CONF-02` after `CONF-01`, adopting and extending `CONF-12`'s temporary
+  adapter into the exact nine-case complete-corpus ledger.
 - Land `QA-02` after `CONF-02`, `QA-01`, and `PKG-01` so the first required CI
   workflow is green and protects the complete corpus.
 - Complete `QA-05` and `DOC-04` after the pinned fixture set is authoritative.

@@ -6,11 +6,16 @@ import Testing
   arguments: allReferenceExamples()
 )
 private func uriTemplateParsesOK(example: CaptionedTestCase) throws {
-  try verifyTemplateParsing(
-    source: example.source,
-    caption: example.caption,
-    testCase: example.testCase
-  )
+  try withTemporaryKnownReferenceExampleFailure(
+    for: example,
+    verificationPhase: .parsing
+  ) {
+    try verifyTemplateParsing(
+      source: example.source,
+      caption: example.caption,
+      testCase: example.testCase
+    )
+  }
 }
 
 @Test(
@@ -18,12 +23,17 @@ private func uriTemplateParsesOK(example: CaptionedTestCase) throws {
   arguments: allReferenceExamples()
 )
 private func uriTemplateEvaluatesOK(example: CaptionedTestCase) throws {
-  try verifyTemplateExpansion(
-    source: example.source,
-    caption: example.caption,
-    testCase: example.testCase,
-    parameters: example.parameters
-  )
+  try withTemporaryKnownReferenceExampleFailure(
+    for: example,
+    verificationPhase: .expansion
+  ) {
+    try verifyTemplateExpansion(
+      source: example.source,
+      caption: example.caption,
+      testCase: example.testCase,
+      parameters: example.parameters
+    )
+  }
 }
 
 // MARK: - Verifications
@@ -31,21 +41,13 @@ private func uriTemplateEvaluatesOK(example: CaptionedTestCase) throws {
 private func verifyTemplateParsing(
   source: String,
   caption: String,
-  testCase: ReferenceExampleTestCase,
-  sourceLocation: Testing.SourceLocation = #_sourceLocation
+  testCase: ReferenceExampleTestCase
 ) throws {
-  #expect(
-    throws: Never.self,
-    """
-    Unexpected failure to parse reference-example template: `\(testCase.template)`
-    
-    - template: \(testCase.template)
-    - source: \(source)
-    - caption: \(caption)
-    """
-  ) {
-    let _ = try URITemplate(parsing: testCase.template)
-  }
+  _ = try parseReferenceExampleTemplate(
+    source: source,
+    caption: caption,
+    template: testCase.template
+  )
 }
 
 private func verifyTemplateExpansion(
@@ -55,7 +57,11 @@ private func verifyTemplateExpansion(
   parameters: [String: URIVariableValue],
   sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) throws {
-  let template = try URITemplate(parsing: testCase.template)
+  let template = try parseReferenceExampleTemplate(
+    source: source,
+    caption: caption,
+    template: testCase.template
+  )
   switch testCase.expectation {
   case .evaluationFailure:
     #expect(
@@ -66,20 +72,15 @@ private func verifyTemplateExpansion(
     }
   case .exactMatch(let expectation):
     let evaluation = try template.evaluateAsString(parameters: parameters)
-    #expect(
-      evaluation == expectation,
-      """
-      Template-expansion didn't match expectation.
-      
-      - template: \(template.templateRepresentation)
-      - parameters: \(parameters.errorMessageRepresentation)
-      - expected: \(expectation)
-      - observed: \(evaluation)
-      - source: \(source)
-      - caption: \(caption)
-      """,
-      sourceLocation: sourceLocation
-    )
+    guard evaluation == expectation else {
+      throw ReferenceExampleExactExpansionMismatch(
+        source: source,
+        caption: caption,
+        template: template.templateRepresentation,
+        expected: expectation,
+        observed: evaluation
+      )
+    }
   case .multiplePossibleMatches(let acceptableExpansions):
     let evaluation = try template.evaluateAsString(parameters: parameters)
     let options = acceptableExpansions
@@ -100,6 +101,23 @@ private func verifyTemplateExpansion(
       - caption: \(caption)
       """,
       sourceLocation: sourceLocation
+    )
+  }
+}
+
+private func parseReferenceExampleTemplate(
+  source: String,
+  caption: String,
+  template: String
+) throws -> URITemplate {
+  do {
+    return try URITemplate(parsing: template)
+  } catch let parseError as URITemplate.ParseError {
+    throw ReferenceExampleParsingFailure(
+      source: source,
+      caption: caption,
+      template: template,
+      parseError: parseError
     )
   }
 }
