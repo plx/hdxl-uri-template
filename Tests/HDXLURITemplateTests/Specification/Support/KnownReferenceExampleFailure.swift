@@ -126,17 +126,6 @@ let temporaryKnownReferenceExampleFailures:
   [TemporaryKnownReferenceExampleFailure] = [
     TemporaryKnownReferenceExampleFailure(
       caseIdentity: ReferenceExampleCaseIdentity(
-        source: "extended-tests",
-        caption: "Additional Examples 8: Literal Encoding",
-        template: "café/{var}",
-        expectation: .exactMatch("caf%C3%A9/value")
-      ),
-      backlogIdentifier: "CONF-04",
-      issueNumber: 25,
-      expectedIssueKind: .exactExpansionMismatch(observed: "café/value")
-    ),
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
         source: "negative-tests",
         caption: "Failure Tests",
         template: "{ leading_space}",

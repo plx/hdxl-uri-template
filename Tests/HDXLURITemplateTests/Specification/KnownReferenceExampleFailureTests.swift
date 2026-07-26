@@ -2,22 +2,22 @@ import Testing
 
 @testable import HDXLURITemplate
 
-@Test("Temporary conformance ledger is exactly the seven audited cases")
+@Test("Temporary conformance ledger is exactly the six audited cases")
 private func temporaryConformanceLedgerIsExactAndUnique() {
   let entries = temporaryKnownReferenceExampleFailures
   let caseIdentities = Set(entries.map(\.caseIdentity))
   let signatures = Set(entries.map(FailureSignature.init))
 
-  #expect(entries.count == 7)
+  #expect(entries.count == 6)
   #expect(caseIdentities.count == entries.count)
   #expect(signatures == expectedFailureSignatures)
   #expect(
     Dictionary(grouping: entries, by: \.issueNumber).mapValues(\.count)
-      == [25: 1, 27: 3, 29: 1, 33: 2]
+      == [27: 3, 29: 1, 33: 2]
   )
   #expect(
     Set(entries.map(\.backlogIdentifier))
-      == ["CONF-04", "CONF-06", "CONF-08", "CONF-09"]
+      == ["CONF-06", "CONF-08", "CONF-09"]
   )
   #expect(
     entries.allSatisfy {
@@ -80,6 +80,19 @@ private func resolvedCONF03ExamplesAreOrdinaryPasses() throws {
     )
     try verifyReferenceExampleBehavior(example)
   }
+}
+
+@Test("Resolved CONF-04 example passes without a temporary ledger entry")
+private func resolvedCONF04ExampleIsAnOrdinaryPass() throws {
+  let example = try pinnedExample(matching: resolvedCONF04CaseIdentity)
+
+  #expect(
+    temporaryKnownReferenceExampleFailure(
+      for: example,
+      mode: .temporaryLedger
+    ) == nil
+  )
+  try verifyReferenceExampleBehavior(example)
 }
 
 @Test("Strict mode is command-selectable")
@@ -278,14 +291,20 @@ private let resolvedCONF03CaseIdentities = [
   )
 ]
 
+private let resolvedCONF04CaseIdentity = ReferenceExampleCaseIdentity(
+  source: "extended-tests",
+  caption: "Additional Examples 8: Literal Encoding",
+  template: "café/{var}",
+  expectation: .exactMatch("caf%C3%A9/value")
+)
+
 @Test("Known expansion matcher rejects different output")
 private func knownExpansionMatcherIsExact() throws {
-  let entry = try #require(
-    temporaryKnownReferenceExampleFailures.first {
-      $0.caseIdentity.source == "extended-tests"
-    }
+  let expectedIssueKind = ExpectedReferenceExampleIssueKind
+    .exactExpansionMismatch(observed: "café/value")
+  let example = try pinnedExample(
+    matching: resolvedCONF04CaseIdentity
   )
-  let example = try pinnedExample(matching: entry.caseIdentity)
   let context = ReferenceExampleCaseContext(example: example)
   let exactFailure = ReferenceExampleExactExpansionMismatch(
     context: context,
@@ -299,15 +318,15 @@ private func knownExpansionMatcherIsExact() throws {
   )
 
   #expect(
-    entry.expectedIssueKind.matches(
+    expectedIssueKind.matches(
       exactFailure,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: resolvedCONF04CaseIdentity
     )
   )
   #expect(
-    !entry.expectedIssueKind.matches(
+    !expectedIssueKind.matches(
       differentWrongOutput,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: resolvedCONF04CaseIdentity
     )
   )
 }
