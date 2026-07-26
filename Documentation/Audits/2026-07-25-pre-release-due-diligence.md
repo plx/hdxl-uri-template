@@ -7,6 +7,7 @@
 
 **Program navigation:**
 [remediation index](./Production-Readiness-Remediation-Index.md) ·
+[remediation execution goal](./Production-Readiness-Remediation-Goal.md) ·
 [post-remediation audit playbook](./Post-Remediation-Production-Readiness-Audit.md) ·
 [final-audit issue #44](https://github.com/plx/hdxl-uri-template/issues/44)
 

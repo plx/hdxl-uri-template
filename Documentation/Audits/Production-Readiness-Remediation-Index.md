@@ -11,9 +11,11 @@ GitHub issue number. The stable identifier should continue to be used in
 remediation notes, audit evidence, and release traceability even if an issue is
 transferred or superseded.
 
-The two documents that define the program's evidence and final gate are:
+The companion documents that define the program's evidence, execution, and
+final gate are:
 
 - [Pre-release due-diligence audit](./2026-07-25-pre-release-due-diligence.md)
+- [Production-readiness remediation execution goal](./Production-Readiness-Remediation-Goal.md)
 - [Post-remediation production-readiness audit playbook](./Post-Remediation-Production-Readiness-Audit.md)
 
 ## Source of truth

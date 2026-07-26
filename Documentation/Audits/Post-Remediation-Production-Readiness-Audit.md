@@ -29,6 +29,7 @@ later commit.
 **Program navigation:**
 [initial due-diligence report](./2026-07-25-pre-release-due-diligence.md) ·
 [remediation index](./Production-Readiness-Remediation-Index.md) ·
+[remediation execution goal](./Production-Readiness-Remediation-Goal.md) ·
 [final-audit issue #44](https://github.com/plx/hdxl-uri-template/issues/44)
 
 ## Intentional support boundary
