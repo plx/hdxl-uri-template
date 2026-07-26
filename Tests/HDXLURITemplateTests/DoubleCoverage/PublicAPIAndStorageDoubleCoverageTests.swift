@@ -43,24 +43,26 @@ private func manualPublicTemplateAPICoverage() throws {
   #expect(decoded == template)
   #expect(template < (try URITemplate(parsing: "https://example.net/{id}")))
 
-  // The public parse error should keep the original template and expose the underlying parser explanation.
+  // The public parse error keeps the original template while exposing bounded
+  // localized prose.
   do {
     _ = try URITemplate(parsing: "{")
     Issue.record("Expected an unterminated template to throw.")
   } catch let error as URITemplate.ParseError {
     #expect(error.template == "{")
-    #expect(error.localizedDescription.contains("Couldn't parse template-string"))
+    #expect(error.errorDescription == "The URI template could not be parsed.")
   }
 
-  // EvaluationError has user-facing diagnostics even when created from an internal downstream failure.
+  // EvaluationError provides the same safe description regardless of whether
+  // it wraps an internal downstream failure.
   let noUnderlyingError = URITemplate.EvaluationError(template: template, parameters: parameters)
-  #expect(noUnderlyingError.localizedDescription.contains("Error evaluating template"))
+  #expect(noUnderlyingError.errorDescription == "The URI template could not be evaluated.")
   let underlyingError = URITemplate.EvaluationError(
     template: template,
     parameters: parameters,
     underlyingError: URLError(.badURL)
   )
-  #expect(underlyingError.localizedDescription.contains("Underlying error"))
+  #expect(underlyingError.errorDescription == "The URI template could not be evaluated.")
 }
 
 @Test(
