@@ -37,11 +37,13 @@ private func manualPublicTemplateAPICoverage() throws {
     #expect(error.underlyingError is URLError)
   }
 
-  // Codable and comparison are part of the package's public value semantics, so this checks they preserve the parsed structure rather than object identity.
+  // Codable, equality, and hashing are part of the package's public value
+  // semantics, so this checks they preserve parsed structure rather than object
+  // identity.
   let encoded = try JSONEncoder().encode(template)
   let decoded = try JSONDecoder().decode(URITemplate.self, from: encoded)
   #expect(decoded == template)
-  #expect(template < (try URITemplate(parsing: "https://example.net/{id}")))
+  #expect(Set([template, decoded]).count == 1)
 
   // The public parse error should keep the original template and expose the underlying parser explanation.
   do {
@@ -120,8 +122,6 @@ private func manualStorageAndComponentCoverage() throws {
   #expect(storage.debugDescription.contains("URITemplateStorage"))
   #expect(storage == storage)
   #expect(storage == (try URITemplateStorage(parsing: "prefix{/id}")))
-  #expect(storage < (try URITemplateStorage(parsing: "z")))
-  #expect(!(storage < storage))
   #expect(Set([storage, try URITemplateStorage(parsing: "prefix{/id}")]).count == 1)
 
   let encoded = try JSONEncoder().encode(storage)

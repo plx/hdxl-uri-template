@@ -1,0 +1,61 @@
+{
+  "module": "HDXLURITemplate",
+  "declarations": [
+    {
+      "path": [
+        "URITemplate"
+      ],
+      "requiredConformances": [
+        "Swift.Decodable",
+        "Swift.Encodable",
+        "Swift.Equatable",
+        "Swift.Hashable",
+        "Swift.Sendable"
+      ],
+      "forbiddenConformances": [
+        "Swift.Comparable"
+      ],
+      "forbiddenMembers": [
+        "<(_:_:)"
+      ]
+    },
+    {
+      "path": [
+        "URIVariableValue"
+      ],
+      "requiredConformances": [
+        "Swift.Decodable",
+        "Swift.Encodable",
+        "Swift.Equatable",
+        "Swift.Hashable",
+        "Swift.Sendable"
+      ],
+      "forbiddenConformances": [
+        "Swift.Comparable"
+      ],
+      "forbiddenMembers": [
+        "<(_:_:)"
+      ]
+    },
+    {
+      "path": [
+        "URIVariableValueType"
+      ],
+      "requiredConformances": [
+        "Swift.CaseIterable",
+        "Swift.Decodable",
+        "Swift.Encodable",
+        "Swift.Equatable",
+        "Swift.Hashable",
+        "Swift.RawRepresentable",
+        "Swift.Sendable"
+      ],
+      "forbiddenConformances": [
+        "Swift.Comparable"
+      ],
+      "forbiddenMembers": [
+        "<(_:_:)"
+      ]
+    }
+  ]
+}

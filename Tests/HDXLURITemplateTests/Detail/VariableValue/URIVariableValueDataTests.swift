@@ -11,13 +11,9 @@ extension Tag {
   .tags(.uriVariableValueData)
 )
 private func validateFixtures() {
-  verifyOrderedAscending(texts)
-  verifyOrderedAscending(lists)
-  verifyOrderedAscending(associations)
   verifyOrderedAscending(keys)
   verifyOrderedAscending(values)
   verifyOrderedAscending(pairs)
-  verifyOrderedAscending(probes)
   #expect(associations.count == associationPairSubsets.count)
   
   verifyAllSatisfy(
@@ -27,39 +23,6 @@ private func validateFixtures() {
   )
   
   verifyPairwiseDistinct(probes)
-}
-
-@Test(
-  "`URIVariableValueData` ordering logic",
-  .tags(.uriVariableValueData)
-)
-private func validateOrdering() {
-  for undefined in undefined {
-    for text in texts {
-      #expect(undefined < text)
-    }
-    for text in lists {
-      #expect(undefined < text)
-    }
-    for association in associations {
-      #expect(undefined < association)
-    }
-  }
-  
-  for text in texts {
-    for list in lists {
-      #expect(text < list)
-    }
-    for association in associations {
-      #expect(text < association)
-    }
-  }
-  
-  for list in lists {
-    for association in associations {
-      #expect(list < association)
-    }
-  }
 }
 
 @Test(
@@ -104,8 +67,6 @@ private func characterizationLogic(probe: URIVariableValueData) {
 
 // MARK: Fixtures
 
-private let undefined: [URIVariableValueData] = [.undefined]
-
 private let texts: [URIVariableValueData] = [
   "a",
   "ab",
@@ -123,7 +84,6 @@ private let lists: [URIVariableValueData] = [
 ].map { URIVariableTextValue(rawValue: $0) }
   .smallPowerSet
   .map { .list(URIVariableListValue(values: $0)) }
-  .sorted()
 
 private let keys: [URIVariableTextValue] = [
   "a",
@@ -158,7 +118,6 @@ private let associations: [URIVariableValueData] = associationPairSubsets
     try? URIVariableAssociationValue(validating: $0)
   }
   .map(URIVariableValueData.association)
-  .sorted()
 
 private let probes: [URIVariableValueData] = {
   var result: [URIVariableValueData] = [.undefined]
@@ -166,5 +125,5 @@ private let probes: [URIVariableValueData] = {
   result.append(contentsOf: lists)
   result.append(contentsOf: associations)
   
-  return result.sorted()
+  return result
 }()

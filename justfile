@@ -20,4 +20,7 @@ test-debug:
 test-release:
     swift test -c release -q
 
-test-all: test-debug test-release
+check-public-api:
+    swift Scripts/check-public-api.swift
+
+test-all: check-public-api test-debug test-release

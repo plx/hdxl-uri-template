@@ -58,6 +58,12 @@ let package = Package(
           "Resources/spec-examples-by-section.json"
         )
       ]
+    ),
+    .testTarget(
+      name: "HDXLURITemplatePublicAPITests",
+      dependencies: [
+        "HDXLURITemplate"
+      ]
     )
   ],
   swiftLanguageModes: [

@@ -78,7 +78,6 @@ private func manualVariableValueModelCoverage() throws {
   #expect(association.debugDescription.contains("URIVariableAssociationValue"))
   #expect(association.errorMessageRepresentation == "[ key: value ]")
   #expect(!URITemplateVariableName(rawValue: "").isValid)
-  #expect(!(URIVariableValueData.undefined < .undefined))
 
   let values: [URIVariableValue] = try [
     .undefined,
@@ -101,7 +100,7 @@ private func manualVariableValueModelCoverage() throws {
   #expect(values[5].count == 1)
   #expect(values[6].count == 2)
   #expect(values[8].valueType == .association)
-  #expect(values.sorted().first == .undefined)
+  #expect(Set(values).count == values.count)
 
   for value in values {
     let roundTrip = try JSONDecoder().decode(URIVariableValue.self, from: JSONEncoder().encode(value))

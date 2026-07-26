@@ -19,7 +19,6 @@ import Foundation
 /// In other words, the public API is write-mostly, and that's by design: the internals make *heavy* use of `newtype`-like wrapper structs, and I'd like to *keep* those `internal`.
 /// Sure, the write-mostly API also limits the potential for misuse, but that's a fringe benefit--it's really about keeping the `newtype`s out of the public-facing API.
 ///
-/// - note: This conforms to `Comparable`, but the sort is *structural* (by flavor, then content) rather than "semantic" (e.g. by textual representation).
 /// - note: Deserialization throws `AssociationError` for duplicate association
 ///   keys and `DataValidationError` for other invalid stored values.
 ///
@@ -163,26 +162,6 @@ public struct URIVariableValue {
 extension URIVariableValue : Sendable { }
 extension URIVariableValue : Equatable { }
 extension URIVariableValue : Hashable { }
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Comparable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValue : Comparable {
-  
-  @inlinable
-  public static func <(
-    lhs: URIVariableValue,
-    rhs: URIVariableValue
-  ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return lhs.storage < rhs.storage
-  }
-
-}
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible

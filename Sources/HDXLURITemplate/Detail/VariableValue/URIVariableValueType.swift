@@ -32,23 +32,6 @@ extension URIVariableValueType : Codable { }
 extension URIVariableValueType : CaseIterable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: - Comparable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueType : Comparable {
-  
-  @inlinable
-  public static func <(
-    lhs: URIVariableValueType,
-    rhs: URIVariableValueType
-  ) -> Bool {
-    lhs.rawValue < rhs.rawValue
-  }
-
-}
-
-
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 

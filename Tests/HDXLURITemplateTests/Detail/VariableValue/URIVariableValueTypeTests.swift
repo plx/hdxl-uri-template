@@ -8,11 +8,14 @@ extension Tag {
 }
 
 @Test(
-  "`URIVariableValueType.allCases` is ordered ascending",
+  "`URIVariableValueType.allCases` contains every case",
   .tags(.uriVariableValueType)
 )
-private func allCasesOrderedAscending() {
-  verifyOrderedAscending(URIVariableValueType.allCases)
+private func allCasesAreComplete() {
+  #expect(
+    Set(URIVariableValueType.allCases)
+      == [.undefined, .text, .list, .association]
+  )
 }
 
 @Test(
