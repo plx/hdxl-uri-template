@@ -76,7 +76,10 @@ private func manualObjCVariableValueWrapperCoverage() throws {
   let text = URIVariableValueWrapper(string: "hello")
   let list = URIVariableValueWrapper(strings: ["a", "b"])
   let pair = URIVariableValueWrapper(key: "k", value: "v")
-  let pairs = URIVariableValueWrapper(keys: ["b", "a"], values: ["2", "1"])
+  let pairs = try URIVariableValueWrapper(
+    keys: ["b", "a"],
+    values: ["2", "1"]
+  )
   let dictionary = URIVariableValueWrapper(
     dictionary: ["b": "2", "a": "1"],
     comparator: { lhs, rhs in lhs < rhs ? .orderedAscending : (lhs == rhs ? .orderedSame : .orderedDescending) }
@@ -158,8 +161,8 @@ private func manualObjCVariableValueWrapperCoverage() throws {
   "Property ObjC variable value wrapper coverage",
   .tags(.doubleCoverageObjC)
 )
-private func propertyObjCVariableValueWrapperCoverage() {
-  let values: [URIVariableValue] = [
+private func propertyObjCVariableValueWrapperCoverage() throws {
+  let values: [URIVariableValue] = try [
     .undefined,
     .emptyString,
     .emptyList,

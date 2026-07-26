@@ -27,10 +27,19 @@ let package = Package(
       name: "HDXLURITemplate",
       dependencies: []
     ),
+    .target(
+      name: "HDXLURITemplateObjCInterop",
+      dependencies: [
+        "HDXLURITemplate"
+      ],
+      path: "Tests/HDXLURITemplateObjCInterop",
+      publicHeadersPath: "include"
+    ),
     .testTarget(
       name: "HDXLURITemplateTests",
       dependencies: [
-        "HDXLURITemplate", 
+        "HDXLURITemplate",
+        "HDXLURITemplateObjCInterop"
       ],
       exclude: [
         "Resources/README.md"

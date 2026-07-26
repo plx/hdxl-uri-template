@@ -4,8 +4,10 @@ import Foundation
 extension ReferenceExampleGroup {
   
   var variableValues: [String: URIVariableValue] {
-    variables.mapValues { referenceValue in
-      referenceValue.variableValue
+    get throws {
+      try variables.mapValues { referenceValue in
+        try referenceValue.variableValue
+      }
     }
   }
     
@@ -16,8 +18,8 @@ extension ReferenceExampleGroup {
   func captionedTestCases(
     source: String,
     caption: String
-  ) -> some Sendable & Collection<CaptionedTestCase> {
-    let parameters = variableValues
+  ) throws -> some Sendable & Collection<CaptionedTestCase> {
+    let parameters = try variableValues
     return testCases.lazy.map { testCase in
       CaptionedTestCase(
         source: source,

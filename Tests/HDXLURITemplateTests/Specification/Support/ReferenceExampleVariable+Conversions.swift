@@ -27,34 +27,36 @@ extension ReferenceExamplePrimitiveJSONValue {
 extension ReferenceExampleVariable {
   
   var variableValue: URIVariableValue {
-    switch self {
-    case .value(.null):
-      .undefined
-    case .value(let value):
-      .text(value.stringRepresentation)
-    case .list(let values):
-      .list(
-        values.compactMap { value in
-          switch value {
-          case .null:
-            nil
-          default:
-            value.stringRepresentation
+    get throws {
+      switch self {
+      case .value(.null):
+        .undefined
+      case .value(let value):
+        .text(value.stringRepresentation)
+      case .list(let values):
+        .list(
+          values.compactMap { value in
+            switch value {
+            case .null:
+              nil
+            default:
+              value.stringRepresentation
+            }
           }
-        }
-      )
-    case .association(let association):
-      .association(
-        association.lazy.compactMap { key, value in
-          switch value {
-          case .null:
-            nil
-          default:
-            (key, value.stringRepresentation)
+        )
+      case .association(let association):
+        try .association(
+          association.lazy.compactMap { key, value in
+            switch value {
+            case .null:
+              nil
+            default:
+              (key, value.stringRepresentation)
+            }
           }
-        }
-        .sorted(by: { $0.0 < $1.0 })
-      )
+          .sorted(by: { $0.0 < $1.0 })
+        )
+      }
     }
   }
   

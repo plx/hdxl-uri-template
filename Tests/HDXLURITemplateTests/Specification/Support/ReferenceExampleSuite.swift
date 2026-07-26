@@ -58,12 +58,12 @@ extension ReferenceExampleSuite {
 
   func captionedTestCases(
     source: String
-  ) -> [CaptionedTestCase] {
-    groups.sorted { lhs, rhs in
+  ) throws -> [CaptionedTestCase] {
+    try groups.sorted { lhs, rhs in
       lhs.key < rhs.key
     }.flatMap { groupName, group in
       Array(
-        group.captionedTestCases(
+        try group.captionedTestCases(
           source: source,
           caption: groupName
         )

@@ -221,7 +221,9 @@ private func manualVariableExpansionCoverage() throws {
   #expect(try list.expansion(expansionType: .pathParameter, variableName: name, expansionModifier: .explode) == "name=red;name;name=blue")
   #expect(try URIVariableListValue().expansion(expansionType: .query, variableName: name, expansionModifier: .explode) == "")
 
-  let association = URIVariableAssociationValue(strings: [("a", "1"), ("b", ""), ("c", "3")])
+  let association = try URIVariableAssociationValue(
+    validatingStrings: [("a", "1"), ("b", ""), ("c", "3")]
+  )
   #expect(try association.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified) == "a,1,b,,c,3")
   #expect(try association.expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified) == "name=a,1,b,,c,3")
   #expect(try association.expansion(expansionType: .query, variableName: name, expansionModifier: .explode) == "a=1&b=&c=3")
@@ -237,7 +239,7 @@ private func manualVariableExpansionCoverage() throws {
   #expect(try URITemplateVariable(parsing: "missing").evaluate(parameters: parameters, expansionType: .simple) == "")
   #expect(try URITemplateVariable(parsing: "emptyList").evaluateIfDefined(parameters: parameters, expansionType: .simple) == nil)
 
-  let value = URIVariableValue.association([("a", "1")])
+  let value = try URIVariableValue.association([("a", "1")])
   #expect(try value.evaluate(expansionType: .query, templateVariable: variable) == "name=a,1")
   #expect(try URIVariableValue.undefined.evaluate(expansionType: .query, templateVariable: variable) == "")
 
@@ -279,7 +281,9 @@ private func propertyVariableExpansionCoverage() throws {
     #expect(unexploded == prefixedList)
     #expect(try list.expansion(expansionType: expansionType, templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)).isEmpty == false)
 
-    let association = URIVariableAssociationValue(strings: [("a", "1"), ("b", "2")])
+    let association = try URIVariableAssociationValue(
+      validatingStrings: [("a", "1"), ("b", "2")]
+    )
     let prefixedAssociation = try association.expansion(expansionType: expansionType, variableName: name, expansionModifier: .prefix(2))
     let unexplodedAssociation = try association.expansion(expansionType: expansionType, variableName: name, expansionModifier: .unmodified)
     #expect(prefixedAssociation == unexplodedAssociation)

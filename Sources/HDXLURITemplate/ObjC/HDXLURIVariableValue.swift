@@ -110,11 +110,12 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
       return nil
     }
 
-    // safe to assume truly-unique b/c we're just stripping a newtype
-    // wrapper from an underlying, already-existing dictionary
-    return [String:String](uniqueKeysWithValues: association.storage.map {
-      ($0.key.rawValue, $0.value.rawValue)
-    })
+    var result: [String: String] = [:]
+    result.reserveCapacity(association.count)
+    for pair in association.storage {
+      result[pair.key.rawValue] = pair.value.rawValue
+    }
+    return result
   }
   
   @objc(enumerateAssociationPairsUsingBlock:)
@@ -177,11 +178,16 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
     )
   }
   
-  @objc(initWithKeys:values:)
-  public convenience init(keys: [String], values: [String]) {
-    precondition(keys.count == values.count)
+  @objc
+  public convenience init(keys: [String], values: [String]) throws {
+    guard keys.count == values.count else {
+      throw URIVariableValue.AssociationError.mismatchedKeyValueCounts(
+        keyCount: keys.count,
+        valueCount: values.count
+      )
+    }
     self.init(
-      variableValue: .association(
+      variableValue: try .association(
         zip(keys,values)
       )
     )
@@ -190,13 +196,13 @@ public final class URIVariableValueWrapper : NSObject, NSCopying, NSCoding, NSSe
   @objc(initWithDictionary:sortDescriptor:)
   public convenience init(
     dictionary: [String:String],
-    comparator: (String, String) -> ComparisonResult) {
+    comparator: (String, String) -> ComparisonResult
+  ) {
     self.init(
       variableValue: .association(
-        dictionary.sorted {
-          (l,r) -> Bool
-          in
-          comparator(l.0,r.0) == .orderedAscending
+        dictionary,
+        orderingKeysWith: { lhs, rhs in
+          comparator(lhs, rhs) == .orderedAscending
         }
       )
     )
