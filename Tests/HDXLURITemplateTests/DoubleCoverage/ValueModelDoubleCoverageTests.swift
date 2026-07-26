@@ -77,7 +77,10 @@ private func manualVariableValueModelCoverage() throws {
   #expect(association.description == "[ \"key\":\"value\" ]")
   #expect(association.debugDescription.contains("URIVariableAssociationValue"))
   #expect(association.errorMessageRepresentation == "[ key: value ]")
-  #expect(!URITemplateVariableName(rawValue: "").isValid)
+  // This invalid raw value intentionally violates the HEAVY_DEBUG invariant.
+  #if !HEAVY_DEBUG
+    #expect(!URITemplateVariableName(rawValue: "").isValid)
+  #endif
 
   let values: [URIVariableValue] = try [
     .undefined,

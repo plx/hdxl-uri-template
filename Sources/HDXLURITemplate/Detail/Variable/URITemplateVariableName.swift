@@ -23,7 +23,7 @@ internal struct URITemplateVariableName: RawRepresentable {
   internal init(rawValue: RawValue) {
 #if HEAVY_DEBUG
     pedanticAssert(!rawValue.isEmpty)
-    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
+    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: rawValue))
     defer { pedanticAssert(isValid) }
 #endif
     self.rawValue = rawValue

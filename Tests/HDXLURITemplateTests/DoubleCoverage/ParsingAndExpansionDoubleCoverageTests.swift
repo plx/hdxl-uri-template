@@ -167,7 +167,10 @@ private func manualExpansionSupportCoverage() throws {
   var removable = "abc,def"
   removable.removeLastComponent(forSeparator: ",")
   #expect(removable == "abc,")
-  #expect("abc".constrained(toCodePointCount: -1) == "")
+  // The negative fallback intentionally violates the HEAVY_DEBUG invariant.
+  #if !HEAVY_DEBUG
+    #expect("abc".constrained(toCodePointCount: -1) == "")
+  #endif
   #expect(StandardEnumerationCodingKeys(intValue: 2) == nil)
 }
 
