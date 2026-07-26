@@ -1,5 +1,8 @@
 import Foundation
 
+// RFC-derived Code Components in this file are attributed in
+// THIRD_PARTY_NOTICES.md.
+
 extension CharacterSet {
   
   @inlinable
@@ -31,20 +34,13 @@ extension CharacterSet {
 // MARK: Character Sets - Allowed By Expansion Type
 // -------------------------------------------------------------------------- //
 
-/*
- For each defined variable in the variable-list, perform variable
- expansion, as defined in Section 3.2.1, with the allowed characters
- being those in the unreserved set.
- */
+// RFC 6570 section 3.2.2 permits only unreserved characters in simple
+// expansion values.
 @usableFromInline
 internal let simpleExpansionAllowedCharacterSet: CharacterSet = rfc_unreserved
 
-/*
- Reserved expansion, as indicated by the plus ("+") operator for Level
- 2 and above templates, is identical to simple string expansion except
- that the substituted values may also contain pct-encoded triplets and
- characters in the reserved set.
- */
+// RFC 6570 section 3.2.3 additionally preserves reserved characters and
+// valid percent-encoded triplets.
 @usableFromInline
 internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
   unionOf: [
@@ -56,51 +52,29 @@ internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
   ]
 )
 
-/*
- Fragment expansion, as indicated by the crosshatch ("#") operator for
- Level 2 and above templates, is identical to reserved expansion
- except that a crosshatch character (fragment delimiter) is appended
- first to the result string if any of the variables are defined.
- */
+// RFC 6570 section 3.2.4 gives fragment values the reserved-expansion
+// character set; prefix insertion is handled separately.
 @usableFromInline
 internal let fragmentAllowedCharacterSet: CharacterSet = reservedExpansionAllowedCharacterSet
 
-/*
- For each defined variable in the variable-list, append "." to the
- result string and then perform variable expansion, as defined in
- Section 3.2.1, with the allowed characters being those in the
- unreserved set.
- */
+// RFC 6570 section 3.2.5 permits only unreserved characters in label values.
 @usableFromInline
 internal let labelAllowedCharacterSet: CharacterSet = rfc_unreserved
 
-/*
- Note that the expansion process for path segment expansion is
- identical to that of label expansion aside from the substitution of
- "/" instead of ".".  However, unlike ".", a "/" is a reserved
- character and will be pct-encoded if found in a value.
- */
+// RFC 6570 section 3.2.6 uses the label value character set for path
+// segments; the slash separator is inserted outside the value.
 @usableFromInline
 internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet
 
-/*
- o  perform variable expansion, as defined in Section 3.2.1, with the
- allowed characters being those in the unreserved set.
- */
+// RFC 6570 section 3.2.7 permits only unreserved path-parameter values.
 @usableFromInline
 internal let pathParameterAllowedCharacterSet: CharacterSet = rfc_unreserved
 
-/*
- o  perform variable expansion, as defined in Section 3.2.1, with the
- allowed characters being those in the unreserved set.
- */
+// RFC 6570 section 3.2.8 permits only unreserved query values.
 @usableFromInline
 internal let queryAllowedCharacterSet: CharacterSet = rfc_unreserved
 
-/*
- o  perform variable expansion, as defined in Section 3.2.1, with the
- allowed characters being those in the unreserved set.
- */
+// RFC 6570 section 3.2.9 applies the same rule to query continuations.
 @usableFromInline
 internal let queryContinuationAllowedCharacterSet: CharacterSet = rfc_unreserved
 
@@ -203,8 +177,8 @@ internal let rfc_ucschar_ranges: [ClosedRange<UnicodeScalar>] = rfc_ucschar_uint
   let lowerBound = infalliblyUnwrap(
     UnicodeScalar($0.lowerBound),
     explanation: """
-      `rfc_ucschar_uint32_ranges` is a hardcoded transcription of the \
-      `ucschar` production from RFC 3987 §2.2. Every value in that table \
+      `rfc_ucschar_uint32_ranges` adapts the `ucschar` production reproduced \
+      by RFC 6570 §1.5 from RFC 3987 §2.2. Every value in that table \
       lies in `0x00A0...0xD7FF` or `0xE000...0x10FFFD`, which sits outside \
       the UTF-16 surrogate gap (`0xD800...0xDFFF`) and at or below the \
       Unicode maximum (`0x10FFFF`). Those two cases are the only reasons \
@@ -216,8 +190,8 @@ internal let rfc_ucschar_ranges: [ClosedRange<UnicodeScalar>] = rfc_ucschar_uint
     UnicodeScalar($0.upperBound),
     explanation: """
       Same rationale as the lower bound above: every upper bound in \
-      `rfc_ucschar_uint32_ranges` is a hand-audited value from the \
-      RFC 3987 §2.2 `ucschar` table, lying outside the UTF-16 surrogate \
+      `rfc_ucschar_uint32_ranges` adapts the RFC 6570 §1.5 `ucschar` table, \
+      which originates in RFC 3987 §2.2, and lies outside the UTF-16 surrogate \
       gap and at or below the Unicode maximum. `UnicodeScalar.init(_: UInt32)` \
       only returns `nil` for those two cases, neither of which can occur here.
       """
@@ -245,8 +219,8 @@ internal let rfc_iprivate_ranges: [ClosedRange<UnicodeScalar>] = rfc_iprivate_ui
   let lowerBound = infalliblyUnwrap(
     UnicodeScalar($0.lowerBound),
     explanation: """
-      `rfc_iprivate_uint32_ranges` is a hardcoded transcription of the \
-      `iprivate` production from RFC 3987 §2.2. Every value in that table \
+      `rfc_iprivate_uint32_ranges` adapts the `iprivate` production reproduced \
+      by RFC 6570 §1.5 from RFC 3987 §2.2. Every value in that table \
       sits inside one of Unicode's private-use planes (`0xE000...0xF8FF`, \
       `0xF0000...0xFFFFD`, or `0x100000...0x10FFFD`) — well above the \
       UTF-16 surrogate gap and at or below the Unicode maximum. \

@@ -14,9 +14,10 @@ tests belong in separate Swift test files.
 | `extended-tests.json` | 53 | 7,426 | `547c6d6669132a62ea002791cbefed43251c7fe2ad82f8725d930d401e5acd23` |
 | `negative-tests.json` | 36 | 2,516 | `7f4bd7def905c492b40fae92b6a51665489539dd773db464022a52eb37907e81` |
 
-The upstream files are licensed under Apache License 2.0. Repository-wide
-third-party notice and standards attribution are tracked by DOC-04
-([issue #42](https://github.com/plx/hdxl-uri-template/issues/42)); do not insert
+The upstream files are licensed under Apache License 2.0. The
+[repository-wide third-party notice](../../../THIRD_PARTY_NOTICES.md) records
+the upstream copyright notice and the full license is reproduced in
+[`LICENSES/Apache-2.0.txt`](../../../LICENSES/Apache-2.0.txt). Do not insert
 notices into these byte-faithful JSON files.
 
 ## Updating the snapshot
@@ -29,6 +30,12 @@ fixture_checkout="$(mktemp -d)"
 fixture_commit=4171dac22aa67fc710b3f6df308a50bd08552986
 git clone https://github.com/uri-templates/uritemplate-test.git "$fixture_checkout"
 git -C "$fixture_checkout" checkout --detach "$fixture_commit"
+
+# Review all upstream licensing material at the selected commit.
+git -C "$fixture_checkout" ls-tree -r --name-only HEAD |
+  grep -E '(^|/)(LICENSE|NOTICE)(\.|$)'
+git -C "$fixture_checkout" grep -n -i -E \
+  'copyright|license|notice' HEAD -- README.md
 
 for fixture in \
   spec-examples.json \
@@ -46,6 +53,8 @@ Recompute and review the snapshot metadata:
 ```sh
 for fixture in Tests/HDXLURITemplateTests/Resources/*.json
 do
+  fixture_name="$(basename "$fixture")"
+  cmp "$fixture_checkout/$fixture_name" "$fixture"
   shasum -a 256 "$fixture"
   wc -c "$fixture"
   jq '[.[] | .testcases | length] | add' "$fixture"
@@ -53,8 +62,11 @@ done
 
 swift test --filter pinnedFixture
 swift test --filter pinnedSpecExamplesIncludeApostropheExample
+swift test
 ```
 
-Update this document and the fixture-count tests in the same fixture-only
-change. Record the new upstream commit, explain count or content changes, and
-keep license/provenance review coordinated with DOC-04.
+Update this document, the root
+[`THIRD_PARTY_NOTICES.md`](../../../THIRD_PARTY_NOTICES.md), and the
+fixture-count tests in the same fixture-only change. Record the new upstream
+commit, explain count or content changes, and update reproduced license or
+notice files if the upstream terms changed.

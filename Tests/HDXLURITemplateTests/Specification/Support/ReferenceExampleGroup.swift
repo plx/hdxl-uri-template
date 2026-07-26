@@ -44,19 +44,3 @@ extension ReferenceExampleGroup: Codable {
     self.testCases = try container.decode([ReferenceExampleTestCase].self, forKey: .testCases)
   }
 }
-
-
-
-/*
- "level": 1,
- "variables": {
- "var"   : "value",
- "hello" : "Hello World!"
- },
- "testcases" : [
- ["{var}", "value"],
- ["'{var}'", "'value'"],
- ["{hello}", "Hello%20World%21"]
- ]
-
- */
