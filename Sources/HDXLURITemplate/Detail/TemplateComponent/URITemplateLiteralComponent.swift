@@ -123,12 +123,14 @@ extension URITemplateLiteralComponent {
      triplets corresponding to that character's encoding in UTF-8
      [RFC3629].
      
-     literals      =  %x21 / %x23-24 / %x26 / %x28-3B / %x3D / %x3F-5B
+     literals      =  %x21 / %x23-24 / %x26-3B / %x3D / %x3F-5B
      /  %x5D / %x5F / %x61-7A / %x7E / ucschar / iprivate
      /  pct-encoded
      ; any Unicode character except: CTL, SP,
-     ;  DQUOTE, "'", "%" (aside from pct-encoded),
+     ;  DQUOTE, "%" (aside from pct-encoded),
      ;  "<", ">", "\", "^", "`", "{", "|", "}"
+
+     Corrected by verified RFC 6570 erratum 6937.
      */
     return try NSRegularExpression(
       pattern:
@@ -140,15 +142,14 @@ extension URITemplateLiteralComponent {
           \\u0021
           \\u0023
           \\u0024
-          \\u0026
           \\u003D
           \\u005D
           \\u005F
-          \\u0073
+          \\u007E
         ]
         |
         [
-          [\\u0028-\\u003B]
+          [\\u0026-\\u003B]
           [\\u003F-\\u005B]
           [\\u0061-\\u007A]
           [\\u00A0-\\uD7FF]

@@ -29,28 +29,6 @@ struct FailureSignature: Hashable {
 let expectedFailureSignatures: Set<FailureSignature> = [
   FailureSignature(
     caseIdentity: ReferenceExampleCaseIdentity(
-      source: "spec-examples",
-      caption: "Level 1 Examples",
-      template: "'{var}'",
-      expectation: .exactMatch("'value'")
-    ),
-    backlogIdentifier: "CONF-03",
-    issueNumber: 18,
-    expectedIssueKind: .parseError(invalidLiteralContent: "'")
-  ),
-  FailureSignature(
-    caseIdentity: ReferenceExampleCaseIdentity(
-      source: "spec-examples-by-section",
-      caption: "2.1 Literals",
-      template: "'{count}'",
-      expectation: .exactMatch("'one,two,three'")
-    ),
-    backlogIdentifier: "CONF-03",
-    issueNumber: 18,
-    expectedIssueKind: .parseError(invalidLiteralContent: "'")
-  ),
-  FailureSignature(
-    caseIdentity: ReferenceExampleCaseIdentity(
       source: "extended-tests",
       caption: "Additional Examples 8: Literal Encoding",
       template: "café/{var}",
