@@ -2,22 +2,22 @@ import Testing
 
 @testable import HDXLURITemplate
 
-@Test("Temporary conformance ledger is exactly the nine audited cases")
+@Test("Temporary conformance ledger is exactly the seven audited cases")
 private func temporaryConformanceLedgerIsExactAndUnique() {
   let entries = temporaryKnownReferenceExampleFailures
   let caseIdentities = Set(entries.map(\.caseIdentity))
   let signatures = Set(entries.map(FailureSignature.init))
 
-  #expect(entries.count == 9)
+  #expect(entries.count == 7)
   #expect(caseIdentities.count == entries.count)
   #expect(signatures == expectedFailureSignatures)
   #expect(
     Dictionary(grouping: entries, by: \.issueNumber).mapValues(\.count)
-      == [18: 2, 25: 1, 27: 3, 29: 1, 33: 2]
+      == [25: 1, 27: 3, 29: 1, 33: 2]
   )
   #expect(
     Set(entries.map(\.backlogIdentifier))
-      == ["CONF-03", "CONF-04", "CONF-06", "CONF-08", "CONF-09"]
+      == ["CONF-04", "CONF-06", "CONF-08", "CONF-09"]
   )
   #expect(
     entries.allSatisfy {
@@ -64,6 +64,21 @@ private func temporaryLedgerRetainsExactFailureEvidence() {
         "Observed failure drifted for \(entry.caseIdentity): \(error)"
       )
     }
+  }
+}
+
+@Test("Resolved CONF-03 examples pass without temporary ledger entries")
+private func resolvedCONF03ExamplesAreOrdinaryPasses() throws {
+  for caseIdentity in resolvedCONF03CaseIdentities {
+    let example = try pinnedExample(matching: caseIdentity)
+
+    #expect(
+      temporaryKnownReferenceExampleFailure(
+        for: example,
+        mode: .temporaryLedger
+      ) == nil
+    )
+    try verifyReferenceExampleBehavior(example)
   }
 }
 
@@ -203,18 +218,16 @@ private func temporaryLedgerRejectsUnrelatedFailure() async throws {
 
 @Test("Known parse matcher rejects different failures")
 private func knownParseMatcherIsExact() throws {
-  let entry = try #require(
-    temporaryKnownReferenceExampleFailures.first {
-      $0.caseIdentity.source == "spec-examples"
-        && $0.caseIdentity.template == "'{var}'"
-    }
+  let caseIdentity = try #require(resolvedCONF03CaseIdentities.first)
+  let expectedIssueKind = ExpectedReferenceExampleIssueKind.parseError(
+    invalidLiteralContent: "'"
   )
-  let example = try pinnedExample(matching: entry.caseIdentity)
+  let example = try pinnedExample(matching: caseIdentity)
   let context = ReferenceExampleCaseContext(example: example)
   let exactFailure = ReferenceExampleParsingFailure(
     context: context,
     parseError: URITemplate.ParseError(
-      template: entry.caseIdentity.template,
+      template: caseIdentity.template,
       underlyingError: URITemplateLiteralComponent.ParseError.invalidContent(
         "'"
       )
@@ -223,7 +236,7 @@ private func knownParseMatcherIsExact() throws {
   let wrongUnderlyingFailure = ReferenceExampleParsingFailure(
     context: context,
     parseError: URITemplate.ParseError(
-      template: entry.caseIdentity.template,
+      template: caseIdentity.template,
       underlyingError: URITemplateLiteralComponent.ParseError.invalidContent(
         "\""
       )
@@ -231,24 +244,39 @@ private func knownParseMatcherIsExact() throws {
   )
 
   #expect(
-    entry.expectedIssueKind.matches(
+    expectedIssueKind.matches(
       exactFailure,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: caseIdentity
     )
   )
   #expect(
-    !entry.expectedIssueKind.matches(
+    !expectedIssueKind.matches(
       wrongUnderlyingFailure,
-      caseIdentity: entry.caseIdentity
+      caseIdentity: caseIdentity
     )
   )
   #expect(
-    !entry.expectedIssueKind.matches(
+    !expectedIssueKind.matches(
       KnownFailureMatcherProbeError(),
-      caseIdentity: entry.caseIdentity
+      caseIdentity: caseIdentity
     )
   )
 }
+
+private let resolvedCONF03CaseIdentities = [
+  ReferenceExampleCaseIdentity(
+    source: "spec-examples",
+    caption: "Level 1 Examples",
+    template: "'{var}'",
+    expectation: .exactMatch("'value'")
+  ),
+  ReferenceExampleCaseIdentity(
+    source: "spec-examples-by-section",
+    caption: "2.1 Literals",
+    template: "'{count}'",
+    expectation: .exactMatch("'one,two,three'")
+  )
+]
 
 @Test("Known expansion matcher rejects different output")
 private func knownExpansionMatcherIsExact() throws {
