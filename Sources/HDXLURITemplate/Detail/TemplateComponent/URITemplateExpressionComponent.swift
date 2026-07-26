@@ -32,6 +32,7 @@ internal struct URITemplateExpressionComponent {
     variables: [URITemplateVariable]
   ) {
 #if HEAVY_DEBUG
+    pedanticAssert(!variables.isEmpty)
     pedanticAssert(variables.allSatisfy(\.isValid))
     defer { pedanticAssert(isValid)}
 #endif
@@ -129,7 +130,7 @@ extension URITemplateExpressionComponent {
     let variables = variables
       .lazy
       .map(\.templateRepresentation)
-      .joined(separator: ", ")
+      .joined(separator: ",")
     return "\(expansionType.formatString)\(variables)"
   }
   
@@ -148,7 +149,8 @@ extension URITemplateExpressionComponent {
   
   @inlinable
   internal var isValid: Bool {
-    variables.allSatisfy(\.isValid)
+    !variables.isEmpty
+      && variables.allSatisfy(\.isValid)
   }
   
 }

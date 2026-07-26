@@ -13,25 +13,17 @@ internal final class URITemplateStorage {
   // ------------------------------------------------------------------------ //
   
   @usableFromInline
-  internal var components: [URITemplateComponent] {
-    didSet {
-      guard components != oldValue else {
-        return
-      }
-      resetCachedDerivedProperties()
-    }
-  }
+  internal let components: [URITemplateComponent]
+
+  /// The authoritative, syntactically-valid source for `components`.
+  @usableFromInline
+  internal let templateSource: String
   
-  /// Used to coordinate access to cached fields, which is necessary b/c they may be mutated w/out exclusive ownership.
+  /// Coordinates reads and updates of fields populated by nonmutating getters.
   ///
-  /// For `components` we can assume it's only ever mutated by an exclusive owner, b/c this class is storage for
-  /// a struct implementing the standard COW-style semantics.
-  ///
-  /// For the cached properties, however, these are getting created-and-cached via (non-mutating) getters on the struct,
-  /// which means they're not *necessarily* going to have exclusive ownership, which introduces the risk for problems
-  /// (and does so *even though* the values-to-be-cached should be identical, given what we said about `components`).
-  ///
-  /// As such, we use this lock to protect the cached fields during (a) reads and (b) updates.
+  /// The parsed source and components are immutable, but cache population may
+  /// occur without exclusive ownership of the public value. The lock protects
+  /// that remaining lazy state.
   /// TODO: see how it'd look to setup a cached-fields struct, migrate it into the struct, and keep all the cached state together.
   @usableFromInline
   internal var cachedFieldLock: OSAllocatedUnfairLock<Void>
@@ -41,81 +33,34 @@ internal final class URITemplateStorage {
   // ------------------------------------------------------------------------ //
   
   @inlinable
-  internal convenience init() {
-    self.init(
-      components: []
-    )
-  }
-  
-  @inlinable
-  internal convenience init(component: URITemplateComponent) {
-#if HEAVY_DEBUG
-    pedanticAssert(component.isValid)
-#endif
-    self.init(
-      components: [component]
-    )
-  }
-  
-  @inlinable
-  internal required init(components: [URITemplateComponent]) {
+  internal init(parsing template: String) throws {
+    let components = try template.parseIntoURITemplateComponents()
 #if HEAVY_DEBUG
     pedanticAssert(components.allSatisfy(\.isValid))
     defer { pedanticAssert(isValid) }
 #endif
     self.components = components
+    self.templateSource = template
     self.cachedFieldLock = OSAllocatedUnfairLock()
   }
-  
+
   @inlinable
-  internal convenience init(parsing template: String) throws {
-    if template.isEmpty {
-      self.init()
-    } else {
-      self.init(
-        components: try template.parseIntoURITemplateComponents()
-      )
-    }
-  }
-    
-  @inlinable
-  func resetCachedDerivedProperties() {
-    cachedFieldLock.precondition(.notOwner)
-    cachedFieldLock.withLock {
-      _templateRepresentation = nil
-      _templateVariables = nil
-      _templateVariableNames = nil
-      _variableNames = nil
-    }
+  internal static func renderedTemplateSource(
+    for components: [URITemplateComponent]
+  ) -> String {
+    components
+      .lazy
+      .map(\.templateRepresentation)
+      .joined()
   }
   
   // ------------------------------------------------------------------------ //
   // MARK: `templateRepresentation`
   // ------------------------------------------------------------------------ //
   
-  @usableFromInline
-  internal var _templateRepresentation: String? = nil
-  
   @inlinable
   internal var templateRepresentation: String {
-    cachedFieldLock.precondition(.notOwner)
-    return cachedFieldLock.withLock {
-      _withLockTemplateRepresentation
-    }
-  }
-
-  @inlinable
-  internal var _withLockTemplateRepresentation: String {
-    cachedFieldLock.precondition(.owner)
-    return _templateRepresentation.obtainAssuredValue(
-      guaranteedBy: components
-        .lazy
-        .map {
-          (component: URITemplateComponent) -> String
-          in
-          component.templateRepresentation
-        }.joined(separator: "")
-    )
+    templateSource
   }
 
   // ------------------------------------------------------------------------ //
@@ -317,14 +262,21 @@ extension URITemplateStorage : Codable {
   
   @inlinable
   internal convenience init(from decoder: Decoder) throws {
-    // No storage-level `allSatisfy(\.isValid)` re-check is needed here: every
-    // `URITemplateComponent`'s own `init(from:)` rejects invalid data — the
-    // literal- and variable-name regexes and the prefix-count range each throw
-    // a `DataValidationError` on decode — so a successfully decoded
-    // `[URITemplateComponent]` is already guaranteed to be valid.
+    // Preserve the existing component-array wire format, but establish decoded
+    // storage through the strict parser so source and parsed state cannot drift.
     let container = try decoder.singleValueContainer()
     let components = try container.decode([URITemplateComponent].self)
-    self.init(components: components)
+    try self.init(
+      parsing: Self.renderedTemplateSource(
+        for: components
+      )
+    )
+    guard self.components == components else {
+      throw DecodingError.dataCorruptedError(
+        in: container,
+        debugDescription: "Decoded URI-template components do not round-trip through their source representation."
+      )
+    }
   }
   
 }

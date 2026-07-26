@@ -215,11 +215,14 @@ private func manualCodableValidationErrorCoverage() throws {
     _ = try JSONDecoder().decode(URITemplateLiteralComponent.self, from: invalidLiteralJSON)
   }
 
-  let invalidStorage = URITemplateStorage(components: [
-    .literal(URITemplateLiteralComponent(rawValue: "{bad}"))
-  ])
+  let invalidStorageJSON = Data(
+    #"[{"literal":{"_0":"{bad}"}}]"#.utf8
+  )
   #expect(throws: DataValidationError<URITemplateLiteralComponent>.self) {
-    _ = try JSONDecoder().decode(URITemplateStorage.self, from: JSONEncoder().encode(invalidStorage))
+    _ = try JSONDecoder().decode(
+      URITemplateStorage.self,
+      from: invalidStorageJSON
+    )
   }
 
   try verifyDuplicateAssociationDecodeFailure()

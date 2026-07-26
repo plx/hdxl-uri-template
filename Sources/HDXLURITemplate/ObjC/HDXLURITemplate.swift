@@ -50,6 +50,7 @@ public class URITemplateWrapper : NSObject, NSCopying, NSCoding, NSSecureCoding 
   // MARK: Derived Properties
   // ------------------------------------------------------------------------ //
   
+  /// The exact validated source string from which this template was parsed.
   @objc
   public var templateRepresentation: String {
     template.templateRepresentation
