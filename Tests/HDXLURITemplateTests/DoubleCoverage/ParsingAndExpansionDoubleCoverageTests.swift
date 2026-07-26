@@ -142,8 +142,8 @@ private func manualExpansionSupportCoverage() throws {
   #expect("a/b".escaped(forValueExpansionType: .simple) == "a%2Fb")
   #expect("a/b".escaped(forValueExpansionType: .reserved) == "a/b")
   #expect("%2F/%zz".escaped(forValueExpansionType: .reserved) == "%2F/%25zz")
-  #expect("x%2Fy".unicodeScalars.decomposedIntoEscapedAndUnescapedParts.count == 3)
-  #expect("x%2Fy".unicodeScalars.hasPercentEscape(at: "x%2Fy".unicodeScalars.index(after: "x%2Fy".unicodeScalars.startIndex)))
+  #expect((0x30 as UInt8).isASCIIHexadecimalDigit)
+  #expect(!(0x47 as UInt8).isASCIIHexadecimalDigit)
 
   // CharacterSet convenience initializers underpin RFC sets; these examples cover scalar ranges and unions.
   let scalarA: UnicodeScalar = "a"

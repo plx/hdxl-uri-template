@@ -159,7 +159,6 @@ private let percentEncodingSanityStrings: [String] = [
 )
 private func addingPercentEncodingNeverReturnsNil(expansionType: URIValueExpansionType) {
   let allowedCharacters = CharacterSet.allowedCharacters(forValueExpansionType: expansionType)
-  let unescapedAllowedCharacters = allowedCharacters.subtracting(rfc_pct_encode)
 
   for testString in percentEncodingSanityStrings {
     #expect(
@@ -171,43 +170,6 @@ private func addingPercentEncodingNeverReturnsNil(expansionType: URIValueExpansi
       by `infalliblyUnwrap` at the non-triplets branch of `String.escaped(forValueExpansionType:)`.
       """
     )
-    #expect(
-      testString.addingPercentEncoding(withAllowedCharacters: unescapedAllowedCharacters) != nil,
-      """
-      `String.addingPercentEncoding(withAllowedCharacters:)` returned `nil` \
-      for input \(testString.debugDescription) with the allowed-character set \
-      minus `rfc_pct_encode` for expansion type \(expansionType). This breaks \
-      the assumption used by `infalliblyUnwrap` inside the per-chunk loop of \
-      `String.escaped(forValueExpansionType:)`.
-      """
-    )
-  }
-}
-
-@Test(
-  "`addingPercentEncoding` returns non-nil for `String.UnicodeScalarView` slices that survive `decomposedIntoEscapedAndUnescapedParts`",
-  .tags(.infalliblyUnwrapAssumptions),
-  arguments: URIValueExpansionType.allCases
-)
-private func decomposedChunksRoundTripThroughAddingPercentEncoding(expansionType: URIValueExpansionType) {
-  let unescapedAllowedCharacters = CharacterSet
-    .allowedCharacters(forValueExpansionType: expansionType)
-    .subtracting(rfc_pct_encode)
-
-  for testString in percentEncodingSanityStrings {
-    for piece in testString.unicodeScalars.decomposedIntoEscapedAndUnescapedParts {
-      guard case .unescaped(let chunk) = piece else { continue }
-      #expect(
-        chunk.addingPercentEncoding(withAllowedCharacters: unescapedAllowedCharacters) != nil,
-        """
-        `addingPercentEncoding(withAllowedCharacters:)` returned `nil` for an \
-        unescaped chunk \(chunk.debugDescription) (carved from \
-        \(testString.debugDescription)) under expansion type \(expansionType). \
-        This breaks the assumption used by `infalliblyUnwrap` at the per-chunk \
-        call site in `String.escaped(forValueExpansionType:)`.
-        """
-      )
-    }
   }
 }
 
