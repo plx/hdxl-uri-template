@@ -268,7 +268,10 @@ and early policy decisions:
 - Land `CONF-02` after `CONF-01`, adopting and extending `CONF-12`'s temporary
   adapter into the exact nine-case complete-corpus ledger.
 - Land `QA-02` after `CONF-02`, `QA-01`, and `PKG-01` so the first required CI
-  workflow is green and protects the complete corpus.
+  workflow is green and protects the complete corpus. `QA-02` is also a native
+  blocker of epic [#6](https://github.com/plx/hdxl-uri-template/issues/6),
+  whose exit criteria require that same complete conformance gate to run in
+  CI.
 - Complete `QA-05` and `DOC-04` after the pinned fixture set is authoritative.
 
 The temporary known-failure ledger in `CONF-02` is scaffolding, not a
