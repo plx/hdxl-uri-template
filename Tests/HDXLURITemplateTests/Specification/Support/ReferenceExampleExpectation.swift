@@ -1,16 +1,30 @@
-
 enum ReferenceExampleExpectation {
   case evaluationFailure
   case exactMatch(String)
   case multiplePossibleMatches([String])
 }
 
-extension ReferenceExampleExpectation : Sendable { }
-extension ReferenceExampleExpectation : Equatable { }
-extension ReferenceExampleExpectation : Hashable { }
+extension ReferenceExampleExpectation: Sendable { }
+extension ReferenceExampleExpectation: Equatable { }
+extension ReferenceExampleExpectation: Hashable { }
+
+extension ReferenceExampleExpectation {
+
+  var diagnosticDescription: String {
+    switch self {
+    case .evaluationFailure:
+      "false (controlled parse or evaluation failure required)"
+    case .exactMatch(let expected):
+      String(reflecting: expected)
+    case .multiplePossibleMatches(let acceptableExpansions):
+      String(reflecting: acceptableExpansions)
+    }
+  }
+
+}
 
 extension ReferenceExampleExpectation: Codable {
-  
+
   func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
     switch self {
@@ -22,7 +36,7 @@ extension ReferenceExampleExpectation: Codable {
       try container.encode(matches)
     }
   }
-  
+
   init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
     if let sentinel = try? container.decode(Bool.self), sentinel == false {
@@ -40,6 +54,5 @@ extension ReferenceExampleExpectation: Codable {
       )
     }
   }
-  
-}
 
+}
