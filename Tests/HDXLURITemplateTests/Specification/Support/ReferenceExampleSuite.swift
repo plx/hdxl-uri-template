@@ -36,6 +36,15 @@ extension ReferenceExampleSuite {
     case fileNotFound(String)
   }
 
+  static func decodeSpecificationData(
+    _ data: Data
+  ) throws -> ReferenceExampleSuite {
+    try JSONDecoder.referenceExampleJSONDecoder.decode(
+      ReferenceExampleSuite.self,
+      from: data
+    )
+  }
+
   static func forSpecificationFile(
     named fileName: String
   ) throws -> ReferenceExampleSuite {
@@ -50,10 +59,7 @@ extension ReferenceExampleSuite {
 
     let data = try Data(contentsOf: url)
 
-    return try JSONDecoder.referenceExampleJSONDecoder.decode(
-      ReferenceExampleSuite.self,
-      from: data
-    )
+    return try decodeSpecificationData(data)
   }
 
   func captionedTestCases(

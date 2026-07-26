@@ -130,12 +130,6 @@ private func resolvedPinnedPrefixCaseIsAnOrdinaryPass() throws {
     allReferenceExamples().first(where: caseIdentity.matches)
   )
 
-  #expect(
-    temporaryKnownReferenceExampleFailure(
-      for: example,
-      mode: .temporaryLedger
-    ) == nil
-  )
   try verifyReferenceExampleBehavior(example)
 }
 
