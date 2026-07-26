@@ -2,6 +2,34 @@
 
 Port of (private) Objective-C implementation of URI templates.
 
+## Supported environments
+
+HDXLURITemplate declares Swift tools version 6.3 and uses Swift language mode 6.
+It supports iOS 26 or later, macOS 26 or later, tvOS 26 or later, watchOS 26 or
+later, visionOS 26 or later, and Mac Catalyst 26 or later.
+
+Older Swift toolchains, older Apple OS releases, and non-Apple platforms,
+including Linux, are intentionally unsupported. This deliberately narrow floor
+is the package's maintained compatibility contract.
+
+## Build and test
+
+Select an Xcode installation containing Apple Swift 6.3 through
+`DEVELOPER_DIR`, then resolve, inspect, build, and test the package with that
+toolchain:
+
+```sh
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+xcrun swift package resolve
+xcrun swift package dump-package
+xcrun swift build -c debug
+xcrun swift test -c debug
+xcrun swift build -c release
+xcrun swift test -c release
+```
+
+The repository's `just` recipes use the same `DEVELOPER_DIR`/`xcrun` selection.
+
 ## Codable representation
 
 `URITemplate` encodes as one string containing its exact, validated
