@@ -53,7 +53,7 @@ extension URITemplate {
       for component in storage.components {
         switch component {
         case .literal(let literal):
-          result.append(contentsOf: literal.rawValue)
+          result.append(contentsOf: literal.expansionRepresentation)
         case .expression(let expression):
           result.append(contentsOf: try expression.evaluate(parameters: parameters))
         }
