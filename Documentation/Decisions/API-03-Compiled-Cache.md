@@ -1,6 +1,6 @@
 # API-03 compiled-cache decision
 
-Status: default decision recorded before final measurement.
+Status: final decision; the predeclared no-cache default is retained.
 
 ## Default
 
@@ -59,4 +59,28 @@ shippable.
 
 ## Final result
 
-Pending reproducible Release measurements on the final post-restack commit.
+Do not open a follow-up compiled-cache design issue.
+
+The accepted clean Release run measured commit
+`d4434e2ab7114168e0508f8d9ee2a9a9c2611ef9` under Xcode 26.6/Swift 6.3.3.
+The complete raw evidence and environment record are retained in
+[`../Benchmarks/Data/API-03/`](../Benchmarks/Data/API-03/). The frozen
+thresholds resolve as follows:
+
+| Criterion | Accepted evidence | Result |
+| --- | --- | --- |
+| Correctness, corruption, versioning, source correspondence, and fallback | The pre-timing gate passed all 234 positive pinned cases, all generated-corpus checks, all nine rejection lanes, and exact fixture pins. The post-run evidence validators also passed. | Passes the prerequisite |
+| At least 2× lower confidence bound at 1,000 and 10,000 templates | Warm direct/cache speedup was 0.267× [0.265, 0.267] and 0.266× [0.266, 0.268]. Fresh-process speedup was 0.310× [0.306, 0.312] and 0.281× [0.280, 0.283]. Values below 1 mean the cache was slower. | Fails |
+| Benefit in both warm and fresh modes | The prototype was about 3.2–3.8 times slower than direct parsing in the four realistic balanced comparisons. Repeated/unique sensitivity collections agreed. | Fails |
+| Direct reparse exceeds the approximately 10 ms 1,000-template budget and cache saves meaningful time | Direct reparsing took 4.907 ms warm and 6.546 ms in the fresh child. Fresh launch-to-exit was 15.888 ms only after including fixed process startup; the cache increased it to 30.585 ms. | Fails |
+| Acceptable size, memory, fallback, and complexity | The sidecar plus source was 3.73×/4.18× the direct input size at 1,000/10,000 templates. At 10,000, median maximum RSS rose 47.8% and peak footprint 63.5%. Most rejection lanes paid validation plus reparse. The cache core alone is 1,383 physical Swift lines. | Fails |
+
+The sole positive finding is that the versioned, integrity-protected prototype
+can reject every modeled invalid sidecar and recover by parsing the separately
+retained source. That demonstrates the required safety boundary, not a
+performance case for shipping it.
+
+API-02's exact validated source remains the only durable template
+representation. Direct parsing remains the implementation default. The
+benchmark prototype stays outside `Sources/HDXLURITemplate` and outside the
+package's public products; it must not be promoted into production code.

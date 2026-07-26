@@ -1,6 +1,7 @@
 # API-03: reparsing and compiled-cache benchmark
 
-Status: protocol frozen before final measurement; results pending.
+Status: final clean Release measurement accepted; no compiled cache
+recommended.
 
 ## Research question
 
@@ -213,10 +214,152 @@ for the production library, benchmark support, and runner are retained in
 stable placeholders, and both files' SHA-256 values are recorded in the
 environment file.
 
+## Final measurement
+
+The accepted run measured clean commit
+`d4434e2ab7114168e0508f8d9ee2a9a9c2611ef9` from
+`2026-07-26T18:46:52Z` through `2026-07-26T19:09:22Z`. It used Xcode 26.6
+build `17F113`, Apple Swift 6.3.3, and the Release configuration on an Apple
+M4 Max Mac with 16 physical/logical cores and 64 GiB of memory. The host was
+on AC power with no recorded thermal or performance warning. The actual
+runtime was macOS 27.0 build `26A5378n`; this is not a macOS 26 runtime
+result.
+
+The pre-timing correctness and fixture gate passed. Post-run validation
+accepted exactly 1,620 warm, 1,620 fresh-process, and 1,620 memory records
+covering all 54 frozen configurations, plus all 108 summary rows and three
+Release compiler invocations. The largest relative MAD was 1.1677% for warm
+evidence and 4.3572% for fresh-process evidence, below the frozen 5% and 10%
+rerun thresholds. No sample was deleted.
+
+The following values are milliseconds per operation. Parenthesized values are
+nearest-rank p95. A direct-parse speedup below 1 means the prototype sidecar is
+slower than direct parsing.
+
+| Mode | Templates | Direct parse | Semantic JSON | Binary plist | Prototype cache | Direct/cache speedup, 95% CI |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Warm | 1,000 | 4.907 (4.969) | 5.166 | 5.682 | 18.406 (18.719) | 0.267× [0.265, 0.267] |
+| Fresh process | 1,000 | 6.546 (6.739) | 6.584 | 7.189 | 21.143 (21.551) | 0.310× [0.306, 0.312] |
+| Warm | 10,000 | 49.201 (49.963) | 51.819 | 56.804 | 184.718 (187.326) | 0.266× [0.266, 0.268] |
+| Fresh process | 10,000 | 54.900 (55.887) | 55.740 | 60.948 | 195.255 (273.151) | 0.281× [0.280, 0.283] |
+
+The optimistic prototype hit was therefore about 3.2–3.8 times slower than
+direct parsing for the realistic balanced collections. Fresh launch-to-exit
+medians tell the same story: 15.888 ms direct versus 30.585 ms prototype at
+1,000 templates, and 64.651 ms versus 205.063 ms at 10,000. The 1,000-template
+direct reparse itself remained below the approximately 10 ms consumer budget
+in both modes. Although fixed child-process startup raises the full fresh
+launch above 10 ms, the sidecar increases rather than reduces that total.
+
+The all-repeated and all-unique 1,000/10,000 sensitivity collections did not
+reveal a favorable cache case. Their warm cache speedups were 0.266–0.267× and
+their fresh-process speedups were 0.283–0.311×. The all-unique 10,000 warm
+interval has an unusually low 0.096× lower bound because one of only five
+top-level worker clusters was slow; the predeclared hierarchical interval is
+intentionally coarse and was not replaced. Its median still agrees with every
+other realistic collection and it cannot support a positive cache claim.
+
+The smallest fresh-process microcases do not change that conclusion. At one
+template, the prototype's internal operation timer was 3.409× faster but saved
+only 0.698 ms, and launch-to-exit speedup was 1.079×. At ten templates,
+operation speedup was 1.937× [1.887, 1.974], below the 2× threshold, with only
+1.060× launch speedup. The cache was slower for both warmed microcases and for
+every balanced collection from 100 templates upward.
+
+The confidence intervals describe one prewarmed host and do not quantify
+cross-machine or cold-disk variation. That limitation cannot reverse this
+negative decision: the predeclared balanced-size intervals are narrow and
+entirely below 1×.
+
+### Size and peak memory
+
+At 1,000 templates the sidecar plus authoritative source occupied 282,484
+bytes versus 75,701 bytes for direct/semantic JSON, or 3.73× as much. At
+10,000 templates it occupied 3,166,503 bytes versus 757,001 bytes, or 4.18× as
+much.
+
+The following `/usr/bin/time -lp` results are MiB. Each cell is median (p95)
+across the 30 fresh-process samples paired with the latency evidence.
+
+| Templates | Operation | Maximum RSS | Peak memory footprint |
+| ---: | --- | ---: | ---: |
+| 1,000 | Direct parse | 9.24 (9.39) | 4.34 (4.48) |
+| 1,000 | Prototype cache | 9.80 (10.03) | 5.06 (5.28) |
+| 10,000 | Direct parse | 20.85 (21.25) | 15.95 (16.34) |
+| 10,000 | Prototype cache | 30.82 (32.41) | 26.07 (27.67) |
+
+Against direct parsing, the prototype's median RSS and peak footprint rose by
+6.1% and 16.6% at 1,000 templates, then by 47.8% and 63.5% at 10,000. These
+figures are process-level peaks, not allocation attribution; instrumented
+allocation diagnostics are reported separately below and are excluded from
+latency evidence.
+
+### Rejection and fallback
+
+All nine rejection lanes produced their pinned controlled outcomes and the
+same final public parse result. The truncated lane rejected before full
+sidecar validation and remained near direct parsing: 5.073/6.777 ms warm/fresh
+at 1,000 templates and 50.878/56.595 ms at 10,000. The other lanes paid both
+validation and reparse costs. Their warm medians ranged from 18.420 to 22.498
+ms at 1,000 and 183.339 to 224.857 ms at 10,000; fresh medians ranged from
+21.985 to 26.348 ms and 195.231 to 237.188 ms, respectively. Fallback is
+correct and deterministic, but it is not a performance advantage.
+
+### Allocation diagnostic attempt
+
+An Allocations trace could not be collected on this host. An exact
+`git archive` of measured commit `d4434e2` was built in an external scratch
+directory with Xcode 26.6/Swift 6.3.3. The source-equivalent diagnostic binary
+was 1,622,176 bytes with SHA-256
+`2542644d40099a69e2ef88d91d826f205012e6489b1bd86a0c389fa216ddb8dc`.
+After preparing the full deterministic inputs, the direct balanced-10,000
+diagnostic was launched with the following sanitized command:
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app xcrun xctrace record \
+  --template Allocations \
+  --output <TRACE> \
+  --target-stdout <TARGET_OUTPUT> \
+  --no-prompt --launch -- \
+  <BINARY> single-shot \
+  --directory <INPUTS> \
+  --workload balanced-10000 \
+  --operation direct-parse \
+  --commit d4434e2ab7114168e0508f8d9ee2a9a9c2611ef9 \
+  --process-index 0 --sample-index 0
+```
+
+The recorder printed its launch message but left the child stopped before
+user code, emitted no target output, and never finalized the trace. A bounded
+retry added `--time-limit 10s` and used process index 1, but it remained stuck
+beyond that limit in the same state. Both incomplete bundles failed:
+
+```sh
+DEVELOPER_DIR=/Applications/Xcode.app xcrun xctrace export \
+  --input <TRACE> --toc
+```
+
+The export exited 10 with `Export failed: Document Missing Template Error`.
+The unbounded and bounded partial 48,128-byte tar archives had SHA-256 values
+`9ca7c7a678a1a9b1d49926dd7fb018c78c233702e3ca38781593d6bd88101e10`
+and
+`ebac40f9da36c877ea649a62cf23e82a11f6e2dad0d425152df3acfe4b8251fd`,
+respectively. They contain no usable template, allocation table, or target
+measurement and are not accepted or checked in as evidence. Prototype-cache
+tracing was not attempted after the repeated infrastructure-level startup
+failure.
+
+No allocation-count or allocated-byte claim is made. The decision rests on
+the successful uninstrumented latency evidence and paired `/usr/bin/time -lp`
+RSS/peak-footprint evidence. Missing allocation attribution limits diagnostic
+detail but cannot turn the measured cache regression into a positive result.
+
 ## Interpretation
 
 The decision thresholds were fixed before observing final samples and are
 recorded in
 [`../Decisions/API-03-Compiled-Cache.md`](../Decisions/API-03-Compiled-Cache.md).
-Only validated end-to-end results count toward a positive decision. An
-optimistic prototype-only speedup is insufficient.
+Only validated end-to-end results count toward a positive decision. The
+prototype failed the speed, startup-budget, encoded-size, peak-memory, and
+complexity criteria. The default remains direct parsing of API-02's exact
+validated source, and no follow-up compiled-cache design issue is justified.
