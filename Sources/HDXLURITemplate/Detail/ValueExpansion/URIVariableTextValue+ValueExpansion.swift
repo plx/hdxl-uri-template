@@ -88,11 +88,17 @@ extension URIVariableTextValue {
     pedanticAssert(expansionModifier.isValid)
     pedanticAssert(isValid)
 #endif
-    return effectiveVariableValue(
-      forExpansionModifier: expansionModifier
-    ).escaped(
-      forValueExpansionType: expansionType
-    )
+    return switch expansionModifier {
+    case .unmodified, .explode:
+      rawValue.escaped(
+        forValueExpansionType: expansionType
+      )
+    case .prefix(let codePointCount):
+      rawValue.escaped(
+        forValueExpansionType: expansionType,
+        maximumDecodedCodePointCount: codePointCount
+      )
+    }
   }
   
   @inlinable
@@ -110,7 +116,7 @@ extension URIVariableTextValue {
       rawValue
     case .prefix(let codePointCount):
       rawValue.constrained(
-        toCodePointCount: codePointCount
+        toDecodedURIValueCodePointCount: codePointCount
       )
     }
   }

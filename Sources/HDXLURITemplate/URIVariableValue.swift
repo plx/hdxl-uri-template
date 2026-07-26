@@ -73,6 +73,14 @@ public struct URIVariableValue {
     
 
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `text`.
+  ///
+  /// During prefix expansion, a well-formed percent-encoded UTF-8 scalar
+  /// counts as one Unicode code point and retains its original triplet
+  /// spelling for reserved and fragment expansion. A syntactically-valid
+  /// `%HH` triplet that is not part of well-formed UTF-8 is treated as one
+  /// opaque prefix-counting unit; this is the library's deterministic fallback
+  /// for malformed encoded input. A percent sign outside `%HH` is ordinary text
+  /// and is escaped as `%25`.
   @inlinable
   public static func text(_ text: String) -> Self {
     Self(
