@@ -44,10 +44,10 @@ extension URITemplate {
     // error surfaced while expanding a component is re-thrown as an
     // `EvaluationError` carrying the template and parameters, so callers get
     // a uniform error type with diagnostic context (see `SpecificationTests`'
-    // `.evaluationFailure` expectation). The escape/expansion simplification
-    // currently leaves the expansion pipeline non-throwing in practice, so
-    // this is a defensive boundary that preserves the contract should any
-    // downstream step regain a throwing path.
+    // `.evaluationFailure` expectation). Composite values with prefix
+    // modifiers are one controlled downstream failure surfaced here.
+    // That failure is rejected after both the modifier and runtime value
+    // flavor are known.
     do {
       var result: String = ""
       for component in storage.components {

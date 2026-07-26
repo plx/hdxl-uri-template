@@ -123,45 +123,18 @@ struct TemporaryKnownReferenceExampleFailure: Sendable {
 }
 
 let temporaryKnownReferenceExampleFailures:
-  [TemporaryKnownReferenceExampleFailure] = [
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
-        source: "negative-tests",
-        caption: "Failure Tests",
-        template: "{keys:1}",
-        expectation: .evaluationFailure
-      ),
-      backlogIdentifier: "CONF-09",
-      issueNumber: 33,
-      expectedIssueKind: .expectedFailureUnexpectedSuccess(
-        parsedTemplateRepresentation: "{keys:1}",
-        observedExpansion: "comma,%2C,dot,.,semi,%3B"
-      )
-    ),
-    TemporaryKnownReferenceExampleFailure(
-      caseIdentity: ReferenceExampleCaseIdentity(
-        source: "negative-tests",
-        caption: "Failure Tests",
-        template: "{+keys:1}",
-        expectation: .evaluationFailure
-      ),
-      backlogIdentifier: "CONF-09",
-      issueNumber: 33,
-      expectedIssueKind: .expectedFailureUnexpectedSuccess(
-        parsedTemplateRepresentation: "{+keys:1}",
-        observedExpansion: "comma,,,dot,.,semi,;"
-      )
-    )
-  ]
+  [TemporaryKnownReferenceExampleFailure] = []
 
 func temporaryKnownReferenceExampleFailure(
   for example: CaptionedTestCase,
-  mode: ReferenceExampleKnownFailureMode
+  mode: ReferenceExampleKnownFailureMode,
+  entries: [TemporaryKnownReferenceExampleFailure]
+    = temporaryKnownReferenceExampleFailures
 ) -> TemporaryKnownReferenceExampleFailure? {
   guard mode == .temporaryLedger else {
     return nil
   }
-  return temporaryKnownReferenceExampleFailures.first {
+  return entries.first {
     $0.matches(example)
   }
 }
@@ -169,13 +142,16 @@ func temporaryKnownReferenceExampleFailure(
 func withTemporaryKnownReferenceExampleFailure(
   for example: CaptionedTestCase,
   mode: ReferenceExampleKnownFailureMode,
+  entries: [TemporaryKnownReferenceExampleFailure]
+    = temporaryKnownReferenceExampleFailures,
   sourceLocation: Testing.SourceLocation = #_sourceLocation,
   _ body: () throws -> Void
 ) rethrows {
   guard
     let knownFailure = temporaryKnownReferenceExampleFailure(
       for: example,
-      mode: mode
+      mode: mode,
+      entries: entries
     )
   else {
     try body()

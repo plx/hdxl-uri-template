@@ -26,36 +26,7 @@ struct FailureSignature: Hashable {
   }
 }
 
-let expectedFailureSignatures: Set<FailureSignature> = [
-  FailureSignature(
-    caseIdentity: ReferenceExampleCaseIdentity(
-      source: "negative-tests",
-      caption: "Failure Tests",
-      template: "{keys:1}",
-      expectation: .evaluationFailure
-    ),
-    backlogIdentifier: "CONF-09",
-    issueNumber: 33,
-    expectedIssueKind: .expectedFailureUnexpectedSuccess(
-      parsedTemplateRepresentation: "{keys:1}",
-      observedExpansion: "comma,%2C,dot,.,semi,%3B"
-    )
-  ),
-  FailureSignature(
-    caseIdentity: ReferenceExampleCaseIdentity(
-      source: "negative-tests",
-      caption: "Failure Tests",
-      template: "{+keys:1}",
-      expectation: .evaluationFailure
-    ),
-    backlogIdentifier: "CONF-09",
-    issueNumber: 33,
-    expectedIssueKind: .expectedFailureUnexpectedSuccess(
-      parsedTemplateRepresentation: "{+keys:1}",
-      observedExpansion: "comma,,,dot,.,semi,;"
-    )
-  )
-]
+let expectedFailureSignatures: Set<FailureSignature> = []
 
 let resolvedCONF06CaseIdentities = [
   ReferenceExampleCaseIdentity(
