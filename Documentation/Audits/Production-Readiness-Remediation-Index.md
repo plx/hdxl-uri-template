@@ -199,6 +199,7 @@ feature implementation.
 | `API-07` | [#51 — Add read-only Swift payload inspection for variable values](https://github.com/plx/hdxl-uri-template/issues/51) | P2 task |
 | `API-08` | [#52 — Decide and document the Objective-C support policy](https://github.com/plx/hdxl-uri-template/issues/52) | P1 decision |
 | `API-09` | [#53 — Complete safe Objective-C parsing, evaluation, and error APIs if retained](https://github.com/plx/hdxl-uri-template/issues/53) | P1 task |
+| `API-10` | [#81 — Remove the unsupported Objective-C facade before the initial 0.x contract](https://github.com/plx/hdxl-uri-template/issues/81) | P1 task |
 
 ### Architecture and maintainability
 
@@ -365,8 +366,9 @@ If Objective-C support is retained:
 
 If Objective-C support is removed:
 
+- merge the nonclosing `API-08` decision record, then complete `API-10`;
 - close `API-09` using the native not-planned/superseded disposition and link
-  the removal decision;
+  the removal decision and implementation evidence;
 - remove the wrappers, misleading support claims, and Objective-C-specific
   archive surface before the public contract is declared;
 - keep `QA-04` as a public Swift consumer fixture and mark only the `.m`
