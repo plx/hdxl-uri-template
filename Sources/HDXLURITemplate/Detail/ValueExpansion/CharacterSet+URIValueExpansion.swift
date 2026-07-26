@@ -144,7 +144,7 @@ internal let rfc_gen_delims:CharacterSet = CharacterSet(
 @usableFromInline
 internal let rfc_sub_delims:CharacterSet = CharacterSet(
   charactersIn: [
-    "!$^'()",
+    "!$&'()",
     "*+,;="
   ].joined(separator: "")
 )
