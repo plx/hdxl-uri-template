@@ -1,26 +1,34 @@
 import Testing
 @testable import HDXLURITemplate
 
+let referenceExampleSuiteNames = [
+  "spec-examples",
+  "spec-examples-by-section",
+  "extended-tests",
+  "negative-tests"
+]
+
 func allReferenceExamples(
   function: StaticString = #function,
   file: StaticString = #file,
   line: UInt = #line
-) -> some Sendable & Collection<CaptionedTestCase> {
+) -> [CaptionedTestCase] {
   do {
-    return try [
-      "spec-examples",
-      "extended-tests"
-    ].lazy.flatMap { filename in
-      try ReferenceExampleSuite.forSpecificationFile(
+    var result: [CaptionedTestCase] = []
+    for filename in referenceExampleSuiteNames {
+      let suite = try ReferenceExampleSuite.forSpecificationFile(
         named: filename
-      ).captionedTestCases(source: filename)
+      )
+      result.append(
+        contentsOf: suite.captionedTestCases(source: filename)
+      )
     }
-  }
-  catch let error {
+    return result
+  } catch let error {
     fatalError(
       """
       Unable to load built-in test examples b/c \(String(reflecting: error))!
-      
+
       - function: \(function)
       - file: \(file)
       - line: \(line)
@@ -30,4 +38,3 @@ func allReferenceExamples(
     )
   }
 }
-
