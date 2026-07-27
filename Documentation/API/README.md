@@ -34,10 +34,10 @@ executable README examples to exactly match compiled fixture sources. The
 DocC catalog contributes four more synchronized external-consumer examples.
 DocC conversion treats diagnostics and unresolved links as errors, validates
 parameter and return documentation, and requires an abstract for every
-supported public symbol. `just test-check-docc` proves that the gate rejects
-example drift, an unresolved link, and a deliberately invalid public API
-example. The Debug job in Core CI runs the complete boundary, documentation,
-and failure-detector checks.
+supported public symbol and conceptual page. `just test-check-docc` proves that
+the gate rejects example drift, an unresolved link, a missing article abstract,
+and a deliberately invalid public API example. The Debug job in Core CI runs
+the complete boundary, documentation, and failure-detector checks.
 
 The contract also inspects every `HDXLURITemplate-Swift.h` that the compiler
 emits and rejects the removed Objective-C wrapper classes and enum. It requires

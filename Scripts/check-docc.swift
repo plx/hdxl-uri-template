@@ -155,6 +155,48 @@ private func validateCompiledExamples(
   return blocks.count
 }
 
+private func validatePageAbstracts(catalog: URL) throws -> Int {
+  let files = try markdownFiles(beneath: catalog)
+  var violations: [String] = []
+
+  for file in files {
+    let lines = try String(contentsOf: file, encoding: .utf8)
+      .split(separator: "\n", omittingEmptySubsequences: false)
+    guard
+      let titleIndex = lines.firstIndex(where: {
+        !$0.trimmingCharacters(in: .whitespaces).isEmpty
+      }),
+      lines[titleIndex].hasPrefix("# ")
+    else {
+      violations.append(
+        "DocC page must begin with a level-one title: \(file.path)"
+      )
+      continue
+    }
+
+    let firstContent =
+      lines[(titleIndex + 1)...].first(where: {
+        !$0.trimmingCharacters(in: .whitespaces).isEmpty
+      })
+    guard
+      let firstContent,
+      !firstContent.hasPrefix("#"),
+      !firstContent.hasPrefix("@"),
+      !firstContent.hasPrefix("```")
+    else {
+      violations.append(
+        "DocC page title must be followed by a prose abstract: \(file.path)"
+      )
+      continue
+    }
+  }
+
+  guard violations.isEmpty else {
+    throw DocCCheckError.documentationViolations(violations)
+  }
+  return files.count
+}
+
 private func symbolGraph(
   beneath directory: URL
 ) throws -> URL {
@@ -243,6 +285,7 @@ private func main() throws {
     try? FileManager.default.removeItem(at: scratchDirectory)
   }
 
+  let pageCount = try validatePageAbstracts(catalog: catalog)
   let exampleCount = try validateCompiledExamples(
     catalog: catalog,
     consumerSourceDirectory: consumerSourceDirectory
@@ -329,7 +372,7 @@ private func main() throws {
 
   print(
     "DocC contract passed for \(publicSymbols.count) public symbols, "
-      + "\(coverage.count - publicSymbols.count) conceptual/catalog pages, "
+      + "\(pageCount) authored catalog pages, "
       + "and \(exampleCount) synchronized compiled examples."
   )
 }

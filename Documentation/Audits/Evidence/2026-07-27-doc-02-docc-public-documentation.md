@@ -51,15 +51,17 @@ promising internal parser or value-storage representation.
 
 `Scripts/check-docc.swift` enforces the catalog from a fresh temporary build:
 
-1. exactly six Swift code blocks must each match one external-consumer source
+1. every authored catalog page must begin with a level-one title followed by a
+   prose abstract;
+2. exactly six Swift code blocks must each match one external-consumer source
    file byte-for-byte;
-2. the package is built with tests before SwiftPM emits a public-only symbol
+3. the package is built with tests before SwiftPM emits a public-only symbol
    graph for `HDXLURITemplate`;
-3. only that library graph is supplied to DocC;
-4. DocC runs with diagnostics as errors, analysis, inherited documentation,
+4. only that library graph is supplied to DocC;
+5. DocC runs with diagnostics as errors, analysis, inherited documentation,
    parameter/return validation, documentation coverage, and GitHub source
    links; and
-5. every symbol or module entry in `documentation-coverage.json` must have an
+6. every symbol or module entry in `documentation-coverage.json` must have an
    abstract.
 
 The six examples comprise the two existing README examples plus four DocC
@@ -78,15 +80,17 @@ The implementation revision produced this coverage:
 
 The 94 DocC coverage entries represent all 93 supported public declarations
 plus the documented module landing page. The conversion emitted no warnings,
-link failures, or other diagnostics.
+link failures, or other diagnostics. The separate authored-page check covers
+all ten catalog Markdown pages, including the seven conceptual guides.
 
 ## Failure-oriented detector
 
 `Scripts/test-check-docc.sh` first accepts the clean catalog, then proves that
-the checks fail for three temporary mutations:
+the checks fail for four temporary mutations:
 
 - a DocC code block that no longer matches its compiled source;
 - a landing-page topic reference to a nonexistent article; and
+- a conceptual article with its abstract removed; and
 - an external-consumer example calling a nonexistent public API.
 
 The mutations and builds stay in validated temporary directories and do not
@@ -113,7 +117,7 @@ Results:
   Objective-C-header absence surfaces;
 - the DocC gate synchronized all six compiled examples and documented every
   supported declaration without warnings or unresolved links;
-- all three deliberately broken documentation/consumer controls were rejected;
+- all four deliberately broken documentation/consumer controls were rejected;
 - Debug passed 204 tests;
 - `HEAVY_DEBUG` and Release each passed 205 tests;
 - the complete pinned conformance runner passed all 270 cases in every lane;

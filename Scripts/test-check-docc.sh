@@ -78,6 +78,26 @@ fi
   'Missing-Article' \
   "$scratch/link-output.txt" >/dev/null
 
+missing_abstract_catalog="$scratch/HDXLURITemplate-missing-abstract.docc"
+/bin/cp -R "$catalog_source" "$missing_abstract_catalog"
+/usr/bin/sed \
+  -i '' \
+  '/^Validate URI-template source/,/^$/d' \
+  "$missing_abstract_catalog/Parsing-Templates.md"
+
+if HDXL_DOCC_CATALOG_PATH="$missing_abstract_catalog" \
+  xcrun swift "$checker" \
+  >"$scratch/abstract-output.txt" \
+  2>&1
+then
+  /usr/bin/printf '%s\n' \
+    'error: the DocC gate accepted an article without an abstract' >&2
+  exit 1
+fi
+/usr/bin/grep -F \
+  'DocC page title must be followed by a prose abstract' \
+  "$scratch/abstract-output.txt" >/dev/null
+
 invalid_consumer="$scratch/invalid-consumer"
 /bin/cp -R "$consumer_source" "$invalid_consumer"
 /usr/bin/sed \
@@ -106,4 +126,4 @@ fi
   "$scratch/consumer-output.txt" >/dev/null
 
 /usr/bin/printf '%s\n' \
-  'DocC detector accepted clean documentation and rejected example drift, a broken link, and an invalid public API example.'
+  'DocC detector accepted clean documentation and rejected example drift, a broken link, a missing article abstract, and an invalid public API example.'
