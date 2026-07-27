@@ -245,7 +245,7 @@ feature implementation.
 | `DOC-03` | [#41 — Add contribution, security, changelog, and release-process documentation](https://github.com/plx/hdxl-uri-template/issues/41) | P1 task |
 | `DOC-04` | [#42 — Add third-party notices and standards-derived-code attribution](https://github.com/plx/hdxl-uri-template/issues/42) | P0 task |
 | `DOC-05` | [#17 — Confirm publication rights and provenance for the recreated implementation](https://github.com/plx/hdxl-uri-template/issues/17) | P0 decision |
-| `DOC-06` | [#43 — Prepare the first 0.x release candidate and compatibility policy](https://github.com/plx/hdxl-uri-template/issues/43) | P0 task |
+| [`DOC-06`](../Release/0.1.0-Candidate.md) | [#43 — Prepare the first 0.x release candidate and compatibility policy](https://github.com/plx/hdxl-uri-template/issues/43) | P0 task |
 | `AUDIT-01` | [#44 — Execute the independent post-remediation production-readiness audit](https://github.com/plx/hdxl-uri-template/issues/44) | P0 task |
 
 ## Dependency-respecting burn-down
