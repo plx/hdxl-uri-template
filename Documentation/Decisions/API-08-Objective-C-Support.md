@@ -1,7 +1,6 @@
 # API-08 Objective-C support decision
 
-Status: approved on July 26, 2026; removal implementation is required before
-the decision is final.
+Status: final on July 26, 2026.
 
 Approver: repository maintainer.
 
@@ -18,10 +17,8 @@ of `HDXLURIVariableValueType`, their wrapper-only coding and archive surfaces,
 and their Objective-C-specific tests before the initial public contract is
 declared.
 
-This record does not by itself complete API-08. Dedicated removal issue
-[#81](https://github.com/plx/hdxl-uri-template/issues/81) must land, the
-conditional facade issue must receive its authorized disposition, and the
-repository must then record final evidence before #52 closes.
+The decision and its removal contract are complete. The final evidence below
+records the implementation, validation, and authorized downstream disposition.
 
 ## Evidence reviewed
 
@@ -29,7 +26,7 @@ The decision considered the generated Xcode 26.6 / Swift 6.3.3 interface,
 production wrappers, package targets, Swift and Objective-C tests, repository
 history, compatibility implications, and the cost of both supported outcomes.
 
-The current generated interface exposes three Objective-C symbols:
+At decision time, the generated interface exposed three Objective-C symbols:
 
 - `HDXLURITemplate`, with parsing, representation, variable-name, copying, and
   secure-coding operations;
@@ -37,53 +34,55 @@ The current generated interface exposes three Objective-C symbols:
   enumeration, copying, and secure-coding operations; and
 - `HDXLURIVariableValueType`, as a closed `uint8_t` enum.
 
-That surface is not a usable facade for the package's core operation:
+That surface was not a usable facade for the package's core operation:
 
-- `HDXLURITemplate` has no expansion or evaluation API;
-- `initWithURITemplate:` returns `nil` through `try?` and discards the parse
+- `HDXLURITemplate` had no expansion or evaluation API;
+- `initWithURITemplate:` returned `nil` through `try?` and discarded the parse
   failure;
-- the dictionary initializer calls a comparator block `sortDescriptor:`;
-- ordered associations lose their ordering when projected to `NSDictionary`;
-- nullability and callback-pointer safety depend on Objective-C callers
+- the dictionary initializer called a comparator block `sortDescriptor:`;
+- ordered associations lost their ordering when projected to `NSDictionary`;
+- nullability and callback-pointer safety depended on Objective-C callers
   honoring the generated Swift bridge contract; and
-- secure archives delegate to private Swift `Codable` schemas whose
-  compatibility is not an intentional public contract.
+- secure archives delegated to private Swift `Codable` schemas whose
+  compatibility was not an intentional public contract.
 
-The two wrapper source files contain 438 physical lines. Supporting them would
-also require a permanent second public contract for selectors, nullability,
-Foundation collections, `NSError`, copying, secure coding, archive migration,
-and Swift/Clang agreement across future semantic changes.
+The two wrapper source files contained 438 physical lines. Supporting them
+would also have required a permanent second public contract for selectors,
+nullability, Foundation collections, `NSError`, copying, secure coding, archive
+migration, and Swift/Clang agreement across future semantic changes.
 
-The repository identifies no actual or committed Objective-C consumer. The
-project's origin as a recreation of private Objective-C work is provenance, not
-evidence of current demand.
+The repository identified no actual or committed Objective-C consumer. The
+project's origin as a recreation of private Objective-C work was provenance,
+not evidence of current demand.
 
-A real `.m` test fixture now exists, so the earlier absolute claim that there
-is no Objective-C caller is stale. The fixture covers association construction,
-enumeration, ordering, copying, and secure-coding round trips. It does not parse
-or expand a template and therefore is not a real core-operation consumer.
+A real `.m` test fixture existed during the decision review, so the earlier
+absolute claim that there was no Objective-C caller was stale. The fixture
+covered association construction, enumeration, ordering, copying, and
+secure-coding round trips. It did not parse or expand a template and therefore
+was not a real core-operation consumer. API-10 removed that fixture with the
+unsupported facade.
 
 ## Rationale and tradeoff
 
-Removing the incomplete facade before the first release produces one coherent,
-fully usable Swift contract. It avoids implying support for a bridge that
-cannot perform expansion and avoids freezing accidental selectors and archive
-schemas.
+Removing the incomplete facade before the first release produced one coherent,
+fully usable Swift contract. It avoided implying support for a bridge that
+could not perform expansion and avoided freezing accidental selectors and
+archive schemas.
 
-Retaining the facade was a defensible alternative because the package is
-Apple-only, its core Swift API is small, the wrapper code already exists, and a
-SwiftPM Objective-C test target now builds. Retention would become preferable
-if a named current or committed consumer required it. No such consumer or
+Retaining the facade was a defensible alternative because the package was
+Apple-only, its core Swift API was small, the wrapper code already existed, and
+a SwiftPM Objective-C test target built. Retention would have become preferable
+if a named current or committed consumer had required it. No such consumer or
 compatibility horizon was identified.
 
-Removal can inconvenience an unrecorded private Objective-C caller and can make
-existing wrapper archives unreadable once the wrappers disappear. That cost is
-accepted for the pre-release contract. The package does not promise migration
-of wrapper objects or archives.
+Removal may inconvenience an unrecorded private Objective-C caller and may make
+previously created wrapper archives unreadable now that the wrappers are
+absent. That cost remains accepted for the pre-release contract. The package
+does not promise migration of wrapper objects or archives.
 
 ## Removal contract
 
-Issue #81 owns one complete, reviewable removal:
+Issue #81 was scoped to own one complete, reviewable removal:
 
 - delete the two public wrapper classes;
 - remove Objective-C exposure from the value-type enum while preserving the
@@ -97,10 +96,11 @@ Issue #81 owns one complete, reviewable removal:
 - make README, DocC, package claims, tests, and audit scope agree that
   Objective-C is unsupported.
 
-The removal issue is a native child of epic #8 and a native blocker of #52. It
-is deliberately not blocked by still-open #52; the merged nonclosing decision
-record is its contract prerequisite, and a reverse native dependency would
-create a cycle.
+The removal issue is a native child of epic #8. Its native blocker relationship
+to #52 records the now-satisfied implementation prerequisite. While open, it
+was deliberately not blocked by then-open #52; the merged nonclosing decision
+record was its contract prerequisite, and a reverse native dependency would
+have created a cycle.
 
 ## Compatibility and migration
 
@@ -115,20 +115,45 @@ rather than depending on this package to expose a general Objective-C facade.
 Persist semantic template strings and application-owned value data instead of
 wrapper archives.
 
-## Downstream disposition
+## Final evidence
 
-After complete removal evidence merges:
+The Swift-only decision record merged in
+[PR #82](https://github.com/plx/hdxl-uri-template/pull/82), with explicit
+maintainer approval recorded below. Dedicated removal
+[issue #81](https://github.com/plx/hdxl-uri-template/issues/81) closed through
+[PR #85](https://github.com/plx/hdxl-uri-template/pull/85), merged as
+`51f06ea3d2fcb6e9ec478d53fa49af3df92d587a`.
 
-1. close conditional facade issue
-   [#53](https://github.com/plx/hdxl-uri-template/issues/53) with GitHub's native
-   `not_planned` reason and links to this decision and the removal PR;
-2. keep public-consumer issue
-   [#22](https://github.com/plx/hdxl-uri-template/issues/22) mandatory for a
-   real Swift consumer while recording its `.m` portion as not applicable;
-3. require README, DocC, release-candidate, and audit work to state explicitly
-   that Objective-C is unsupported; and
-4. close #52 only through a final evidence PR proving the decision and removal
-   acceptance criteria.
+That removal:
+
+- deleted both public wrapper classes, the Objective-C enum exposure, their
+  wrapper-only coding and archive surfaces, the interop package target, the
+  `.m` fixture, and wrapper-only tests;
+- preserved the native Swift association invariants and their tests;
+- made the README, CHANGELOG, DocC comments, package manifest, API inventory,
+  tests, and audit documentation agree on a Swift-only contract;
+- added a public-API validation gate that requires exactly the package and
+  external-consumer generated Swift headers and rejects all three former
+  Objective-C symbols in every header; and
+- passed the full Debug, heavy Debug, and Release suites with Xcode 26.6 /
+  Swift 6.3.3 and Xcode 27.0 beta / Swift 6.4, plus hosted heavy-Debug and
+  automated review checks on the exact merged head.
+
+Conditional facade
+[issue #53](https://github.com/plx/hdxl-uri-template/issues/53) then received
+the approved implementation links and rationale and closed with GitHub's native
+`not_planned` reason. Public-consumer
+[issue #22](https://github.com/plx/hdxl-uri-template/issues/22) remains
+mandatory for a real Swift consumer; its `.m` portion is not applicable under
+this decision. Release-candidate and audit work must continue to state
+explicitly that Objective-C is unsupported.
+
+The API-08 acceptance criteria are therefore satisfied:
+
+- the maintainer-approved decision is durable;
+- README, DocC, package claims, tests, and issue dispositions agree;
+- all wrapper source, tests, and support claims were deliberately removed; and
+- no release describes Objective-C support.
 
 ## Reconsideration
 
