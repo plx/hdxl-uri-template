@@ -125,10 +125,10 @@ private func expansionThrowingBoundaryIsNarrow() throws {
     ).evaluate(parameters: parameters)
   }
 
-  requireExpansionError(evaluateValue)
-  requireExpansionError(evaluateVariable)
-  requireExpansionError(evaluateVariableIfDefined)
-  requireExpansionError(evaluateExpression)
+  requireExpansionErrorSignature(evaluateValue)
+  requireExpansionErrorSignature(evaluateVariable)
+  requireExpansionErrorSignature(evaluateVariableIfDefined)
+  requireExpansionErrorSignature(evaluateExpression)
 }
 
 private func requireNonthrowing<Result>(
@@ -137,7 +137,7 @@ private func requireNonthrowing<Result>(
   _ = operation()
 }
 
-private func requireExpansionError<Result>(
+private func requireExpansionErrorSignature<Result>(
   _ operation: () throws(URIVariableValue.ExpansionError) -> Result
 ) {
   _ = operation
