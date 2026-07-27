@@ -1,6 +1,5 @@
 import Foundation
 import HDXLURITemplate
-import HDXLURITemplateObjCInterop
 import Testing
 
 private let maximumDefaultDiagnosticByteCount = 512
@@ -134,14 +133,6 @@ private func parseErrorDefaultDiagnosticsRedactSourceText(
       labelPrefix: "underlying parse error",
       excluding: probe.sentinels
     )
-    verifyObjectiveCDefaultDiagnostics(
-      for: error,
-      excluding: probe.sentinels
-    )
-    verifyObjectiveCDefaultDiagnostics(
-      for: error.underlyingError,
-      excluding: probe.sentinels
-    )
   } catch {
     Issue.record("Expected URITemplate.ParseError.")
   }
@@ -217,17 +208,9 @@ private func evaluationErrorDefaultDiagnosticsRedactCompositeValues(
       )
       #expect(underlyingError.localizedDescription.contains(":1"))
       #expect(underlyingError.localizedDescription.contains("query"))
-      verifyObjectiveCDefaultDiagnostics(
-        for: underlyingError,
-        excluding: sentinels
-      )
     } else {
       Issue.record("Expected a structured underlying expansion error.")
     }
-    verifyObjectiveCDefaultDiagnostics(
-      for: error,
-      excluding: sentinels
-    )
   } catch {
     Issue.record("Expected URITemplate.EvaluationError.")
   }
@@ -287,34 +270,11 @@ private func urlConversionErrorDiagnosticsRedactRenderedOutput() throws {
         labelPrefix: "underlying URL error",
         excluding: sentinels
       )
-      verifyObjectiveCDefaultDiagnostics(
-        for: underlyingError,
-        excluding: sentinels
-      )
     } else {
       Issue.record("Expected an underlying bad-URL error.")
     }
-    verifyObjectiveCDefaultDiagnostics(
-      for: error,
-      excluding: sentinels
-    )
   } catch {
     Issue.record("Expected URITemplate.EvaluationError.")
-  }
-}
-
-private func verifyObjectiveCDefaultDiagnostics(
-  for error: any Error,
-  excluding sentinels: [String]
-) {
-  if !HDXLObjCErrorDiagnosticsAreSafe(
-    error as NSError,
-    sentinels,
-    UInt(maximumDefaultDiagnosticByteCount)
-  ) {
-    Issue.record(
-      "Objective-C NSError diagnostics were unsafe."
-    )
   }
 }
 

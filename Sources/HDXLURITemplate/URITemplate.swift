@@ -15,24 +15,30 @@ import Foundation
 /// class-backed storage. The parsed source and components are immutable; the
 /// storage class coordinates lazy caches for frequently-used derived values.
 ///
+/// - Important: This package's initial contract is Swift-only. Code that used
+///   the removed `HDXLURITemplate` wrapper should migrate to
+///   ``init(parsing:)``, ``templateRepresentation``, ``variableNames``, and
+///   the native evaluation APIs. Archives of the removed wrapper are not a
+///   supported persistence format.
+///
 public struct URITemplate {
-  
+
   @usableFromInline
   internal var storage: URITemplateStorage
-  
+
   @inlinable
   internal init(storage: URITemplateStorage) {
-#if HEAVY_DEBUG
-    pedanticAssert(storage.isValid)
-    defer { pedanticAssert(storage.isValid) }
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(storage.isValid)
+      defer { pedanticAssert(storage.isValid) }
+    #endif
     self.storage = storage
   }
 
   // ------------------------------------------------------------------------ //
   // MARK: Initialization
   // ------------------------------------------------------------------------ //
-  
+
   /// Public initializer, constructs a template by parsing a template string.
   ///
   /// - parameter template: A string containing a URI template.
@@ -46,24 +52,23 @@ public struct URITemplate {
       self.init(
         storage: try URITemplateStorage(parsing: template)
       )
-    }
-    catch let underlyingError {
+    } catch let underlyingError {
       throw ParseError(
         template: template,
         underlyingError: underlyingError
       )
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplate - Equatable
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : Sendable { }
-extension URITemplate : Equatable { }
-extension URITemplate : Hashable { }
+extension URITemplate: Sendable {}
+extension URITemplate: Equatable {}
+extension URITemplate: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplate - Codable
@@ -110,27 +115,26 @@ extension URITemplate: Codable {
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : CustomStringConvertible {
-  
+extension URITemplate: CustomStringConvertible {
+
   @inlinable
   public var description: String {
     storage.description
   }
-  
-}
 
+}
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : CustomDebugStringConvertible {
-  
+extension URITemplate: CustomDebugStringConvertible {
+
   @inlinable
   public var debugDescription: String {
     "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -138,12 +142,12 @@ extension URITemplate : CustomDebugStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URITemplate {
-  
+
   @inlinable
   public var isValid: Bool {
     storage.isValid
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -151,7 +155,7 @@ extension URITemplate {
 // -------------------------------------------------------------------------- //
 
 extension URITemplate {
-  
+
   /// Returns the exact validated source string from which this template was
   /// parsed.
   ///
@@ -161,11 +165,11 @@ extension URITemplate {
   public var templateRepresentation: String {
     storage.templateRepresentation
   }
-  
+
   /// The names of the variables within the template (as `String`s).
   @inlinable
   public var variableNames: Set<String> {
     storage.variableNames
   }
-  
+
 }

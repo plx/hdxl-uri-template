@@ -15,8 +15,8 @@ purpose is to answer, with reproducible evidence:
 3. Can malformed, adversarial, concurrent, or unusually large input cause
    incorrect results, a trap, a race, excessive resource use, or disclosure of
    sensitive values?
-4. Are the public Swift, Codable, and Objective-C contracts coherent and safe
-   to support?
+4. Are the public Swift and Codable contracts coherent, and is the documented
+   absence of Objective-C support enforced?
 5. Can consumers build, adopt, operate, update, and roll back the package
    within its documented support boundary?
 6. Are the documentation, licensing, automation, and release mechanics
@@ -116,7 +116,7 @@ Do not begin the final audit until all of the following exist:
   build/run invocation, deterministic inputs or seeds, expected output schema,
   and artifact location for:
   - the complete conformance runner;
-  - the public Swift consumer and conditional Objective-C consumer;
+  - the public Swift consumer and generated Objective-C-absence check;
   - parser, evaluator, and Codable fuzzers;
   - concurrency stress;
   - representative and adversarial benchmarks.
@@ -329,7 +329,7 @@ branch involving:
 - Percent encoding.
 - Unicode scalar boundaries.
 - Codable failure.
-- Objective-C error bridging.
+- Bridged `NSError` behavior for public Swift errors.
 - Invariant enforcement.
 
 Do not accept a high aggregate percentage as a substitute for the behavioral
@@ -360,7 +360,7 @@ Acceptance criteria:
 
 - All declared platforms compile using their version-26 SDK.
 - No source is accidentally excluded from one platform.
-- Objective-C exposure compiles on every platform on which it is documented.
+- The generated interface exposes no removed Objective-C facade symbol.
 - A platform-specific exception is reflected in `Package.swift` and public
   documentation, not only in CI.
 
@@ -642,17 +642,14 @@ Verify the documented duplicate-key policy through:
 - Swift construction.
 - Codable decoding.
 - Codable round-trip.
-- Objective-C construction.
-- Objective-C dictionary projection, if retained.
 - Exploded and non-exploded expansion.
 
-Test duplicate keys, empty keys if representable, unequal Objective-C key/value
-array lengths, `nil` where nullability permits it, and very large associations.
+Test duplicate keys, empty keys if representable, and very large associations.
 
 No public input may reach `precondition`, `fatalError`,
 `Dictionary(uniqueKeysWithValues:)` with unvalidated duplicates, a forced cast,
 or a forced unwrap. Expected rejection must use the documented Swift error,
-failable initializer, or Objective-C `NSError` contract.
+failable initializer, or another controlled Swift error contract.
 
 ### 4.9 Codable validation and representation
 
@@ -700,7 +697,6 @@ Test errors:
 - As their concrete Swift type.
 - Caught as `any Error`.
 - Bridged to `NSError`.
-- Through the Objective-C API.
 - Through Codable.
 
 Default error descriptions must not contain full variable values, parameter
@@ -755,7 +751,6 @@ Inspect every public declaration for:
 - Error behavior.
 - Empty and undefined semantics.
 - Ownership and mutation behavior.
-- Consistency between Swift and Objective-C.
 - Availability matching the OS 26+ boundary.
 
 Compile a consumer without `@testable import`. Warnings or missing operations
@@ -835,28 +830,18 @@ validated against authoritative source. It is not the public Codable contract.
 Do not retain compiled-AST serialization solely on an unmeasured assumption
 that it is faster.
 
-### 5.5 Review Objective-C support
+### 5.5 Verify Objective-C absence
 
-If Objective-C remains supported, compile and run a real `.m` consumer target.
-Swift tests calling Objective-C wrappers do not satisfy this gate.
+The approved initial contract is Swift-only. Build with the stable toolchain
+and inspect the generated `HDXLURITemplate-Swift.h`. It must expose none of the
+removed `HDXLURITemplate`, `HDXLURIVariableValue`, or
+`HDXLURIVariableValueType` declarations.
 
-The consumer must exercise:
-
-- Template parsing.
-- Expansion.
-- Scalar, list, association, empty, and undefined values.
-- Expected parse and expansion errors through `NSError **`.
-- Duplicate association keys.
-- Unequal key/value array lengths.
-- Nullability annotations.
-- `NSCopying`, equality, hashing, and secure coding if advertised.
-
-Confirm generated Swift names and Objective-C selectors are usable and
-documented. No Objective-C-callable path may terminate the process on caller
-input.
-
-If Objective-C is removed or explicitly limited, verify that the package and
-README no longer imply a broader contract.
+Verify that the package has no Objective-C wrapper source, interop target,
+`.m` consumer fixture, wrapper archive contract, or broader README/API claim.
+The historical decision and removal evidence may name the deleted surface,
+but current support documentation must state that Objective-C import and use
+are unsupported.
 
 ## Phase 6: Robustness and fuzzing
 
@@ -1120,7 +1105,6 @@ Document trust boundaries for:
 - Variable names.
 - Variable values.
 - Serialized templates and values.
-- Objective-C callers.
 - Files or network responses supplying cached data.
 - The final URI consumer.
 
@@ -1223,7 +1207,7 @@ The public documentation must cover:
 - Error handling.
 - Thread-safety and Sendable guarantees.
 - Codable semantics and compatibility.
-- Objective-C support or its explicit absence/limitations.
+- Explicit absence of Objective-C support and native Swift migration guidance.
 - Performance characteristics and any input-size guidance.
 - Security warnings for untrusted templates, reserved expansion, URI schemes,
   SSRF, and logging.
@@ -1262,7 +1246,7 @@ CI must:
 - Execute all four conformance suites and assert fixture counts.
 - Preserve machine-readable test results.
 - Compile every declared Apple OS 26 platform.
-- Run public-consumer and real Objective-C consumer tests.
+- Run the public Swift consumer and generated Objective-C-absence checks.
 - Run formatting/lint policy selected by the project.
 - Treat compiler and unhandled-resource warnings according to documented
   policy.
@@ -1408,7 +1392,8 @@ Examples:
 - Invalid state can be publicly constructed or decoded.
 - Adversarial input has demonstrated superlinear resource growth.
 - Error paths disclose plausible secrets by default.
-- Public Codable or Objective-C behavior contradicts its documentation.
+- Public Codable behavior or the documented Objective-C absence contradicts
+  the built interface.
 - A required platform fails to compile.
 
 Decision: **No-go.** Fix and rerun the affected phase plus all downstream
@@ -1492,7 +1477,7 @@ The audit is incomplete without all of these:
 
 6. **Build and verification artifacts**
    - Debug, Release, `HEAVY_DEBUG`, coverage, platform-build, public-consumer,
-     and Objective-C-consumer logs.
+     and generated Objective-C-absence logs.
 
 7. **Robustness package**
    - Sanitizer logs.
@@ -1549,7 +1534,7 @@ Copy this section into `sign-off.md`.
 - [ ] All declared Apple OS 26 compile lanes
 - [ ] Swift public API
 - [ ] Codable
-- [ ] Objective-C, or documented removal/limitation
+- [ ] Documented Objective-C absence
 - [ ] RFC 6570 and applicable verified errata
 - [ ] Security and privacy
 - [ ] Release mechanics
@@ -1571,7 +1556,7 @@ Copy this section into `sign-off.md`.
 - [ ] Every nonbehavioral ticket has objective, ticket-appropriate pre-change
       evidence
 - [ ] Public-only consumer passed
-- [ ] Objective-C `.m` consumer passed or support is explicitly absent
+- [ ] Generated Objective-C interface proves the removed facade is absent
 - [ ] Codable malformed-input and compatibility checks passed
 - [ ] Address Sanitizer passed
 - [ ] Thread Sanitizer passed

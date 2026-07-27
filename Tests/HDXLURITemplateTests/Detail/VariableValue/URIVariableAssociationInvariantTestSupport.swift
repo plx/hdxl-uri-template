@@ -5,7 +5,8 @@ import Testing
 
 struct DuplicateAssociationProbe:
   CustomTestStringConvertible,
-  Sendable {
+  Sendable
+{
 
   let label: String
   let pairs: [(String, String)]
@@ -37,7 +38,7 @@ let duplicateAssociationProbes = [
       ("b", "2"),
       ("c", "3"),
       ("b", "4"),
-      ("a", "5")
+      ("a", "5"),
     ],
     firstIndex: 1,
     duplicateIndex: 3
@@ -53,7 +54,7 @@ let duplicateAssociationProbes = [
     pairs: [("\u{00E9}", "1"), ("e\u{0301}", "2")],
     firstIndex: 0,
     duplicateIndex: 1
-  )
+  ),
 ]
 
 func malformedAssociationPropertyList() -> [String: Any] {
@@ -62,9 +63,9 @@ func malformedAssociationPropertyList() -> [String: Any] {
     "data": [
       "storage": [
         ["key": "private-key", "value": "private-first"],
-        ["key": "private-key", "value": "private-second"]
+        ["key": "private-key", "value": "private-second"],
       ]
-    ]
+    ],
   ]
 }
 
@@ -82,45 +83,13 @@ struct MalformedAssociationPayload: Encodable {
     MalformedAssociationPair(
       key: "private-key",
       value: "private-second"
-    )
+    ),
   ]
 }
 
 struct MalformedAssociationPair: Encodable {
   let key: String
   let value: String
-}
-
-@objc(HDXLMalformedAssociationArchiveProxy)
-final class MalformedAssociationArchiveProxy:
-  NSObject,
-  NSSecureCoding {
-
-  static var supportsSecureCoding: Bool {
-    true
-  }
-
-  required init?(coder: NSCoder) {
-    nil
-  }
-
-  override init() {
-    super.init()
-  }
-
-  func encode(with coder: NSCoder) {
-    guard let archiver = coder as? NSKeyedArchiver else {
-      return
-    }
-    do {
-      try archiver.encodeEncodable(
-        MalformedAssociationValuePayload(),
-        forKey: "variableValue"
-      )
-    } catch {
-      coder.failWithError(error)
-    }
-  }
 }
 
 struct AssociationProbeGenerator {
@@ -173,10 +142,11 @@ func expectDuplicateAssociationFailure(
     Issue.record("Expected duplicate association keys to throw.")
   } catch let error as URIVariableValue.AssociationError {
     #expect(
-      error == .duplicateKey(
-        firstIndex: firstIndex,
-        duplicateIndex: duplicateIndex
-      )
+      error
+        == .duplicateKey(
+          firstIndex: firstIndex,
+          duplicateIndex: duplicateIndex
+        )
     )
   } catch {
     Issue.record("Unexpected association error: \(error)")
@@ -191,13 +161,15 @@ func expectDuplicateDecodeFailure(
     Issue.record("Expected duplicate association decoding to throw.")
   } catch let error as URIVariableValue.AssociationError {
     #expect(
-      error == .duplicateKey(
-        firstIndex: 0,
-        duplicateIndex: 1
-      )
+      error
+        == .duplicateKey(
+          firstIndex: 0,
+          duplicateIndex: 1
+        )
     )
     let bridgedError = error as NSError
-    let diagnostic = String(reflecting: error)
+    let diagnostic =
+      String(reflecting: error)
       + bridgedError.description
       + bridgedError.userInfo.description
     #expect(!diagnostic.contains("private"))

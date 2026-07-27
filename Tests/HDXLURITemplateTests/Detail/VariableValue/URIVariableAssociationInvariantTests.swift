@@ -28,11 +28,11 @@ private func associationConstructionPreservesValidOrder() throws {
   )
   let caseDistinct = try URIVariableValue.association([
     ("Key", "upper"),
-    ("key", "lower")
+    ("key", "lower"),
   ])
   let dictionary = URIVariableValue.association([
     "b": "2",
-    "a": "1"
+    "a": "1",
   ])
 
   #expect(associationPairs(in: empty) == [])
@@ -44,14 +44,14 @@ private func associationConstructionPreservesValidOrder() throws {
     associationPairs(in: caseDistinct)
       == associationPairSnapshots([
         ("Key", "upper"),
-        ("key", "lower")
+        ("key", "lower"),
       ])
   )
   #expect(
     associationPairs(in: dictionary)
       == associationPairSnapshots([
         ("a", "1"),
-        ("b", "2")
+        ("b", "2"),
       ])
   )
 }
@@ -61,7 +61,7 @@ private func associationConstructionConsumesSequenceOnce() throws {
   let pairs = [
     ("a", "1"),
     ("b", "2"),
-    ("c", "3")
+    ("c", "3"),
   ]
   var iteratorCreationCount = 0
   let sequence = AnySequence<(String, String)> {
@@ -89,15 +89,16 @@ private func associationErrorsAreStructuredAndPrivate() {
   do {
     _ = try URIVariableValue.association([
       (secretKey, secretValue),
-      (secretKey, secretValue)
+      (secretKey, secretValue),
     ])
     Issue.record("Expected duplicate association keys to throw.")
   } catch let error as URIVariableValue.AssociationError {
     #expect(
-      error == .duplicateKey(
-        firstIndex: 0,
-        duplicateIndex: 1
-      )
+      error
+        == .duplicateKey(
+          firstIndex: 0,
+          duplicateIndex: 1
+        )
     )
     let bridgedError = error as NSError
     #expect(
@@ -116,7 +117,8 @@ private func associationErrorsAreStructuredAndPrivate() {
       ] as? Int == 1
     )
 
-    let diagnostic = String(reflecting: error)
+    let diagnostic =
+      String(reflecting: error)
       + bridgedError.description
       + bridgedError.userInfo.description
     #expect(!diagnostic.contains(secretKey))
@@ -130,7 +132,7 @@ private func associationErrorsAreStructuredAndPrivate() {
 private func associationCodablePreservesWireShapeAndOrder() throws {
   let value = try URIVariableValue.association([
     ("b", "2"),
-    ("a", "1")
+    ("a", "1"),
   ])
 
   let jsonEncoder = JSONEncoder()
@@ -141,8 +143,7 @@ private func associationCodablePreservesWireShapeAndOrder() throws {
   )
   #expect(
     jsonString
-      ==
-      """
+      == """
       {"data":{"storage":[{"key":"b","value":"2"},{"key":"a","value":"1"}]},"type":8}
       """
   )
@@ -155,7 +156,7 @@ private func associationCodablePreservesWireShapeAndOrder() throws {
     associationPairs(in: jsonRoundTrip)
       == associationPairSnapshots([
         ("b", "2"),
-        ("a", "1")
+        ("a", "1"),
       ])
   )
 
@@ -171,7 +172,7 @@ private func associationCodablePreservesWireShapeAndOrder() throws {
     associationPairs(in: propertyListRoundTrip)
       == associationPairSnapshots([
         ("b", "2"),
-        ("a", "1")
+        ("a", "1"),
       ])
   )
 }
@@ -209,44 +210,6 @@ private func associationDecodingRejectsDuplicateKeys() throws {
       from: propertyList
     )
   }
-}
-
-@Test("Malformed secure archives cannot bypass association validation")
-private func malformedSecureArchiveCannotBypassAssociationValidation() throws {
-  let archiver = NSKeyedArchiver(requiringSecureCoding: true)
-  archiver.setClassName(
-    NSStringFromClass(URIVariableValueWrapper.self),
-    for: MalformedAssociationArchiveProxy.self
-  )
-  archiver.encode(
-    MalformedAssociationArchiveProxy(),
-    forKey: NSKeyedArchiveRootObjectKey
-  )
-  archiver.finishEncoding()
-
-  let unarchiver = try NSKeyedUnarchiver(
-    forReadingFrom: archiver.encodedData
-  )
-  unarchiver.requiresSecureCoding = true
-  let decoded = unarchiver.decodeObject(
-    of: URIVariableValueWrapper.self,
-    forKey: NSKeyedArchiveRootObjectKey
-  )
-  unarchiver.finishDecoding()
-
-  #expect(decoded == nil)
-  let error = try #require(unarchiver.error) as NSError
-  #expect(
-    error.domain
-      == URIVariableValue.AssociationError.errorDomain
-  )
-  #expect(error.code == 1)
-  let diagnostic = error.description
-    + error.userInfo.description
-  #expect(
-    !diagnostic
-      .contains("private")
-  )
 }
 
 @Test("Large and seeded association inputs preserve the invariant")
@@ -295,15 +258,15 @@ private func largeAndSeededAssociationInputsPreserveInvariant() throws {
 private func validAssociationSemanticsRemainOrdered() throws {
   let value = try URIVariableValue.association([
     ("b", "2"),
-    ("a", "1")
+    ("a", "1"),
   ])
   let equalValue = try URIVariableValue.association([
     ("b", "2"),
-    ("a", "1")
+    ("a", "1"),
   ])
   let reorderedValue = try URIVariableValue.association([
     ("a", "1"),
-    ("b", "2")
+    ("b", "2"),
   ])
   let template = try URITemplate(parsing: "{?items*}")
 

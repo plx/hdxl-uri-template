@@ -6,6 +6,13 @@ All notable changes to this package are documented in this file.
 
 ### Changed
 
+- Removed the incomplete pre-release Objective-C facade. The
+  `HDXLURITemplate` and `HDXLURIVariableValue` wrapper classes,
+  `HDXLURIVariableValueType` Objective-C exposure, wrapper-only
+  `NSCopying`/`NSCoding`/`NSSecureCoding` surface, and Objective-C SwiftPM test
+  target are no longer present. The initial `0.x` contract is Swift-only;
+  migrate to native `URITemplate` and `URIVariableValue` APIs. Removed wrapper
+  archives are unsupported and are not migrated.
 - Removed the public `Comparable` conformances and `<` operators from
   `URITemplate`, `URIVariableValue`, and `URIVariableValueType`. Their former
   structural ordering was an implementation detail rather than a semantic

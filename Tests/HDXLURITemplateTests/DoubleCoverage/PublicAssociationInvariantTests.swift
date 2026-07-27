@@ -7,15 +7,16 @@ private func publicAssociationFactoryRejectsDuplicateKeys() {
   do {
     _ = try URIVariableValue.association([
       ("private-key", "private-first"),
-      ("private-key", "private-second")
+      ("private-key", "private-second"),
     ])
     Issue.record("Expected duplicate association keys to throw.")
   } catch let error as URIVariableValue.AssociationError {
     #expect(
-      error == .duplicateKey(
-        firstIndex: 0,
-        duplicateIndex: 1
-      )
+      error
+        == .duplicateKey(
+          firstIndex: 0,
+          duplicateIndex: 1
+        )
     )
     #expect(!String(reflecting: error).contains("private"))
     #expect(!(error as NSError).userInfo.description.contains("private"))
@@ -28,16 +29,16 @@ private func publicAssociationFactoryRejectsDuplicateKeys() {
 private func publicAssociationAPIsPreserveValidBehavior() throws {
   let orderedValue = try URIVariableValue.association([
     ("b", "2"),
-    ("a", "1")
+    ("a", "1"),
   ])
   let dictionaryValue = URIVariableValue.association([
     "b": "2",
-    "a": "1"
+    "a": "1",
   ])
   let tiedDictionaryValue = URIVariableValue.association(
     [
       "b": "2",
-      "a": "1"
+      "a": "1",
     ],
     orderingKeysWith: { _, _ in false }
   )
@@ -69,25 +70,4 @@ private func publicAssociationAPIsPreserveValidBehavior() throws {
     from: data
   )
   #expect(decoded == orderedValue)
-}
-
-@Test("The public Swift Objective-C wrapper initializer throws on mismatch")
-private func publicWrapperInitializerRejectsMismatchedCounts() {
-  do {
-    _ = try URIVariableValueWrapper(
-      keys: ["private-key"],
-      values: []
-    )
-    Issue.record("Expected mismatched association counts to throw.")
-  } catch let error as URIVariableValue.AssociationError {
-    #expect(
-      error == .mismatchedKeyValueCounts(
-        keyCount: 1,
-        valueCount: 0
-      )
-    )
-    #expect(!String(reflecting: error).contains("private"))
-  } catch {
-    Issue.record("Unexpected public association error: \(error)")
-  }
 }

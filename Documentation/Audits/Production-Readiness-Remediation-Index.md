@@ -261,7 +261,8 @@ and early policy decisions:
 - `HARD-02` establishes nontrapping association invariants.
 - `API-01` removes accidental comparison contracts.
 - `API-04` fixes Swift/Foundation error bridging.
-- `API-08` decides whether Objective-C remains supported.
+- `API-08` records the approved Swift-only policy, and `API-10` removes the
+  unsupported Objective-C facade before the initial public contract.
 - `ARCH-04` is independent and may be completed here, although its P3 priority
   permits deferral behind higher-priority unblocked work.
 
@@ -302,8 +303,9 @@ entry and requires the complete pinned corpus to pass without exclusions.
   diagnostic boundaries that its decoding contract must use.
 - Implement `API-07` against the final association and value-Codable model.
 - Run `API-03` only after semantic Codable and the corrected parser are stable.
-- Follow the Objective-C branch described below for `API-08`, `API-09`, and
-  `QA-04`.
+- Complete the approved Objective-C removal branch described below: implement
+  `API-10`, disposition `API-09` as not planned, and keep `QA-04` focused on
+  the real public Swift consumer.
 
 Do not introduce a compiled-cache API as part of semantic Codable. If `API-03`
 finds a material benefit, create a separately reviewed design ticket.
@@ -322,8 +324,8 @@ these refactors. Architectural cleanup must not redefine settled behavior.
 ### Phase 5: make verification and documentation durable
 
 - Add `QA-03` after `QA-02`, `HARD-01`, and `HARD-02`.
-- Complete `QA-04` after the primary CI gate and Objective-C decision; require
-  the retained facade first if Objective-C remains supported.
+- Complete `QA-04` after the primary CI gate and `API-10`; verify the real
+  public Swift consumer and the generated-interface absence contract.
 - Schedule `QA-06` after the largest API/architecture rewrites to avoid mass
   formatting conflicts.
 - Complete `DOC-01` after conformance, safe diagnostics, package metadata,
@@ -354,18 +356,7 @@ the release will make.
 `API-08` is the policy fork. It must be resolved early enough that consumer
 tests and documentation do not target a half-supported facade.
 
-If Objective-C support is retained:
-
-- `API-09` must provide safe parsing, expansion, and error APIs, including the
-  applicable Codable/secure-coding and association decisions;
-- `QA-04` must compile and run a real `.m` consumer rather than testing wrappers
-  only from Swift;
-- `DOC-01` and `DOC-02` must document the supported facade and its error,
-  nullability, and archive behavior;
-- `AUDIT-01` must exercise the generated Objective-C interface and actual
-  consumer.
-
-If Objective-C support is removed:
+The maintainer approved the Swift-only removal path on July 26, 2026:
 
 - merge the nonclosing `API-08` decision record, then complete `API-10`;
 - close `API-09` using the native not-planned/superseded disposition and link
@@ -377,8 +368,8 @@ If Objective-C support is removed:
 - make `DOC-01`, `DOC-02`, and `AUDIT-01` state explicitly that Objective-C is
   unsupported.
 
-In either branch, `HARD-02` remains required because the Swift value model must
-preserve its own association invariants.
+`HARD-02` remains required because the Swift value model must preserve its own
+association invariants after the facade is removed.
 
 ## Issue and pull-request conventions
 

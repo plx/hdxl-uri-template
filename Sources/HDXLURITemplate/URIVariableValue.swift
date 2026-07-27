@@ -22,6 +22,12 @@ import Foundation
 /// - note: Deserialization throws `AssociationError` for duplicate association
 ///   keys and `DataValidationError` for other invalid stored values.
 ///
+/// - Important: This package's initial contract is Swift-only. Code that used
+///   the removed `HDXLURIVariableValue` wrapper should migrate to
+///   ``undefined``, ``text(_:)``, ``list(_:)``, and the `association`
+///   factories, then inspect the native value through ``valueType`` and the
+///   `is…Value` properties. Archives of the removed wrapper are not supported.
+///
 public struct URIVariableValue {
 
   // ------------------------------------------------------------------------ //
@@ -31,7 +37,7 @@ public struct URIVariableValue {
   /// Shorthand for the wrapped data-storage type.
   @usableFromInline
   internal typealias Storage = URIVariableValueData
-  
+
   /// Holds the actual variable value.
   @usableFromInline
   internal var storage: URIVariableValueData
@@ -43,33 +49,36 @@ public struct URIVariableValue {
   /// Designated internal-use-only initializer.
   @inlinable
   internal init(storage: URIVariableValueData) {
-#if HEAVY_DEBUG
-    pedanticAssert(storage.isValid)
-    defer { pedanticAssert(isValid) }
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(storage.isValid)
+      defer { pedanticAssert(isValid) }
+    #endif
     self.storage = storage
   }
-  
+
   // ------------------------------------------------------------------------ //
   // MARK: Well-Known Values
   // ------------------------------------------------------------------------ //
-  
+
   /// Convenience for the undefined `URIVariableValue`.
   public static let undefined: URIVariableValue = URIVariableValue(storage: .undefined)
-  
+
   /// Convenience for the empty-string `URIVariableValue`.
-  public static let emptyString: URIVariableValue = URIVariableValue(storage: .text(URIVariableTextValue(rawValue: "")))
-  
+  public static let emptyString: URIVariableValue = URIVariableValue(
+    storage: .text(URIVariableTextValue(rawValue: ""))
+  )
+
   /// Convenience for the empty-list `URIVariableValue`.
   public static let emptyList: URIVariableValue = URIVariableValue(storage: .emptyList)
-  
+
   /// Convenience for the empty-assocication `URIVariableValue`.
-  public static let emptyAssociation: URIVariableValue = URIVariableValue(storage: .emptyAssociation)
+  public static let emptyAssociation: URIVariableValue = URIVariableValue(
+    storage: .emptyAssociation
+  )
 
   // ------------------------------------------------------------------------ //
   // MARK: Public Constructors
   // ------------------------------------------------------------------------ //
-    
 
   /// Constructs a `.text`-flavored `URIVariableValue` wrapping `text`.
   ///
@@ -159,48 +168,48 @@ public struct URIVariableValue {
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValue : Sendable { }
-extension URIVariableValue : Equatable { }
-extension URIVariableValue : Hashable { }
+extension URIVariableValue: Sendable {}
+extension URIVariableValue: Equatable {}
+extension URIVariableValue: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValue : CustomStringConvertible {
-  
+extension URIVariableValue: CustomStringConvertible {
+
   @inlinable
   public var description: String {
     storage.description
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValue - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValue : CustomDebugStringConvertible {
-  
+extension URIVariableValue: CustomDebugStringConvertible {
+
   @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValue - Codable
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValue : Codable {
-  
+extension URIVariableValue: Codable {
+
   @inlinable
   public func encode(to encoder: Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(storage)
   }
-  
+
   @inlinable
   public init(from decoder: Decoder) throws {
     let container = try decoder.singleValueContainer()
@@ -215,16 +224,15 @@ extension URIVariableValue : Codable {
     }
     self.init(storage: storage)
   }
-  
-}
 
+}
 
 // -------------------------------------------------------------------------- //
 // MARK: - Core API
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValue {
-  
+
   /// `true` iff this value counts as *empty*.
   ///
   /// - `.undefined`: always *empty*
@@ -238,7 +246,7 @@ extension URIVariableValue {
   public var isEmpty: Bool {
     storage.isEmpty
   }
-  
+
   /// Returns a count of the defined "sub-values" within `self`.
   ///
   /// - `.undefined`: always *0*
@@ -250,49 +258,49 @@ extension URIVariableValue {
   public var count: Int {
     storage.count
   }
-  
+
   /// The flavor of the value: `.undefined`, `.text`, and so on.
   @inlinable
   public var valueType: URIVariableValueType {
     storage.valueType
   }
-  
+
   /// `true` if this has one of the *defined* flavors (e.g. anything other than `.undefined`).
   @inlinable
   public var isDefined: Bool {
     storage.isDefined
   }
-  
+
   /// `true` if this is of the `.undefined ` flavor.
   @inlinable
   public var isUndefined: Bool {
     storage.isUndefined
   }
-  
+
   /// Synonym for `isUndefined`--exists for analogy with other `is$Value` properties.
   @inlinable
   public var isUndefinedValue: Bool {
     storage.isUndefined
   }
-  
+
   /// `true` iff this has the `.text` flavor.
   @inlinable
   public var isTextValue: Bool {
     storage.isTextValue
   }
-  
+
   /// `true` iff this has the `.list` flavor.
   @inlinable
   public var isListValue: Bool {
     storage.isListValue
   }
-  
+
   /// `true` iff this has the `.association` flavor.
   @inlinable
   public var isAssociationValue: Bool {
     storage.isAssociationValue
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -300,10 +308,10 @@ extension URIVariableValue {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValue {
-  
+
   @inlinable
   internal var isValid: Bool {
     storage.isValid
   }
-  
+
 }

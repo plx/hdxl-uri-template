@@ -3,6 +3,7 @@ import Foundation
 
 private struct PublicAPIContract: Decodable {
   let module: String
+  let forbiddenObjectiveCDeclarations: [String]
   let declarations: [Declaration]
 
   struct Declaration: Decodable {
@@ -46,6 +47,7 @@ private struct SymbolGraph: Decodable {
 
 private enum PublicAPICheckError: Error, CustomStringConvertible {
   case commandFailed(command: String, status: Int32)
+  case missingObjectiveCHeader(module: String, directory: String)
   case missingSymbolGraph(module: String, directory: String)
   case multipleSymbolGraphs(module: String, paths: [String])
   case contractViolations([String])
@@ -54,6 +56,8 @@ private enum PublicAPICheckError: Error, CustomStringConvertible {
     switch self {
     case .commandFailed(let command, let status):
       "Command failed with status \(status): \(command)"
+    case .missingObjectiveCHeader(let module, let directory):
+      "No canonical \(module)-Swift.h was emitted beneath \(directory)."
     case .missingSymbolGraph(let module, let directory):
       "No \(module).symbols.json was emitted beneath \(directory)."
     case .multipleSymbolGraphs(let module, let paths):
@@ -62,6 +66,47 @@ private enum PublicAPICheckError: Error, CustomStringConvertible {
       violations.joined(separator: "\n")
     }
   }
+}
+
+private func generatedObjectiveCHeaders(
+  for module: String,
+  beneath directory: URL
+) throws -> [URL] {
+  let expectedName = "\(module)-Swift.h"
+  let resourceKeys: [URLResourceKey] = [.isRegularFileKey]
+  guard
+    let enumerator = FileManager.default.enumerator(
+      at: directory,
+      includingPropertiesForKeys: resourceKeys,
+      options: [.skipsHiddenFiles]
+    )
+  else {
+    throw PublicAPICheckError.missingObjectiveCHeader(
+      module: module,
+      directory: directory.path
+    )
+  }
+
+  var matches: [URL] = []
+  for case let candidate as URL in enumerator
+  where candidate.lastPathComponent == expectedName {
+    let values = try candidate.resourceValues(forKeys: Set(resourceKeys))
+    if values.isRegularFile == true {
+      matches.append(candidate)
+    }
+  }
+
+  let canonicalMatches = matches.filter {
+    $0.deletingLastPathComponent().lastPathComponent
+      == "GeneratedModuleMaps"
+  }
+  guard !canonicalMatches.isEmpty else {
+    throw PublicAPICheckError.missingObjectiveCHeader(
+      module: module,
+      directory: directory.path
+    )
+  }
+  return canonicalMatches
 }
 
 private func runSwift(
@@ -137,13 +182,21 @@ private func emittedSymbolGraph(
 
 private func validate(
   contract: PublicAPIContract,
-  against graph: SymbolGraph
+  against graph: SymbolGraph,
+  objectiveCHeader: String
 ) throws {
   var violations: [String] = []
 
   if graph.module.name != contract.module {
     violations.append(
       "Expected module \(contract.module), but the symbol graph describes \(graph.module.name)."
+    )
+  }
+
+  for forbiddenDeclaration in contract.forbiddenObjectiveCDeclarations
+  where objectiveCHeader.contains(forbiddenDeclaration) {
+    violations.append(
+      "Generated Objective-C header must not expose \(forbiddenDeclaration)."
     )
   }
 
@@ -249,6 +302,7 @@ private func main() throws {
       "build",
       "--package-path", repositoryRoot.path,
       "--scratch-path", scratchDirectory.path,
+      "--build-system", "swiftbuild",
       "--build-tests",
       "-q",
     ],
@@ -260,6 +314,7 @@ private func main() throws {
       "--package-path", externalConsumerURL.path,
       "--scratch-path",
       scratchDirectory.appendingPathComponent("external-consumer").path,
+      "--build-system", "swiftbuild",
       "-q",
     ],
     in: externalConsumerURL
@@ -269,6 +324,7 @@ private func main() throws {
       "package",
       "--package-path", repositoryRoot.path,
       "--scratch-path", scratchDirectory.path,
+      "--build-system", "swiftbuild",
       "dump-symbol-graph",
       "--minimum-access-level", "public",
     ],
@@ -287,11 +343,26 @@ private func main() throws {
     SymbolGraph.self,
     from: Data(contentsOf: symbolGraphURL)
   )
-  try validate(contract: contract, against: graph)
+  let objectiveCHeaderURLs = try generatedObjectiveCHeaders(
+    for: contract.module,
+    beneath: scratchDirectory
+  )
+  let objectiveCHeader =
+    try objectiveCHeaderURLs
+    .map { try String(contentsOf: $0, encoding: .utf8) }
+    .joined(separator: "\n")
+  try validate(
+    contract: contract,
+    against: graph,
+    objectiveCHeader: objectiveCHeader
+  )
 
   print(
     "Public API contract passed for \(contract.module) "
-      + "(\(contract.declarations.count) declarations checked)."
+      + "(\(contract.declarations.count) Swift declarations and "
+      + "\(contract.forbiddenObjectiveCDeclarations.count) "
+      + "Objective-C absences checked across "
+      + "\(objectiveCHeaderURLs.count) generated headers)."
   )
 }
 
