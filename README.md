@@ -360,8 +360,8 @@ The repository's `just` recipes use the same
 integrity, warning guards, and builds and runs a separate public consumer that
 cannot access `internal` or `package` declarations. The consumer executes the
 README and DocC examples from synchronized source files. The DocC gate treats
-compiler warnings and unresolved links as errors and requires an abstract for
-every supported public symbol.
+documentation diagnostics and unresolved links as errors and requires an
+abstract for every supported public symbol.
 
 Every pull request and `master` update runs the required
 `Required Swift 6.3 / Apple 26 gate` from a clean checkout. Its Xcode 26.6 /

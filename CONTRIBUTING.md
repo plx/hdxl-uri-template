@@ -56,7 +56,8 @@ just test-release
 Run the public-only API and documentation-example boundary directly with:
 
 ```sh
-just check-public-api
+just check-docc
+just test-check-docc
 ```
 
 Run the complete pinned conformance corpus and its integrity guard with:

@@ -89,9 +89,11 @@ jobs:
         if: matrix.lane == 'debug'
         run: |
           set -o pipefail
-          just check-docc 2>&1 |
+          xcrun swift Scripts/check-public-api.swift 2>&1 |
             tee "$CI_ARTIFACTS/public-api-consumer-docc.log"
-          just test-check-docc 2>&1 |
+          xcrun swift Scripts/check-docc.swift 2>&1 |
+            tee -a "$CI_ARTIFACTS/public-api-consumer-docc.log"
+          ./Scripts/test-check-docc.sh 2>&1 |
             tee "$CI_ARTIFACTS/docc-detector-tests.log"
 
       - name: Build ${{ matrix.name }}
