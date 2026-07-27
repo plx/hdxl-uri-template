@@ -149,7 +149,6 @@ The material categories and repository locations are:
   - `Sources/HDXLURITemplate/Detail/ValueExpansion/CharacterSet+URIValueExpansion.swift`
   - `Tests/HDXLURITemplateTests/Detail/Support/InfalliblyUnwrapAssumptionTests.swift`
   - `Tests/HDXLURITemplateTests/Detail/TemplateComponent/URITemplateLiteralGrammarTests.swift`
-  - `Tests/HDXLURITemplateTests/Detail/ValueExpansion/URIValueExpansionTypeTests.swift`
   - `Tests/HDXLURITemplateTests/DoubleCoverage/ParsingAndExpansionDoubleCoverageTests.swift`
 - **Specification example and oracle tables.** RFC 6570 sections 1.2 and
   3.2, together with overlapping Apache-licensed upstream examples, supply
