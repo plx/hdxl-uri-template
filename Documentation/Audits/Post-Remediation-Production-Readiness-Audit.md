@@ -1055,6 +1055,12 @@ and product-size comparisons. Audit runs must still collect fresh results on
 the candidate machine rather than treating its recorded absolute timings as
 portable thresholds.
 
+Use the permanent
+[ARCH-02 public-client benchmark](../Benchmarks/ARCH-02-Cross-Module-Inlining.md)
+to reproduce parsing, expansion, metadata, hashing, semantic-Codable,
+clean-build, module/interface-size, and client-product comparisons after the
+cross-module annotation audit.
+
 If a compiled-cache representation exists, compare all of:
 
 - Parsing the source string.

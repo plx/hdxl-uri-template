@@ -1,0 +1,261 @@
+{
+  "schemaVersion": 1,
+  "environment": {
+    "xcode": "Xcode 26.6 (17F113)",
+    "swift": "Apple Swift 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)",
+    "architecture": "arm64",
+    "logicalCoreCount": 16,
+    "sampleCount": 5
+  },
+  "revisions": {
+    "before": {
+      "label": "before-inlining-removal",
+      "commit": "9a5a1bfe7b0c07d00df1d2ccfc30b3f887712fb1",
+      "productionBase": "d08d73610c09e6a20263bab229724128f1e94770"
+    },
+    "after": {
+      "label": "after-inlining-removal",
+      "commit": "6e6b052c274f46b57a32f1f2989aac01067dbc5e"
+    }
+  },
+  "inventory": {
+    "before": {
+      "swiftFileCount": 52,
+      "annotatedFileCount": 50,
+      "totals": {
+        "inlinable": 211,
+        "usableFromInline": 161,
+        "alwaysInline": 5,
+        "alwaysEmitIntoClient": 0
+      },
+      "categories": {
+        "public-api": {
+          "inlinable": 30,
+          "usableFromInline": 5,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "parser": {
+          "inlinable": 6,
+          "usableFromInline": 13,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "expansion": {
+          "inlinable": 151,
+          "usableFromInline": 119,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "storage": {
+          "inlinable": 4,
+          "usableFromInline": 7,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "codable": {
+          "inlinable": 0,
+          "usableFromInline": 0,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "descriptions": {
+          "inlinable": 0,
+          "usableFromInline": 0,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "objective-c": {
+          "inlinable": 0,
+          "usableFromInline": 0,
+          "alwaysInline": 0,
+          "alwaysEmitIntoClient": 0
+        },
+        "tests-and-assertions": {
+          "inlinable": 0,
+          "usableFromInline": 4,
+          "alwaysInline": 4,
+          "alwaysEmitIntoClient": 0
+        },
+        "support": {
+          "inlinable": 20,
+          "usableFromInline": 13,
+          "alwaysInline": 1,
+          "alwaysEmitIntoClient": 0
+        }
+      }
+    },
+    "after": {
+      "swiftFileCount": 52,
+      "annotatedFileCount": 0,
+      "totals": {
+        "inlinable": 0,
+        "usableFromInline": 0,
+        "alwaysInline": 0,
+        "alwaysEmitIntoClient": 0
+      }
+    }
+  },
+  "cleanBuilds": {
+    "library": {
+      "beforeNanoseconds": [
+        4049858166,
+        3983294875,
+        3978021834,
+        3983136417,
+        4063974500
+      ],
+      "afterNanoseconds": [
+        4411870459,
+        4536809000,
+        4181084708,
+        4012579708,
+        4182616959
+      ],
+      "beforeMedianSeconds": 3.983294875,
+      "afterMedianSeconds": 4.182616959
+    },
+    "publicConsumer": {
+      "beforeNanoseconds": [
+        7360058541,
+        7277970458,
+        7645432833,
+        7409398792,
+        7903722084
+      ],
+      "afterNanoseconds": [
+        6552164625,
+        7514045708,
+        6654259375,
+        6691725750,
+        6709753209
+      ],
+      "beforeMedianSeconds": 7.409398792,
+      "afterMedianSeconds": 6.69172575
+    }
+  },
+  "artifacts": {
+    "swiftModuleBytes": {
+      "before": 1213636,
+      "after": 238952
+    },
+    "swiftSourceInfoBytes": {
+      "before": 170224,
+      "after": 48288
+    },
+    "diagnosticTextualInterfaceBytes": {
+      "before": 105896,
+      "after": 10067
+    },
+    "publicConsumerExecutableBytes": {
+      "before": 1503360,
+      "after": 1141888
+    },
+    "benchmarkExecutableBytes": {
+      "before": 786896,
+      "after": 606176
+    }
+  },
+  "runtime": {
+    "parse": {
+      "iterations": 50000,
+      "beforeNanoseconds": [
+        188520375,
+        189143375,
+        191020917,
+        190164084,
+        191754333
+      ],
+      "afterNanoseconds": [
+        191246959,
+        191787000,
+        191569208,
+        189663375,
+        189838833
+      ],
+      "beforeMedianNanosecondsPerOperation": 3803.28168,
+      "afterMedianNanosecondsPerOperation": 3824.93918,
+      "resultDigest": "1ce1db0542853ca0"
+    },
+    "expansion": {
+      "iterations": 50000,
+      "beforeNanoseconds": [
+        282492208,
+        280501083,
+        280107333,
+        280379000,
+        280237292
+      ],
+      "afterNanoseconds": [
+        284092833,
+        280789583,
+        279690709,
+        278868666,
+        280257625
+      ],
+      "beforeMedianNanosecondsPerOperation": 5607.58,
+      "afterMedianNanosecondsPerOperation": 5605.1525,
+      "resultDigest": "1d364c06084ab610"
+    },
+    "metadata": {
+      "iterations": 5000000,
+      "beforeNanoseconds": [
+        2749750,
+        2782875,
+        2843500,
+        2965000,
+        2797208
+      ],
+      "afterNanoseconds": [
+        52738625,
+        53787375,
+        54687209,
+        52692541,
+        54546625
+      ],
+      "beforeMedianNanosecondsPerOperation": 0.5594416,
+      "afterMedianNanosecondsPerOperation": 10.757475,
+      "resultDigest": "000000000cb8cc3c"
+    },
+    "copyAndHash": {
+      "iterations": 500000,
+      "beforeNanoseconds": [
+        304760833,
+        305989083,
+        305867750,
+        305551333,
+        304854959
+      ],
+      "afterNanoseconds": [
+        316693250,
+        317992541,
+        316498250,
+        317467584,
+        315180084
+      ],
+      "beforeMedianNanosecondsPerOperation": 611.102666,
+      "afterMedianNanosecondsPerOperation": 633.3865,
+      "resultDigest": "20d28e349943a080"
+    },
+    "semanticCodable": {
+      "iterations": 20000,
+      "beforeNanoseconds": [
+        100569209,
+        101491625,
+        102567750,
+        101747583,
+        102226250
+      ],
+      "afterNanoseconds": [
+        102562916,
+        101596417,
+        101886958,
+        101790375,
+        102131959
+      ],
+      "beforeMedianNanosecondsPerOperation": 5087.37915,
+      "afterMedianNanosecondsPerOperation": 5094.3479,
+      "resultDigest": "a527246881021840"
+    }
+  }
+}
