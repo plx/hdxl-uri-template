@@ -76,45 +76,18 @@ private func everyCanonicalPrefixLengthParsesExactly() throws {
   }
 }
 
-@Test("Prefix decoding and internal validity use the numeric invariant")
-private func prefixDecodingAndInternalValidityAgree() throws {
+@Test("Internal prefix validity uses the numeric invariant")
+private func internalPrefixValidityUsesNumericInvariant() {
   for prefixLength in [1, 9, 10, 9_999] {
-    let encoded = Data(
-      """
-      {"type":4,"data":\(prefixLength)}
-      """.utf8
-    )
-    let modifier = try JSONDecoder().decode(
-      URIValueExpansionModifier.self,
-      from: encoded
-    )
+    let modifier = URIValueExpansionModifier.prefix(prefixLength)
 
     #expect(modifier == .prefix(prefixLength))
     #expect(modifier.isValid)
     #expect(modifier.templateRepresentation == ":\(prefixLength)")
-    #expect(
-      try JSONDecoder().decode(
-        URIValueExpansionModifier.self,
-        from: JSONEncoder().encode(modifier)
-      ) == modifier
-    )
   }
 
   for invalidPrefixLength in [0, 10_000, Int.min, Int.max] {
     #expect(!URIValueExpansionModifier.prefix(invalidPrefixLength).isValid)
-    let encoded = Data(
-      """
-      {"type":4,"data":\(invalidPrefixLength)}
-      """.utf8
-    )
-    #expect(
-      throws: DataValidationError<URIValueExpansionModifier>.self
-    ) {
-      _ = try JSONDecoder().decode(
-        URIValueExpansionModifier.self,
-        from: encoded
-      )
-    }
   }
 }
 

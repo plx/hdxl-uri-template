@@ -84,33 +84,6 @@ extension URITemplateLiteralComponent : CustomDebugStringConvertible {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: - Codable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateLiteralComponent : Codable {
-  
-  @inlinable
-  func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(rawValue)
-  }
-  
-  @inlinable
-  init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    let rawValue = try container.decode(String.self)
-    guard Self.validationRegularExpression.matchesEntirety(of: rawValue) else {
-      throw DataValidationError(
-        forType: Self.self,
-        problemDescription: "Decoded invalid underlying string \"\(rawValue)\"!"
-      )
-    }
-    self.init(rawValue: rawValue)
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: URITemplateLiteralComponent - Validation Support
 // -------------------------------------------------------------------------- //
 

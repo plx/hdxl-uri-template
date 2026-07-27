@@ -87,33 +87,6 @@ extension URITemplateVariableName : CustomDebugStringConvertible {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplateVariableName - Codable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateVariableName : Codable {
-  
-  @inlinable
-  func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(rawValue)
-  }
-  
-  @inlinable
-  init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    let storage = try container.decode(String.self)
-    guard Self.validationRegularExpression.matchesEntirety(of: storage) else {
-      throw DataValidationError(
-        forType: Self.self,
-        problemDescription: "Decoded invalid underlying string \"\(storage)\"!"
-      )
-    }
-    self.init(rawValue: storage)
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: - Validation Support
 // -------------------------------------------------------------------------- //
 

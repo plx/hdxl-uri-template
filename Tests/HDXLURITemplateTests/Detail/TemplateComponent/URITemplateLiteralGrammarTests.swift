@@ -69,17 +69,13 @@ private func correctedLiteralsAreValidNextToExpressions(
 }
 
 @Test(
-  "Literal parser, decoder, and invariant accept exact grammar boundaries",
+  "Literal parser and invariant accept exact grammar boundaries",
   arguments: validLiteralBoundarySamples
 )
 private func literalValidationAcceptsExactGrammarBoundaries(
   source: String
 ) throws {
   let parsed = try URITemplateLiteralComponent(parsing: source)
-  let decoded = try JSONDecoder().decode(
-    URITemplateLiteralComponent.self,
-    from: JSONEncoder().encode(source)
-  )
 
   #expect(
     URITemplateLiteralComponent.validationRegularExpression
@@ -87,30 +83,21 @@ private func literalValidationAcceptsExactGrammarBoundaries(
   )
   #expect(parsed.rawValue == source)
   #expect(parsed.isValid)
-  #expect(decoded == parsed)
 }
 
 @Test(
-  "Literal parser, decoder, and invariant reject exact grammar boundaries",
+  "Literal parser and invariant reject exact grammar boundaries",
   arguments: invalidLiteralBoundarySamples
 )
 private func literalValidationRejectsExactGrammarBoundaries(
   source: String
 ) throws {
-  let encoded = try JSONEncoder().encode(source)
-
   #expect(
     !URITemplateLiteralComponent.validationRegularExpression
       .matchesEntirety(of: source)
   )
   #expect(throws: URITemplateLiteralComponent.ParseError.self) {
     _ = try URITemplateLiteralComponent(parsing: source)
-  }
-  #expect(throws: DataValidationError<URITemplateLiteralComponent>.self) {
-    _ = try JSONDecoder().decode(
-      URITemplateLiteralComponent.self,
-      from: encoded
-    )
   }
   #if !HEAVY_DEBUG
   #expect(!URITemplateLiteralComponent(rawValue: source).isValid)

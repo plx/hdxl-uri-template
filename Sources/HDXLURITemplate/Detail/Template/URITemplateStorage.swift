@@ -44,16 +44,6 @@ internal final class URITemplateStorage {
     self.cachedFieldLock = OSAllocatedUnfairLock()
   }
 
-  @inlinable
-  internal static func renderedTemplateSource(
-    for components: [URITemplateComponent]
-  ) -> String {
-    components
-      .lazy
-      .map(\.templateRepresentation)
-      .joined()
-  }
-  
   // ------------------------------------------------------------------------ //
   // MARK: `templateRepresentation`
   // ------------------------------------------------------------------------ //
@@ -221,39 +211,6 @@ extension URITemplateStorage : CustomDebugStringConvertible {
       .map(\.debugDescription)
       .joined(separator: ", ")
     return "URITemplateStorage(components: [ \(components) ])"
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: - Codable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateStorage : Codable {
-  
-  @inlinable
-  internal func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(components)
-  }
-  
-  @inlinable
-  internal convenience init(from decoder: Decoder) throws {
-    // Preserve the existing component-array wire format, but establish decoded
-    // storage through the strict parser so source and parsed state cannot drift.
-    let container = try decoder.singleValueContainer()
-    let components = try container.decode([URITemplateComponent].self)
-    try self.init(
-      parsing: Self.renderedTemplateSource(
-        for: components
-      )
-    )
-    guard self.components == components else {
-      throw DecodingError.dataCorruptedError(
-        in: container,
-        debugDescription: "Decoded URI-template components do not round-trip through their source representation."
-      )
-    }
   }
   
 }

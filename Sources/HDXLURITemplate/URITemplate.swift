@@ -64,7 +64,47 @@ public struct URITemplate {
 extension URITemplate : Sendable { }
 extension URITemplate : Equatable { }
 extension URITemplate : Hashable { }
-extension URITemplate : Codable { }
+
+// -------------------------------------------------------------------------- //
+// MARK: URITemplate - Codable
+// -------------------------------------------------------------------------- //
+
+extension URITemplate: Codable {
+
+  /// Encodes this template as its exact validated URI-template source string.
+  ///
+  /// The semantic source string is the complete public persistence format.
+  /// Private parser storage and compiled caches are never part of the encoded
+  /// representation.
+  @inlinable
+  public func encode(to encoder: any Encoder) throws {
+    var container = encoder.singleValueContainer()
+    try container.encode(templateRepresentation)
+  }
+
+  /// Decodes and validates one URI-template source string.
+  ///
+  /// Decoding always reparses the source through ``init(parsing:)`` so it
+  /// cannot construct state that the public parser would reject. Historical
+  /// payloads synthesized from private parser storage are unsupported.
+  @inlinable
+  public init(from decoder: any Decoder) throws {
+    let container = try decoder.singleValueContainer()
+    let template = try container.decode(String.self)
+    do {
+      try self.init(parsing: template)
+    } catch {
+      throw DecodingError.dataCorrupted(
+        DecodingError.Context(
+          codingPath: container.codingPath,
+          debugDescription: "Invalid URI template string.",
+          underlyingError: error
+        )
+      )
+    }
+  }
+
+}
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible

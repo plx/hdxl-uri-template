@@ -36,7 +36,6 @@ internal struct URITemplateVariable {
 extension URITemplateVariable : Sendable { }
 extension URITemplateVariable : Equatable { }
 extension URITemplateVariable : Hashable { }
-extension URITemplateVariable : Codable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable

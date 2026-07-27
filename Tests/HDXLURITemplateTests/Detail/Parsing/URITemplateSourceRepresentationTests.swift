@@ -91,55 +91,6 @@ private func objectiveCWrapperForwardsExactSource() throws {
   )
 }
 
-@Test("Storage decoding rejects a synthesized invalid source")
-private func storageDecodingRejectsInvalidSource() throws {
-  let emptyExpressionStorageJSON = Data(
-    #"[{"expression":{"_0":{"expansionType":1,"variables":[]}}}]"#.utf8
-  )
-
-  #expect(throws: String.URITemplateChunkingError.self) {
-    _ = try JSONDecoder().decode(
-      URITemplateStorage.self,
-      from: emptyExpressionStorageJSON
-    )
-  }
-}
-
-@Test("Storage decoding rejects noncanonical component arrangements")
-private func storageDecodingRejectsNoncanonicalComponents() {
-  let adjacentLiteralComponentsJSON = Data(
-    """
-    [
-      {"literal":{"_0":"a"}},
-      {"literal":{"_0":"b"}}
-    ]
-    """.utf8
-  )
-  let publicTemplateJSON = Data(
-    """
-    {
-      "storage": [
-        {"literal":{"_0":"a"}},
-        {"literal":{"_0":"b"}}
-      ]
-    }
-    """.utf8
-  )
-
-  #expect(throws: DecodingError.self) {
-    _ = try JSONDecoder().decode(
-      URITemplateStorage.self,
-      from: adjacentLiteralComponentsJSON
-    )
-  }
-  #expect(throws: DecodingError.self) {
-    _ = try JSONDecoder().decode(
-      URITemplate.self,
-      from: publicTemplateJSON
-    )
-  }
-}
-
 private func verifyExactSourceRoundTrip(
   source: String,
   parameters: [String: URIVariableValue]

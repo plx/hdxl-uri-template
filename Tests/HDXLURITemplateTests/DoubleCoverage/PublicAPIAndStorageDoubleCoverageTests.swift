@@ -101,8 +101,8 @@ private func propertyPublicTemplateAPICoverage() throws {
   .tags(.doubleCoveragePublicAPI)
 )
 private func manualStorageAndComponentCoverage() throws {
-  // Exercise parsed storage, cache reads, exact source retention, and Codable
-  // validation explicitly.
+  // Exercise parsed storage, cache reads, exact source retention, and validity
+  // explicitly.
   let emptyStorage = try URITemplateStorage(parsing: "")
   #expect(emptyStorage.templateRepresentation == "")
   #expect(emptyStorage.templateVariables.isEmpty)
@@ -125,11 +125,6 @@ private func manualStorageAndComponentCoverage() throws {
   #expect(storage == storage)
   #expect(storage == (try URITemplateStorage(parsing: "prefix{/id}")))
   #expect(Set([storage, try URITemplateStorage(parsing: "prefix{/id}")]).count == 1)
-
-  let encoded = try JSONEncoder().encode(storage)
-  let decoded = try JSONDecoder().decode(URITemplateStorage.self, from: encoded)
-  #expect(decoded.components == storage.components)
-  #expect(decoded.templateRepresentation == storage.templateRepresentation)
 
   // Component APIs are small discriminators, but both cases matter because storage delegates rendering and variable injection through them.
   #expect(literalComponent.isLiteralComponent)
