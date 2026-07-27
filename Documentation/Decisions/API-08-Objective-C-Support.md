@@ -69,10 +69,10 @@ fully usable Swift contract. It avoids implying support for a bridge that
 cannot perform expansion and avoids freezing accidental selectors and archive
 schemas.
 
-Retaining the facade was a defensible alternative because the package is
-Apple-only, its core Swift API is small, the wrapper code already exists, and a
-SwiftPM Objective-C test target now builds. Retention would become preferable
-if a named current or committed consumer required it. No such consumer or
+Retaining the facade was a defensible alternative because the package was
+Apple-only, its core Swift API was small, the wrapper code already existed, and
+a SwiftPM Objective-C test target built. Retention would have become preferable
+if a named current or committed consumer had required it. No such consumer or
 compatibility horizon was identified.
 
 Removal can inconvenience an unrecorded private Objective-C caller and can make
@@ -82,7 +82,7 @@ of wrapper objects or archives.
 
 ## Removal contract
 
-Issue #81 owns one complete, reviewable removal:
+Issue #81 was scoped to own one complete, reviewable removal:
 
 - delete the two public wrapper classes;
 - remove Objective-C exposure from the value-type enum while preserving the
@@ -96,10 +96,10 @@ Issue #81 owns one complete, reviewable removal:
 - make README, DocC, package claims, tests, and audit scope agree that
   Objective-C is unsupported.
 
-The removal issue is a native child of epic #8 and a native blocker of #52. It
-is deliberately not blocked by still-open #52; the merged nonclosing decision
-record is its contract prerequisite, and a reverse native dependency would
-create a cycle.
+The removal issue was a native child of epic #8 and a native blocker of #52. It
+was deliberately not blocked by then-open #52; the merged nonclosing decision
+record was its contract prerequisite, and a reverse native dependency would
+have created a cycle.
 
 ## Compatibility and migration
 
