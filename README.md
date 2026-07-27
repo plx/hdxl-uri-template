@@ -48,12 +48,11 @@ inspection, can also expose source or values. Do not log that recovery context
 without an application-specific privacy policy; use
 `EvaluationError.kind.description` for a payload-free category.
 
-The project does not yet provide a private vulnerability-reporting channel.
-Use [GitHub Issues](https://github.com/plx/hdxl-uri-template/issues) only for
-non-sensitive defects and never include secrets. The formal contribution and
-security-reporting policy is tracked in
-[#41](https://github.com/plx/hdxl-uri-template/issues/41); users who require a
-private reporting path should wait for that policy.
+Report suspected vulnerabilities through the repository's
+[private vulnerability-reporting form](https://github.com/plx/hdxl-uri-template/security/advisories),
+not through a public issue. Never include secrets, personal data, or private
+production URIs; use synthetic values. The complete response and disclosure
+process is in [SECURITY.md](SECURITY.md).
 
 ## Supported environments
 
@@ -352,9 +351,15 @@ smoke job compiles for every declared Apple 26 platform.
   external-consumer and symbol-graph boundary. Full DocC publication remains
   tracked in [#40](https://github.com/plx/hdxl-uri-template/issues/40); no DocC
   catalog is published yet.
-- [CHANGELOG](CHANGELOG.md) records project changes. The formal contribution,
-  security, and release-policy documents remain tracked in
-  [#41](https://github.com/plx/hdxl-uri-template/issues/41).
+- [CONTRIBUTING](CONTRIBUTING.md) defines the supported development workflow
+  and pull-request requirements. [SECURITY](SECURITY.md) defines private
+  reporting and response, and the [Code of Conduct](CODE_OF_CONDUCT.md)
+  governs project spaces.
+- [CHANGELOG](CHANGELOG.md) records project changes and the `0.x`
+  compatibility policy. The
+  [Release Checklist](Documentation/Release/Release-Checklist.md) and
+  [Canary and Rollback Template](Documentation/Release/Canary-and-Rollback-Template.md)
+  define evidence-based release and operational gates.
 - Project-authored material is available under the [MIT License](LICENSE).
   Vendored fixtures and standards-derived Code Components have separate terms
   in [Third-party notices](THIRD_PARTY_NOTICES.md), reproduced licenses in
