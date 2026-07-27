@@ -34,6 +34,9 @@ jobs:
           xcrun swift --version
           xcrun swift --version | grep -Eq 'Swift version 6\.3([.[:space:]]|$)'
 
+      - name: Test warning guard
+        run: ./Scripts/test-run-without-warnings.sh
+
       - name: Build HEAVY_DEBUG
         run: >-
           ./Scripts/run-without-warnings.sh swift build -c debug
