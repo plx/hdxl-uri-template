@@ -11,6 +11,9 @@ Baseline revision:
 Implementation revision:
 `b14ce960dc5d13e39e7cfdf6eaab19e9a6537caf`
 
+Approved CI-stabilization revision:
+`1888e3b08ee90b3987c739beaac77bc3fe8dfe78`
+
 ## Baseline characterization
 
 At the baseline revision, public Swift consumers could construct every
@@ -94,10 +97,35 @@ implementation revision was:
 The report recorded both matching and mismatching branches for all three new
 properties.
 
+## Approved CI measurement stabilization
+
+PR #101's first Release run and its unchanged-SHA rerun both completed the
+API-07 and functional assertions but failed the pre-existing HARD-01
+percent-triplet scaling test. The reported outlier moved between adjacent
+sizes: the first run measured a `4.20x` 40,000-to-80,000 ratio, while the
+rerun measured a `4.47x` 20,000-to-40,000 ratio. The entire measurement took
+only 45–62 milliseconds and ran concurrently with the 20–30-second API-03
+benchmark. An earlier unchanged `master` run had exhibited the same failure
+mode before passing on a later run.
+
+The explicitly-approved stabilization increases work per sample from
+`[8, 4, 2, 1]` to `[64, 32, 16, 8]` repetitions and the median sample count
+from three to five. It does not change production code, workloads, input
+sizes, the `3.0x` adjacent-ratio ceiling, or the `1.25` fitted-exponent
+ceiling.
+
+One initial run and ten consecutive focused Release reruns passed. Their
+fitted exponents ranged from `0.989` to `1.010`, and the largest observed
+adjacent ratio was `2.064`. The complete Release suite also passed with the
+stabilized test running beside API-03. The combined post-fuzz smoke invocation
+then produced one transient `large-list` rejection; its separate five-sample
+QA-03 scaling rerun passed all six frozen workloads, with fitted exponents
+ranging from `0.957` to `0.998`.
+
 ## Validation record
 
-All commands used Xcode's Swift 6.3 toolchain and completed successfully on the
-implementation revision:
+All validation used Xcode's Swift 6.3 toolchain. The implementation revision
+completed:
 
 ```sh
 swift test --filter publicPayloadInspection
@@ -108,6 +136,17 @@ swift test --sanitize address
 swift test --sanitize thread
 just qa-03-detectors
 just qa-03-smoke
+```
+
+The approved CI-stabilization revision completed the following additional
+validation:
+
+```sh
+swift test -c release --filter HDXLURITemplateTests.PercentEscapeScannerStressTests
+just test-all
+swift run -c release HDXLURITemplateQA03 fuzz --iterations 200000 …
+swift run -c release HDXLURITemplateQA03 concurrency --operations 100000
+swift run -c release HDXLURITemplateQA03 scaling --baseline Hardening/QA03/baselines.json --samples 5
 ```
 
 Results:
