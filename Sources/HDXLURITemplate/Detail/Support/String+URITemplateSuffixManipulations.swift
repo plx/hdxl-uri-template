@@ -6,7 +6,6 @@ extension String {
   ///
   /// - note: For `""`, returns `nil` (rather than some length-zreo range).
   ///
-  @inlinable
   internal func range(forSuffix suffix: String) -> Range<String.Index>? {
     guard
       !isEmpty,
@@ -21,7 +20,6 @@ extension String {
   }
   
   /// Returns the result of removing `suffix` iff `self` actually has `suffix` as a suffix.
-  @inlinable
   internal func conditionallyRemoving(suffix: String) -> String {
     mutated {
       $0.conditionallyRemove(suffix: suffix)
@@ -29,7 +27,6 @@ extension String {
   }
   
   /// In-place removes `suffix` iff it's actually present as a suffix on `self`.
-  @inlinable
   internal mutating func conditionallyRemove(suffix: String) {
     if let suffixRange = range(forSuffix: suffix) {
       removeSubrange(suffixRange)

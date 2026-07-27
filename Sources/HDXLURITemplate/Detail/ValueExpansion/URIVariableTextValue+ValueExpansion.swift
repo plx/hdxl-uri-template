@@ -2,7 +2,6 @@ import Foundation
 
 extension URIVariableTextValue {
   
-  @usableFromInline
   internal enum ExpansionError : Error, LocalizedError {
     
     case unableToEscapeVariableValue(String, String, URIValueExpansionType, URIValueExpansionModifier)
@@ -10,14 +9,12 @@ extension URIVariableTextValue {
     case unableToEscapeTextValue(String, URIValueExpansionType)
   }
   
-  @inlinable
   internal func escapedContents(
     expansionType: URIValueExpansionType
   ) throws -> String {
     rawValue.escaped(forValueExpansionType: expansionType)
   }
   
-  @inlinable
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
@@ -33,7 +30,6 @@ extension URIVariableTextValue {
     )
   }
   
-  @inlinable
   func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
@@ -61,7 +57,6 @@ extension URIVariableTextValue {
     }
   }
   
-  @inlinable
   func escapedVariableValue(
     expansionType: URIValueExpansionType,
     expansionModifier: URIValueExpansionModifier
@@ -83,7 +78,6 @@ extension URIVariableTextValue {
     }
   }
   
-  @inlinable
   func effectiveVariableValue(
     forExpansionModifier expansionModifier: URIValueExpansionModifier
   ) -> String {

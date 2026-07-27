@@ -66,7 +66,7 @@ private enum PublicAPICheckError: Error, CustomStringConvertible {
     case .missingSymbolGraph(let module, let directory):
       "No \(module).symbols.json was emitted beneath \(directory)."
     case .unexpectedObjectiveCHeaders(let module, let paths):
-      "Expected two canonical \(module)-Swift.h headers, found \(paths.count): \(paths.joined(separator: ", "))."
+      "Expected three canonical \(module)-Swift.h headers, found \(paths.count): \(paths.joined(separator: ", "))."
     case .multipleSymbolGraphs(let module, let paths):
       "Found multiple \(module) symbol graphs where exactly one was expected: \(paths.joined(separator: ", "))."
     case .contractViolations(let violations):
@@ -113,7 +113,7 @@ private func generatedObjectiveCHeaders(
       directory: directory.path
     )
   }
-  guard canonicalMatches.count == 2 else {
+  guard canonicalMatches.count == 3 else {
     throw PublicAPICheckError.unexpectedObjectiveCHeaders(
       module: module,
       paths: canonicalMatches.map(\.path).sorted()
@@ -474,6 +474,18 @@ private func main() throws {
   )
   try runSwift(
     arguments: [
+      "run",
+      "--package-path", externalConsumerURL.path,
+      "--scratch-path",
+      scratchDirectory.appendingPathComponent("external-consumer-release").path,
+      "--build-system", "swiftbuild",
+      "-c", "release",
+      "-q",
+    ],
+    in: externalConsumerURL
+  )
+  try runSwift(
+    arguments: [
       "package",
       "--package-path", repositoryRoot.path,
       "--scratch-path", scratchDirectory.path,
@@ -511,7 +523,8 @@ private func main() throws {
   )
 
   print(
-    "Public API contract and external consumer passed for \(contract.module) "
+    "Public API contract and Debug/Release external consumer passed for "
+      + "\(contract.module) "
       + "(\(contract.declarations.count) Swift declarations and "
       + "\(contract.forbiddenDeclarations.count) Swift absences plus "
       + "\(contract.forbiddenObjectiveCDeclarations.count) "

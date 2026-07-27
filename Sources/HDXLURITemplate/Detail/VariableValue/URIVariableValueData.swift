@@ -10,7 +10,6 @@
 ///
 /// Keeping it internal is also the only way to hide the newtype-style wrappers
 /// from the public API--which *is* another goal, here, too!
-@usableFromInline
 internal enum URIVariableValueData {
 
   case undefined
@@ -18,15 +17,12 @@ internal enum URIVariableValueData {
   case list(URIVariableListValue)
   case association(URIVariableAssociationValue)
 
-  @usableFromInline
   internal static let emptyList: URIVariableValueData = .list(URIVariableListValue())
 
-  @usableFromInline
   internal static let emptyAssociation: URIVariableValueData = .association(
     URIVariableAssociationValue()
   )
 
-  @inlinable
   internal init(from text: String) {
     #if HEAVY_DEBUG
       defer { pedanticAssert(isValid) }
@@ -36,7 +32,6 @@ internal enum URIVariableValueData {
     )
   }
 
-  @inlinable
   internal init<S: Sequence>(from texts: S) where S.Element == String {
     #if HEAVY_DEBUG
       defer { pedanticAssert(isValid) }
@@ -50,7 +45,6 @@ internal enum URIVariableValueData {
     )
   }
 
-  @inlinable
   internal init(singleElementListFrom text: String) {
     #if HEAVY_DEBUG
       defer { pedanticAssert(isValid) }
@@ -62,7 +56,6 @@ internal enum URIVariableValueData {
     )
   }
 
-  @inlinable
   internal init(from pair: (String, String)) {
     #if HEAVY_DEBUG
       defer { pedanticAssert(isValid) }
@@ -77,7 +70,6 @@ internal enum URIVariableValueData {
     )
   }
 
-  @inlinable
   internal init<S: Sequence>(
     validating pairs: S
   ) throws where S.Element == (String, String) {
@@ -91,7 +83,6 @@ internal enum URIVariableValueData {
     #endif
   }
 
-  @inlinable
   internal init(
     dictionary: [String: String],
     orderingKeysWith areInIncreasingOrder: (String, String) -> Bool
@@ -123,7 +114,6 @@ extension URIVariableValueData: Hashable {}
 
 extension URIVariableValueData: CustomStringConvertible {
 
-  @usableFromInline
   internal var description: String {
     switch self {
     case .undefined:
@@ -145,7 +135,6 @@ extension URIVariableValueData: CustomStringConvertible {
 
 extension URIVariableValueData: CustomDebugStringConvertible {
 
-  @usableFromInline
   internal var debugDescription: String {
     switch self {
     case .undefined:
@@ -167,7 +156,6 @@ extension URIVariableValueData: CustomDebugStringConvertible {
 
 extension URIVariableValueData {
 
-  @inlinable
   internal var valueType: URIVariableValueType {
     switch self {
     case .undefined:
@@ -181,7 +169,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isEmpty: Bool {
     switch self {
     case .undefined:
@@ -195,7 +182,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isDefined: Bool {
     switch self {
     case .undefined:
@@ -209,7 +195,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isUndefined: Bool {
     switch self {
     case .undefined:
@@ -223,7 +208,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var count: Int {
     switch self {
     case .undefined:
@@ -237,7 +221,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isUndefinedValue: Bool {
     switch self {
     case .undefined:
@@ -247,7 +230,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isTextValue: Bool {
     switch self {
     case .text(_):
@@ -257,7 +239,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isListValue: Bool {
     switch self {
     case .list(_):
@@ -267,7 +248,6 @@ extension URIVariableValueData {
     }
   }
 
-  @inlinable
   internal var isAssociationValue: Bool {
     switch self {
     case .association(_):
@@ -285,7 +265,6 @@ extension URIVariableValueData {
 
 extension URIVariableValueData {
 
-  @inlinable
   internal var isValid: Bool {
     switch self {
     case .undefined:

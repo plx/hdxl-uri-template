@@ -2,7 +2,6 @@ import Foundation
 
 extension URITemplateVariable {
 
-  @inlinable
   internal func evaluate(
     parameters: [String: URIVariableValue],
     expansionType: URIValueExpansionType
@@ -17,7 +16,6 @@ extension URITemplateVariable {
     return expansion
   }
 
-  @inlinable
   internal func evaluateIfDefined(
     parameters: [String: URIVariableValue],
     expansionType: URIValueExpansionType

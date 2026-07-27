@@ -2,20 +2,16 @@
 // MARK: URIVariableListValue - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal struct URIVariableListValue {
 
-  @usableFromInline
   internal var storage: [URIVariableTextValue]
 
-  @inlinable
   internal init() {
     self.init(
       values: []
     )
   }
 
-  @inlinable
   internal init(value: URIVariableTextValue) {
     #if HEAVY_DEBUG
       pedanticAssert(value.isValid)
@@ -25,7 +21,6 @@ internal struct URIVariableListValue {
     )
   }
 
-  @inlinable
   internal init(values: [URIVariableTextValue]) {
     #if HEAVY_DEBUG
       pedanticAssert(values.allSatisfy(\.isValid))
@@ -34,14 +29,12 @@ internal struct URIVariableListValue {
     self.storage = values
   }
 
-  @inlinable
   internal init(string: String) {
     self.init(
       value: URIVariableTextValue(rawValue: string)
     )
   }
 
-  @inlinable
   internal init(strings: [String]) {
     self.init(
       values: strings.map { URIVariableTextValue(rawValue: $0) }
@@ -64,7 +57,6 @@ extension URIVariableListValue: Hashable {}
 
 extension URIVariableListValue: Comparable {
 
-  @inlinable
   internal static func < (
     lhs: Self,
     rhs: Self
@@ -84,7 +76,6 @@ extension URIVariableListValue: Comparable {
 
 extension URIVariableListValue: CustomStringConvertible {
 
-  @usableFromInline
   internal var description: String {
     let values = storage
       .lazy
@@ -102,7 +93,6 @@ extension URIVariableListValue: CustomStringConvertible {
 
 extension URIVariableListValue: CustomDebugStringConvertible {
 
-  @usableFromInline
   internal var debugDescription: String {
     let values = storage
       .lazy
@@ -118,7 +108,6 @@ extension URIVariableListValue: CustomDebugStringConvertible {
 
 extension URIVariableListValue: ExpressibleByArrayLiteral {
 
-  @inlinable
   internal init(arrayLiteral elements: URIVariableTextValue...) {
     self.init(values: elements)
   }
@@ -130,7 +119,6 @@ extension URIVariableListValue: ExpressibleByArrayLiteral {
 
 extension URIVariableListValue {
 
-  @inlinable
   internal var isValid: Bool {
     storage.allSatisfy(\.isValid)
   }
@@ -143,17 +131,14 @@ extension URIVariableListValue {
 
 extension URIVariableListValue {
 
-  @inlinable
   internal var isEmpty: Bool {
     storage.isEmpty
   }
 
-  @inlinable
   internal var count: Int {
     storage.count
   }
 
-  @inlinable
   internal subscript(index: Int) -> URIVariableTextValue {
     storage[index]
   }

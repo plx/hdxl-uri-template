@@ -30,6 +30,11 @@ There are no published versions yet.
 
 ### Changed
 
+- Removed pervasive cross-module and forced-inlining annotations that exposed
+  internal parser, expansion, value-model, and storage declarations to client
+  optimization. Measured public-client parse, expansion, hashing, and semantic
+  Codable behavior remains within 3.7%, while the compiled module and final
+  consumer executable are substantially smaller.
 - Changed `URITemplate` storage to one immutable, compiler-checked `Sendable`
   reference initialized with parsed components, exact source, and variable
   names. Warm metadata reads no longer mutate lazy caches or acquire an unfair

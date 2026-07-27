@@ -2,12 +2,10 @@ import Foundation
 
 extension URITemplateVariable {
   
-  @usableFromInline
   internal enum ParseError : Error {
     case invalidEmptyString
   }
   
-  @inlinable
   internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString

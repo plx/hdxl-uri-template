@@ -6,13 +6,11 @@ import Foundation
 
 extension String {
 
-  @usableFromInline
   internal enum URITemplateChunkingState {
     case literal
     case expression
   }
 
-  @usableFromInline
   internal enum URITemplateChunkRange {
     case literal(Range<String.Index>)
     case expression(Range<String.Index>)

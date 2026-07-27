@@ -3,16 +3,12 @@
 // -------------------------------------------------------------------------- //
 
 /// Represents a single key:value pair of strings--for use within `URIVariableAssociationValue`.
-@usableFromInline
 internal struct URIVariablePairValue {
 
-  @usableFromInline
   internal var key: URIVariableTextValue
 
-  @usableFromInline
   internal var value: URIVariableTextValue
 
-  @inlinable
   internal init(
     key: URIVariableTextValue,
     value: URIVariableTextValue
@@ -42,7 +38,6 @@ extension URIVariablePairValue: Hashable {}
 
 extension URIVariablePairValue: Comparable {
 
-  @inlinable
   internal static func < (
     lhs: URIVariablePairValue,
     rhs: URIVariablePairValue
@@ -66,7 +61,6 @@ extension URIVariablePairValue: Comparable {
 
 extension URIVariablePairValue: CustomStringConvertible {
 
-  @usableFromInline
   internal var description: String {
     "\"\(key.description)\":\"\(value.description)\""
   }
@@ -79,7 +73,6 @@ extension URIVariablePairValue: CustomStringConvertible {
 
 extension URIVariablePairValue: CustomDebugStringConvertible {
 
-  @usableFromInline
   internal var debugDescription: String {
     "URIVariablePairValue(key: \(String(reflecting: key)), value: \(String(reflecting: value)))"
   }
@@ -92,7 +85,6 @@ extension URIVariablePairValue: CustomDebugStringConvertible {
 
 extension URIVariablePairValue: ExpressibleByArrayLiteral {
 
-  @inlinable
   internal init(arrayLiteral elements: URIVariableTextValue...) {
     precondition(elements.count == 2)
     self.init(
@@ -109,7 +101,6 @@ extension URIVariablePairValue: ExpressibleByArrayLiteral {
 
 extension URIVariablePairValue {
 
-  @inlinable
   internal var isValid: Bool {
     key.isValid && value.isValid
   }

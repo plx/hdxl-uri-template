@@ -4,16 +4,12 @@ import Foundation
 // MARK: URITemplateVariable - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal struct URITemplateVariable {
   
-  @usableFromInline
   internal var variableName: URITemplateVariableName
   
-  @usableFromInline
   internal var expansionModifier: URIValueExpansionModifier
   
-  @inlinable
   internal init(
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
@@ -43,7 +39,6 @@ extension URITemplateVariable : Hashable { }
 
 extension URITemplateVariable : Comparable {
   
-  @inlinable
   internal static func <(
     lhs: URITemplateVariable,
     rhs: URITemplateVariable
@@ -67,7 +62,6 @@ extension URITemplateVariable : Comparable {
 
 extension URITemplateVariable : CustomStringConvertible {
   
-  @usableFromInline
   internal var description: String {
     "\"\(variableName)\", \(expansionModifier.description)"
   }
@@ -80,7 +74,6 @@ extension URITemplateVariable : CustomStringConvertible {
 
 extension URITemplateVariable : CustomDebugStringConvertible {
   
-  @usableFromInline
   internal var debugDescription: String {
     "URITemplateVariable(variableName: \(String(reflecting: variableName)), expansionModifier: \(String(reflecting: expansionModifier)))"
   }
@@ -93,7 +86,6 @@ extension URITemplateVariable : CustomDebugStringConvertible {
 
 extension URITemplateVariable {
   
-  @inlinable
   internal var templateRepresentation: String {
     "\(variableName.rawValue)\(expansionModifier.templateRepresentation)"
   }
@@ -106,7 +98,6 @@ extension URITemplateVariable {
 
 extension URITemplateVariable {
   
-  @inlinable
   internal var isValid: Bool {
     variableName.isValid && expansionModifier.isValid
   }

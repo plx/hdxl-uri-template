@@ -5,13 +5,11 @@ import Foundation
 
 extension URITemplateVariableName {
 
-  @usableFromInline
   internal enum TextVariableNameEscapeResult {
     case unnecessary
     case escaped(String)
   }
 
-  @inlinable
   internal func escapedVariableName(
     forExpansionType expansionType: URIValueExpansionType,
     forced: Bool = false
@@ -25,12 +23,10 @@ extension URITemplateVariableName {
     return .escaped(escapedAsLiteral)
   }
 
-  @inlinable
   internal var escapedAsLiteral: String {
     rawValue.escaped(forValueExpansionType: .reserved)
   }
 
-  @inlinable
   internal func shouldEscapeName(
     forExpansionType expansionType: URIValueExpansionType
   ) -> Bool {

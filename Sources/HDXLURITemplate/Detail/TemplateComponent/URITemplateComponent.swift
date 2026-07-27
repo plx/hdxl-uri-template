@@ -2,7 +2,6 @@
 // MARK: URITemplateComponent - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal enum URITemplateComponent {
   
   case literal(URITemplateLiteralComponent)
@@ -24,7 +23,6 @@ extension URITemplateComponent : Hashable {}
 
 extension URITemplateComponent : Comparable {
 
-  @inlinable
   internal static func <(
     lhs: URITemplateComponent,
     rhs: URITemplateComponent
@@ -52,7 +50,6 @@ extension URITemplateComponent : Comparable {
 
 extension URITemplateComponent : CustomStringConvertible {
   
-  @usableFromInline
   internal var description: String {
     switch self {
     case .literal(let literal):
@@ -70,7 +67,6 @@ extension URITemplateComponent : CustomStringConvertible {
 
 extension URITemplateComponent : CustomDebugStringConvertible {
 
-  @usableFromInline
   internal var debugDescription: String {
     switch self {
     case .literal(let literal):
@@ -88,7 +84,6 @@ extension URITemplateComponent : CustomDebugStringConvertible {
 
 extension URITemplateComponent {
   
-  @inlinable
   internal var isLiteralComponent: Bool {
     switch self {
     case .literal:
@@ -98,7 +93,6 @@ extension URITemplateComponent {
     }
   }
   
-  @inlinable
   internal var isExpressionComponent: Bool {
     switch self {
     case .literal:
@@ -108,7 +102,6 @@ extension URITemplateComponent {
     }
   }
   
-  @inlinable
   internal var templateRepresentation: String {
     switch self {
     case .literal(let literal):
@@ -118,7 +111,6 @@ extension URITemplateComponent {
     }
   }
   
-  @inlinable
   internal var templateComponentType: URITemplateComponentType {
     switch self {
     case .literal:
@@ -128,7 +120,6 @@ extension URITemplateComponent {
     }
   }
   
-  @inlinable
   internal func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     switch self {
     case .literal(_):
@@ -148,7 +139,6 @@ extension URITemplateComponent {
 
 extension URITemplateComponent {
   
-  @inlinable
   internal var isValid: Bool {
     switch self {
     case .literal(let literal):

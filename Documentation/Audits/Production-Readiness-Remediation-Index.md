@@ -208,7 +208,7 @@ feature implementation.
 | ID | Issue | Priority/type |
 | --- | --- | --- |
 | [`ARCH-01`](../Benchmarks/ARCH-01-Immutable-Template-Storage.md) | [#31 — Replace mutable locked COW storage with immutable parsed storage](https://github.com/plx/hdxl-uri-template/issues/31) | P2 task |
-| `ARCH-02` | [#36 — Audit and reduce @inlinable/@usableFromInline exposure](https://github.com/plx/hdxl-uri-template/issues/36) | P2 task |
+| [`ARCH-02`](../Benchmarks/ARCH-02-Cross-Module-Inlining.md) | [#36 — Audit and reduce @inlinable/@usableFromInline exposure](https://github.com/plx/hdxl-uri-template/issues/36) | P2 task |
 | `ARCH-03` | [#37 — Remove unreachable expansion error types and simplify throwing boundaries](https://github.com/plx/hdxl-uri-template/issues/37) | P2 task |
 | `ARCH-04` | [#38 — Correct or remove the unused RFC ucschar table](https://github.com/plx/hdxl-uri-template/issues/38) | P3 bug |
 

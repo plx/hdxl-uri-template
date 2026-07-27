@@ -48,6 +48,13 @@ let package = Package(
       ],
       path: "Benchmarks/ARCH01"
     ),
+    .executableTarget(
+      name: "HDXLURITemplateARCH02Benchmark",
+      dependencies: [
+        "HDXLURITemplate"
+      ],
+      path: "Benchmarks/ARCH02"
+    ),
     .target(
       name: "HDXLURITemplateQA03Support",
       dependencies: [

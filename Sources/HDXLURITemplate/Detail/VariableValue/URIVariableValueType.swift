@@ -34,7 +34,6 @@ extension URIVariableValueType: CaseIterable {}
 extension URIVariableValueType: CustomStringConvertible {
 
   /// The stable textual name of this value flavor.
-  @inlinable
   public var description: String {
     switch self {
     case .undefined:
@@ -57,7 +56,6 @@ extension URIVariableValueType: CustomStringConvertible {
 extension URIVariableValueType: CustomDebugStringConvertible {
 
   /// A source-like representation of this value flavor for debugging.
-  @inlinable
   public var debugDescription: String {
     switch self {
     case .undefined:

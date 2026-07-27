@@ -4,7 +4,6 @@ import Foundation
 // MARK: URIValueExpansionModifierType - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal enum URIValueExpansionModifierType : UInt8 {
   
   case unmodified = 1
@@ -28,7 +27,6 @@ extension URIValueExpansionModifierType : CaseIterable { }
 
 extension URIValueExpansionModifierType : Comparable {
   
-  @inlinable
   internal static func <(
     lhs: URIValueExpansionModifierType,
     rhs: URIValueExpansionModifierType
@@ -44,7 +42,6 @@ extension URIValueExpansionModifierType : Comparable {
 
 extension URIValueExpansionModifierType : CustomStringConvertible {
   
-  @inlinable
   internal var description: String {
     switch self {
     case .unmodified:
@@ -63,7 +60,6 @@ extension URIValueExpansionModifierType : CustomStringConvertible {
 
 extension URIValueExpansionModifierType : CustomDebugStringConvertible {
   
-  @inlinable
   internal var debugDescription: String {
     switch self {
     case .unmodified:

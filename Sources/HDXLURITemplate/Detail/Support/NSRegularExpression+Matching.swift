@@ -2,7 +2,6 @@ import Foundation
 
 extension NSRegularExpression {
   
-  @inlinable
   internal func matchesEntirety(of string: String) -> Bool {
     let completeRange = NSRange(
       string.startIndex..<string.endIndex,

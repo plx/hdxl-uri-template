@@ -40,6 +40,12 @@ check-public-api:
 check-immutable-template-storage:
     {{ swift }} Scripts/check-immutable-template-storage.swift
 
+check-cross-module-inlining:
+    {{ swift }} Scripts/check-cross-module-inlining.swift
+
+test-check-cross-module-inlining:
+    ./Scripts/test-check-cross-module-inlining.sh
+
 check-pinned-fixtures:
     ./Scripts/check-pinned-fixtures.sh
 
@@ -57,9 +63,18 @@ qa-03-smoke:
 qa-03-detectors:
     ./Scripts/test-qa-03-detectors.sh
 
-test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-public-api check-immutable-template-storage test-debug test-heavy-debug test-release
+test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-public-api check-immutable-template-storage check-cross-module-inlining test-check-cross-module-inlining test-debug test-heavy-debug test-release
 
 check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug build-release test-release
 
 arch-01-benchmark label commit:
     {{ swift }} run -c release HDXLURITemplateARCH01Benchmark --label {{ label }} --commit {{ commit }}
+
+arch-02-benchmark label commit:
+    ARCH02_SWIFT_VERSION="$({{ swift }} --version | head -n 1)" {{ swift }} run -c release HDXLURITemplateARCH02Benchmark --label {{ label }} --commit {{ commit }}
+
+arch-02-inventory label commit:
+    {{ swift }} Scripts/inventory-cross-module-inlining.swift --label {{ label }} --commit {{ commit }}
+
+arch-02-measure label commit:
+    DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer {{ swift }} Scripts/measure-arch-02.swift --label {{ label }} --commit {{ commit }}

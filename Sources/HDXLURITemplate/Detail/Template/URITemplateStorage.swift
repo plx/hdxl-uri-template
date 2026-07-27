@@ -2,30 +2,25 @@
 // MARK: URITemplateStorage - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal final class URITemplateStorage {
 
   // ------------------------------------------------------------------------ //
   // MARK: Fields
   // ------------------------------------------------------------------------ //
 
-  @usableFromInline
   internal let components: [URITemplateComponent]
 
   /// The authoritative, syntactically-valid source for `components`.
-  @usableFromInline
   internal let templateSource: String
 
   /// The distinct public variable-name strings, computed once during
   /// initialization.
-  @usableFromInline
   internal let variableNames: Set<String>
 
   // ------------------------------------------------------------------------ //
   // MARK: `init`
   // ------------------------------------------------------------------------ //
 
-  @usableFromInline
   internal init(parsing template: String) throws {
     let components = try template.parseIntoURITemplateComponents()
     var variableNames: Set<String> = []
@@ -50,7 +45,6 @@ internal final class URITemplateStorage {
   // MARK: `templateRepresentation`
   // ------------------------------------------------------------------------ //
 
-  @inlinable
   internal var templateRepresentation: String {
     templateSource
   }
@@ -69,7 +63,6 @@ extension URITemplateStorage: Sendable {}
 
 extension URITemplateStorage: Equatable {
 
-  @inlinable
   internal static func == (
     lhs: URITemplateStorage,
     rhs: URITemplateStorage
@@ -92,7 +85,6 @@ extension URITemplateStorage: Equatable {
 
 extension URITemplateStorage: Hashable {
 
-  @inlinable
   internal func hash(into hasher: inout Hasher) {
     components.hash(into: &hasher)
   }
@@ -105,7 +97,6 @@ extension URITemplateStorage: Hashable {
 
 extension URITemplateStorage: CustomStringConvertible {
 
-  @usableFromInline
   internal var description: String {
     "storage for uri template: \"\(templateRepresentation)\""
   }
@@ -118,7 +109,6 @@ extension URITemplateStorage: CustomStringConvertible {
 
 extension URITemplateStorage: CustomDebugStringConvertible {
 
-  @usableFromInline
   internal var debugDescription: String {
     let components = components
       .lazy
@@ -135,7 +125,6 @@ extension URITemplateStorage: CustomDebugStringConvertible {
 
 extension URITemplateStorage {
 
-  @inlinable
   internal var isValid: Bool {
     components.allSatisfy(\.isValid)
   }

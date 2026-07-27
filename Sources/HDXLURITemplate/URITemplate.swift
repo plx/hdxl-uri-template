@@ -22,10 +22,8 @@ import Foundation
 ///
 public struct URITemplate {
 
-  @usableFromInline
   internal let storage: URITemplateStorage
 
-  @inlinable
   internal init(storage: URITemplateStorage) {
     #if HEAVY_DEBUG
       pedanticAssert(storage.isValid)
@@ -45,14 +43,12 @@ public struct URITemplate {
   /// - returns: The corresponding `URITemplate`, ready for use.
   /// - throws: `ParseError` If `template` is invalid, will throw an error.
   ///
-  @inlinable
   public init(parsing template: String) throws {
     self.init(
       storage: try Self.parsedStorage(from: template)
     )
   }
 
-  @usableFromInline
   internal static func parsedStorage(
     from template: String
   ) throws -> URITemplateStorage {
@@ -96,7 +92,6 @@ extension URITemplate: Codable {
   /// The semantic source string is the complete public persistence format.
   /// Private parser storage and compiled caches are never part of the encoded
   /// representation.
-  @inlinable
   public func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
     try container.encode(templateRepresentation)
@@ -107,7 +102,6 @@ extension URITemplate: Codable {
   /// Decoding always reparses the source through ``init(parsing:)`` so it
   /// cannot construct state that the public parser would reject. Historical
   /// payloads synthesized from private parser storage are unsupported.
-  @inlinable
   public init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
     let template = try container.decode(String.self)
@@ -133,7 +127,6 @@ extension URITemplate: Codable {
 extension URITemplate: CustomStringConvertible {
 
   /// A representation of this template suitable for diagnostic display.
-  @inlinable
   public var description: String {
     storage.description
   }
@@ -147,7 +140,6 @@ extension URITemplate: CustomStringConvertible {
 extension URITemplate: CustomDebugStringConvertible {
 
   /// A detailed representation of this template suitable for debugging.
-  @inlinable
   public var debugDescription: String {
     "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"
   }
@@ -161,7 +153,6 @@ extension URITemplate: CustomDebugStringConvertible {
 extension URITemplate {
 
   /// Whether the template's internal state satisfies all invariants.
-  @inlinable
   public var isValid: Bool {
     storage.isValid
   }
@@ -179,13 +170,11 @@ extension URITemplate {
   ///
   /// The returned source is syntactically valid and reparses to an equivalent
   /// `URITemplate`.
-  @inlinable
   public var templateRepresentation: String {
     storage.templateRepresentation
   }
 
   /// The names of the variables within the template (as `String`s).
-  @inlinable
   public var variableNames: Set<String> {
     storage.variableNames
   }
