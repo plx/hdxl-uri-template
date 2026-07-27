@@ -22,8 +22,8 @@ internal struct URITemplateLiteralComponent: RawRepresentable {
   @inlinable
   internal init(rawValue: Storage) {
 #if HEAVY_DEBUG
-    pedanticAssert(!storage.isEmpty)
-    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: storage))
+    pedanticAssert(!rawValue.isEmpty)
+    pedanticAssert(Self.validationRegularExpression.matchesEntirety(of: rawValue))
     defer { pedanticAssert(isValid) }
 #endif
     self.rawValue = rawValue
