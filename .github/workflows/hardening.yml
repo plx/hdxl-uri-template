@@ -1,0 +1,399 @@
+name: Recurring Hardening
+
+on:  # yamllint disable-line rule:truthy
+  schedule:
+    - cron: "41 7 * * 6"
+  workflow_dispatch:
+    inputs:
+      target_sha:
+        description: Full 40-character candidate SHA; blank uses the event SHA
+        required: false
+        type: string
+      profile:
+        description: Scheduled smoke or release-candidate evidence budget
+        required: true
+        default: scheduled
+        type: choice
+        options:
+          - scheduled
+          - candidate
+      seed:
+        description: Deterministic hexadecimal UInt64 fuzz seed
+        required: true
+        default: "0x4844584C51413033"
+        type: string
+      fuzz_iterations:
+        description: Blank selects 200k scheduled or 1m candidate iterations
+        required: false
+        type: string
+      failure_probe:
+        description: Deliberately fail after detector controls to verify artifacts
+        required: true
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+concurrency:
+  group: recurring-hardening-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
+jobs:
+  validate:
+    name: Validate hardening request
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    outputs:
+      fuzz_iterations: ${{ steps.request.outputs.fuzz_iterations }}
+      profile: ${{ steps.request.outputs.profile }}
+      seed: ${{ steps.request.outputs.seed }}
+      target_sha: ${{ steps.request.outputs.target_sha }}
+
+    steps:
+      - id: request
+        name: Freeze target and deterministic budget
+        env:
+          EVENT_SHA: ${{ github.sha }}
+          INPUT_FUZZ_ITERATIONS: ${{ inputs.fuzz_iterations }}
+          INPUT_PROFILE: ${{ inputs.profile }}
+          INPUT_SEED: ${{ inputs.seed }}
+          INPUT_TARGET_SHA: ${{ inputs.target_sha }}
+        run: |
+          set -euo pipefail
+          target_sha="${INPUT_TARGET_SHA:-$EVENT_SHA}"
+          profile="${INPUT_PROFILE:-scheduled}"
+          seed="${INPUT_SEED:-0x4844584C51413033}"
+          fuzz_iterations="$INPUT_FUZZ_ITERATIONS"
+
+          [[ "$target_sha" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$seed" =~ ^0[xX][0-9a-fA-F]{1,16}$ ]]
+          [[ "$profile" = scheduled || "$profile" = candidate ]]
+
+          if [[ -z "$fuzz_iterations" ]]; then
+            if [[ "$profile" = candidate ]]; then
+              fuzz_iterations=1000000
+            else
+              fuzz_iterations=200000
+            fi
+          fi
+          [[ "$fuzz_iterations" =~ ^[0-9]+$ ]]
+          (( fuzz_iterations >= 1 ))
+          if [[ "$profile" = candidate ]]; then
+            (( fuzz_iterations >= 1000000 ))
+          fi
+
+          {
+            echo "target_sha=$target_sha"
+            echo "profile=$profile"
+            echo "seed=$seed"
+            echo "fuzz_iterations=$fuzz_iterations"
+          } >>"$GITHUB_OUTPUT"
+
+  address_sanitizer:
+    name: Address Sanitizer
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-asan
+      QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
+
+    steps:
+      - name: Checkout exact target
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ needs.validate.outputs.target_sha }}
+
+      - name: Record exact environment
+        run: |
+          ./Scripts/record-qa-03-environment.sh \
+            "$QA03_ARTIFACTS" \
+            "$QA03_COMMIT" \
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
+
+      - name: Run full suite under Address Sanitizer
+        run: |
+          set -o pipefail
+          /usr/bin/time -lp \
+            xcrun swift test --sanitize address \
+            --xunit-output "$QA03_ARTIFACTS/test-results.xml" \
+            2>&1 | tee "$QA03_ARTIFACTS/address-sanitizer.log"
+
+      - name: Run bounded parser and value fuzz under Address Sanitizer
+        run: |
+          set -o pipefail
+          /usr/bin/time -lp \
+            xcrun swift run --sanitize address HDXLURITemplateQA03 fuzz \
+            --seed "$QA03_SEED" \
+            --iterations 20000 \
+            --fixtures Tests/HDXLURITemplateTests/Resources \
+            >"$QA03_ARTIFACTS/fuzz-report.json" \
+            2>"$QA03_ARTIFACTS/fuzz-resource-and-progress.log"
+
+      - name: Retain Address Sanitizer evidence
+        if: always()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-03-address-sanitizer-${{ github.run_attempt }}
+          path: ${{ env.QA03_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 30
+
+  thread_sanitizer:
+    name: Thread Sanitizer and concurrency stress
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-tsan
+      QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
+
+    steps:
+      - name: Checkout exact target
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ needs.validate.outputs.target_sha }}
+
+      - name: Record exact environment
+        run: |
+          ./Scripts/record-qa-03-environment.sh \
+            "$QA03_ARTIFACTS" \
+            "$QA03_COMMIT" \
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
+
+      - name: Run full suite under Thread Sanitizer
+        run: |
+          set -o pipefail
+          /usr/bin/time -lp \
+            xcrun swift test --sanitize thread \
+            --xunit-output "$QA03_ARTIFACTS/test-results.xml" \
+            2>&1 | tee "$QA03_ARTIFACTS/thread-sanitizer.log"
+
+      - name: Run 100,000-operation concurrency phases under TSan
+        run: |
+          set -o pipefail
+          /usr/bin/time -lp \
+            xcrun swift run --sanitize thread HDXLURITemplateQA03 \
+            concurrency --operations 100000 \
+            >"$QA03_ARTIFACTS/concurrency-report.json" \
+            2>"$QA03_ARTIFACTS/concurrency-resources.log"
+
+      - name: Retain Thread Sanitizer and concurrency evidence
+        if: always()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-03-thread-sanitizer-${{ github.run_attempt }}
+          path: ${{ env.QA03_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 30
+
+  deterministic_fuzz:
+    name: Deterministic fuzz
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-fuzz
+      QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
+
+    steps:
+      - name: Checkout exact target
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ needs.validate.outputs.target_sha }}
+
+      - name: Record exact environment
+        run: |
+          ./Scripts/record-qa-03-environment.sh \
+            "$QA03_ARTIFACTS" \
+            "$QA03_COMMIT" \
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
+
+      - name: Run deterministic parser and value fuzz
+        run: |
+          set -o pipefail
+          /usr/bin/time -lp \
+            xcrun swift run -c release HDXLURITemplateQA03 fuzz \
+            --seed "$QA03_SEED" \
+            --iterations "$QA03_FUZZ_ITERATIONS" \
+            --fixtures Tests/HDXLURITemplateTests/Resources \
+            >"$QA03_ARTIFACTS/fuzz-report.json" \
+            2>"$QA03_ARTIFACTS/fuzz-resource-and-progress.log"
+
+      - name: Retain deterministic fuzz evidence
+        if: always()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-03-deterministic-fuzz-${{ github.run_attempt }}
+          path: ${{ env.QA03_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 30
+
+  release_scaling:
+    name: Release scaling regression
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 20
+    env:
+      QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-scaling
+      QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
+
+    steps:
+      - name: Checkout exact target
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ needs.validate.outputs.target_sha }}
+
+      - name: Record exact environment
+        run: |
+          ./Scripts/record-qa-03-environment.sh \
+            "$QA03_ARTIFACTS" \
+            "$QA03_COMMIT" \
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
+
+      - name: Measure frozen release scaling workloads
+        run: |
+          set -o pipefail
+          /usr/bin/time -lp \
+            xcrun swift run -c release HDXLURITemplateQA03 scaling \
+            --baseline Hardening/QA03/baselines.json \
+            --samples 5 \
+            >"$QA03_ARTIFACTS/scaling-report.json" \
+            2>"$QA03_ARTIFACTS/scaling-resources.log"
+
+      - name: Retain release scaling evidence
+        if: always()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-03-release-scaling-${{ github.run_attempt }}
+          path: ${{ env.QA03_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 30
+
+  detector_controls:
+    name: Negative detector controls
+    needs: validate
+    runs-on: macos-26
+    timeout-minutes: 15
+    env:
+      QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-detectors
+      QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
+
+    steps:
+      - name: Checkout exact target
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+          ref: ${{ needs.validate.outputs.target_sha }}
+
+      - name: Record exact environment
+        run: |
+          ./Scripts/record-qa-03-environment.sh \
+            "$QA03_ARTIFACTS" \
+            "$QA03_COMMIT" \
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
+
+      - name: Prove fuzz, scaling, and TSan detectors
+        run: |
+          set -o pipefail
+          ./Scripts/test-qa-03-detectors.sh 2>&1 |
+            tee "$QA03_ARTIFACTS/detector-controls.log"
+
+      - name: Controlled artifact-on-failure probe
+        if: inputs.failure_probe
+        run: |
+          {
+            echo "intentional QA-03 failure probe"
+            echo "commit=$QA03_COMMIT"
+            echo "run-id=$GITHUB_RUN_ID"
+          } | tee "$QA03_ARTIFACTS/controlled-failure-probe.log"
+          exit 86
+
+      - name: Retain detector-control evidence
+        if: always()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-03-detector-controls-${{ github.run_attempt }}
+          path: ${{ env.QA03_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 30
+
+  hardening_gate:
+    name: Required recurring hardening gate
+    if: always()
+    needs:
+      - address_sanitizer
+      - detector_controls
+      - deterministic_fuzz
+      - release_scaling
+      - thread_sanitizer
+      - validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+
+    steps:
+      - name: Require every hardening lane
+        env:
+          ADDRESS_SANITIZER_RESULT: ${{ needs.address_sanitizer.result }}
+          DETECTOR_CONTROLS_RESULT: ${{ needs.detector_controls.result }}
+          DETERMINISTIC_FUZZ_RESULT: ${{ needs.deterministic_fuzz.result }}
+          RELEASE_SCALING_RESULT: ${{ needs.release_scaling.result }}
+          THREAD_SANITIZER_RESULT: ${{ needs.thread_sanitizer.result }}
+          VALIDATE_RESULT: ${{ needs.validate.result }}
+        run: |
+          test "$VALIDATE_RESULT" = success
+          test "$ADDRESS_SANITIZER_RESULT" = success
+          test "$THREAD_SANITIZER_RESULT" = success
+          test "$DETERMINISTIC_FUZZ_RESULT" = success
+          test "$RELEASE_SCALING_RESULT" = success
+          test "$DETECTOR_CONTROLS_RESULT" = success

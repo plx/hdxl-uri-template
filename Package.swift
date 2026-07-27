@@ -41,11 +41,26 @@ let package = Package(
       ],
       path: "Benchmarks/API03/Runner"
     ),
+    .target(
+      name: "HDXLURITemplateQA03Support",
+      dependencies: [
+        "HDXLURITemplate"
+      ],
+      path: "Hardening/QA03/Support"
+    ),
+    .executableTarget(
+      name: "HDXLURITemplateQA03",
+      dependencies: [
+        "HDXLURITemplateQA03Support"
+      ],
+      path: "Hardening/QA03/Runner"
+    ),
     .testTarget(
       name: "HDXLURITemplateTests",
       dependencies: [
         "HDXLURITemplate",
-        "HDXLURITemplateAPI03BenchmarkSupport"
+        "HDXLURITemplateAPI03BenchmarkSupport",
+        "HDXLURITemplateQA03Support"
       ],
       exclude: [
         "Resources/README.md"
