@@ -3,14 +3,15 @@
 This document is the durable navigation index for the production-readiness
 program created from the 2026-07-25 due-diligence audit of HDXLURITemplate.
 
-The current program comprises **seven epics and 43 leaf tickets**: the original
+The current program comprises **seven epics and 44 leaf tickets**: the original
 GitHub issues [#5](https://github.com/plx/hdxl-uri-template/issues/5) through
-[#53](https://github.com/plx/hdxl-uri-template/issues/53), plus later finding
-[#55](https://github.com/plx/hdxl-uri-template/issues/55). Each leaf has a
-stable backlog identifier, such as `CONF-05` or `API-02`, in addition to its
-GitHub issue number. The stable identifier should continue to be used in
-remediation notes, audit evidence, and release traceability even if an issue is
-transferred or superseded.
+[#53](https://github.com/plx/hdxl-uri-template/issues/53), plus later tickets
+[#55](https://github.com/plx/hdxl-uri-template/issues/55) and
+[#81](https://github.com/plx/hdxl-uri-template/issues/81). Each leaf has a stable
+backlog identifier, such as `CONF-05` or `API-02`, in addition to its GitHub
+issue number. The stable identifier should continue to be used in remediation
+notes, audit evidence, and release traceability even if an issue is transferred
+or superseded.
 
 The companion documents that define the program's evidence, execution, and
 final gate are:
@@ -154,7 +155,7 @@ feature implementation.
 | [#5](https://github.com/plx/hdxl-uri-template/issues/5) | Bring HDXLURITemplate to production readiness | Top-level program; owns the six topic epics and `AUDIT-01` |
 | [#6](https://github.com/plx/hdxl-uri-template/issues/6) | Complete RFC 6570 conformance and shared-suite coverage | `CONF-01` through `CONF-12` |
 | [#7](https://github.com/plx/hdxl-uri-template/issues/7) | Harden security, robustness, and adversarial performance | `HARD-01` through `HARD-03` |
-| [#8](https://github.com/plx/hdxl-uri-template/issues/8) | Stabilize the public API, serialization, and Objective-C contract | `API-01` through `API-09` |
+| [#8](https://github.com/plx/hdxl-uri-template/issues/8) | Stabilize the public API, serialization, and Objective-C contract | `API-01` through `API-10` |
 | [#9](https://github.com/plx/hdxl-uri-template/issues/9) | Simplify internal architecture and maintainability | `ARCH-01` through `ARCH-04` |
 | [#10](https://github.com/plx/hdxl-uri-template/issues/10) | Establish continuous verification and repository quality gates | `QA-01` through `QA-06` and `WORKFLOW-01` |
 | [#11](https://github.com/plx/hdxl-uri-template/issues/11) | Finish open-source packaging, documentation, and provenance | `PKG-01` and `DOC-01` through `DOC-06` |
