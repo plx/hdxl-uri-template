@@ -8,31 +8,31 @@
 ///
 /// This is a native Swift value. The package does not expose an Objective-C
 /// facade.
-public enum URIVariableValueType: UInt8 {
-
+public enum URIVariableValueType : UInt8 {
+  
   case undefined = 1
   case text = 2
   case list = 4
   case association = 8
-
+  
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType: Sendable {}
-extension URIVariableValueType: Equatable {}
-extension URIVariableValueType: Hashable {}
-extension URIVariableValueType: Codable {}
-extension URIVariableValueType: CaseIterable {}
+extension URIVariableValueType : Sendable { }
+extension URIVariableValueType : Equatable { }
+extension URIVariableValueType : Hashable { }
+extension URIVariableValueType : Codable { }
+extension URIVariableValueType : CaseIterable { }
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType: CustomStringConvertible {
-
+extension URIVariableValueType : CustomStringConvertible {
+  
   @inlinable
   public var description: String {
     switch self {
@@ -46,15 +46,15 @@ extension URIVariableValueType: CustomStringConvertible {
       "association"
     }
   }
-
+  
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType: CustomDebugStringConvertible {
-
+extension URIVariableValueType : CustomDebugStringConvertible {
+  
   @inlinable
   public var debugDescription: String {
     switch self {
@@ -68,5 +68,5 @@ extension URIVariableValueType: CustomDebugStringConvertible {
       "URIVariableValueType.association"
     }
   }
-
+  
 }

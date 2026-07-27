@@ -124,22 +124,21 @@ private let expressionOperators = [
   "/",
   ";",
   "?",
-  "&",
+  "&"
 ]
 
-private let exactSourceExamples =
-  [
-    "",
-    "literal",
-    "'{x}'",
-    "~café/%2f",
-    "cafe\u{301}/%2f",
-    "𝄞{x}",
-    "{x:1}",
-    "{x*}",
-    "{alpha.%2F}",
-    "pre%2f{?name%2F,x}post%AF",
-  ]
+private let exactSourceExamples = [
+  "",
+  "literal",
+  "'{x}'",
+  "~café/%2f",
+  "cafe\u{301}/%2f",
+  "𝄞{x}",
+  "{x:1}",
+  "{x*}",
+  "{alpha.%2F}",
+  "pre%2f{?name%2F,x}post%AF"
+]
   + expressionOperators.map {
     "é{\($0)x:12,y*}~"
   }
@@ -148,7 +147,7 @@ private let exactSourceParameters: [String: URIVariableValue] = [
   "x": .text("value"),
   "y": .list(["one", "two"]),
   "alpha.%2F": .text("alpha"),
-  "name%2F": .text("encoded"),
+  "name%2F": .text("encoded")
 ]
 
 private let generatedLiteralSegments = [
@@ -159,14 +158,14 @@ private let generatedLiteralSegments = [
   "cafe\u{301}",
   "𝄞",
   "'",
-  "mid/path",
+  "mid/path"
 ]
 
 private let generatedVariableLists = [
   "x",
   "x,y",
   "x:1,y*",
-  "name%2F,alpha.%2F",
+  "name%2F,alpha.%2F"
 ]
 
 private let generatedValidSources: [String] = {

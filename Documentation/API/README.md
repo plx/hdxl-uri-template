@@ -17,7 +17,8 @@ That fixture cannot access `internal` or `package` declarations and verifies
 that the retained value contracts remain usable by an external client.
 
 The contract also inspects every `HDXLURITemplate-Swift.h` that the compiler
-emits and rejects the removed Objective-C wrapper classes and enum. A missing
-canonical generated header fails the check so the absence assertion cannot
-silently pass without inspecting the compiler output. The package's initial
-supported contract is Swift-only.
+emits and rejects the removed Objective-C wrapper classes and enum. It requires
+exactly two canonical generated headers, one from the package build and one
+from the external-consumer build, so the absence assertion cannot silently
+pass with missing or duplicate compiler output. The package's initial supported
+contract is Swift-only.

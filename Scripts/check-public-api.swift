@@ -49,6 +49,7 @@ private enum PublicAPICheckError: Error, CustomStringConvertible {
   case commandFailed(command: String, status: Int32)
   case missingObjectiveCHeader(module: String, directory: String)
   case missingSymbolGraph(module: String, directory: String)
+  case unexpectedObjectiveCHeaders(module: String, paths: [String])
   case multipleSymbolGraphs(module: String, paths: [String])
   case contractViolations([String])
 
@@ -60,6 +61,8 @@ private enum PublicAPICheckError: Error, CustomStringConvertible {
       "No canonical \(module)-Swift.h was emitted beneath \(directory)."
     case .missingSymbolGraph(let module, let directory):
       "No \(module).symbols.json was emitted beneath \(directory)."
+    case .unexpectedObjectiveCHeaders(let module, let paths):
+      "Expected two canonical \(module)-Swift.h headers, found \(paths.count): \(paths.joined(separator: ", "))."
     case .multipleSymbolGraphs(let module, let paths):
       "Found multiple \(module) symbol graphs where exactly one was expected: \(paths.joined(separator: ", "))."
     case .contractViolations(let violations):
@@ -104,6 +107,12 @@ private func generatedObjectiveCHeaders(
     throw PublicAPICheckError.missingObjectiveCHeader(
       module: module,
       directory: directory.path
+    )
+  }
+  guard canonicalMatches.count == 2 else {
+    throw PublicAPICheckError.unexpectedObjectiveCHeaders(
+      module: module,
+      paths: canonicalMatches.map(\.path).sorted()
     )
   }
   return canonicalMatches

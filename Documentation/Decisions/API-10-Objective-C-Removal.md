@@ -56,9 +56,9 @@ It contains none of these exact forbidden markers:
 HDXLURIVariableValueType
 ```
 
-`Scripts/check-public-api.swift` now builds through SwiftBuild, inspects every
-canonical generated header from the package and external-consumer builds, and
-fails if any forbidden marker reappears. The three markers live in
+`Scripts/check-public-api.swift` now builds through SwiftBuild, requires exactly
+the two canonical generated headers from the package and external-consumer
+builds, and fails if any forbidden marker reappears. The three markers live in
 `Documentation/API/HDXLURITemplate.public-api.json` so the absence requirement
 is reviewable and versioned.
 
