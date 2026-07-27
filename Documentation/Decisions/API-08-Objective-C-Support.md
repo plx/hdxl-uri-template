@@ -1,7 +1,6 @@
 # API-08 Objective-C support decision
 
-Status: approved on July 26, 2026; removal implementation is required before
-the decision is final.
+Status: final on July 26, 2026.
 
 Approver: repository maintainer.
 
@@ -18,10 +17,8 @@ of `HDXLURIVariableValueType`, their wrapper-only coding and archive surfaces,
 and their Objective-C-specific tests before the initial public contract is
 declared.
 
-This record does not by itself complete API-08. Dedicated removal issue
-[#81](https://github.com/plx/hdxl-uri-template/issues/81) must land, the
-conditional facade issue must receive its authorized disposition, and the
-repository must then record final evidence before #52 closes.
+The decision and its removal contract are complete. The final evidence below
+records the implementation, validation, and authorized downstream disposition.
 
 ## Evidence reviewed
 
@@ -29,7 +26,7 @@ The decision considered the generated Xcode 26.6 / Swift 6.3.3 interface,
 production wrappers, package targets, Swift and Objective-C tests, repository
 history, compatibility implications, and the cost of both supported outcomes.
 
-The current generated interface exposes three Objective-C symbols:
+At decision time, the generated interface exposed three Objective-C symbols:
 
 - `HDXLURITemplate`, with parsing, representation, variable-name, copying, and
   secure-coding operations;
@@ -58,10 +55,12 @@ The repository identifies no actual or committed Objective-C consumer. The
 project's origin as a recreation of private Objective-C work is provenance, not
 evidence of current demand.
 
-A real `.m` test fixture now exists, so the earlier absolute claim that there
-is no Objective-C caller is stale. The fixture covers association construction,
-enumeration, ordering, copying, and secure-coding round trips. It does not parse
-or expand a template and therefore is not a real core-operation consumer.
+A real `.m` test fixture existed during the decision review, so the earlier
+absolute claim that there was no Objective-C caller was stale. The fixture
+covered association construction, enumeration, ordering, copying, and
+secure-coding round trips. It did not parse or expand a template and therefore
+was not a real core-operation consumer. API-10 removed that fixture with the
+unsupported facade.
 
 ## Rationale and tradeoff
 
@@ -115,20 +114,45 @@ rather than depending on this package to expose a general Objective-C facade.
 Persist semantic template strings and application-owned value data instead of
 wrapper archives.
 
-## Downstream disposition
+## Final evidence
 
-After complete removal evidence merges:
+The Swift-only decision record merged in
+[PR #82](https://github.com/plx/hdxl-uri-template/pull/82), with explicit
+maintainer approval recorded below. Dedicated removal
+[issue #81](https://github.com/plx/hdxl-uri-template/issues/81) closed through
+[PR #85](https://github.com/plx/hdxl-uri-template/pull/85), merged as
+`51f06ea3d2fcb6e9ec478d53fa49af3df92d587a`.
 
-1. close conditional facade issue
-   [#53](https://github.com/plx/hdxl-uri-template/issues/53) with GitHub's native
-   `not_planned` reason and links to this decision and the removal PR;
-2. keep public-consumer issue
-   [#22](https://github.com/plx/hdxl-uri-template/issues/22) mandatory for a
-   real Swift consumer while recording its `.m` portion as not applicable;
-3. require README, DocC, release-candidate, and audit work to state explicitly
-   that Objective-C is unsupported; and
-4. close #52 only through a final evidence PR proving the decision and removal
-   acceptance criteria.
+That removal:
+
+- deleted both public wrapper classes, the Objective-C enum exposure, their
+  wrapper-only coding and archive surfaces, the interop package target, the
+  `.m` fixture, and wrapper-only tests;
+- preserved the native Swift association invariants and their tests;
+- made the README, CHANGELOG, DocC comments, package manifest, API inventory,
+  tests, and audit documentation agree on a Swift-only contract;
+- added a public-API validation gate that requires exactly the package and
+  external-consumer generated Swift headers and rejects all three former
+  Objective-C symbols in every header; and
+- passed the full Debug, heavy Debug, and Release suites with both Xcode 26.6 /
+  Swift 6.3.3 and Xcode 27 / Swift 6.4, plus hosted heavy-Debug and automated
+  review checks on the exact merged head.
+
+Conditional facade
+[issue #53](https://github.com/plx/hdxl-uri-template/issues/53) then received
+the approved implementation links and rationale and closed with GitHub's native
+`not_planned` reason. Public-consumer
+[issue #22](https://github.com/plx/hdxl-uri-template/issues/22) remains
+mandatory for a real Swift consumer; its `.m` portion is not applicable under
+this decision. Release-candidate and audit work must continue to state
+explicitly that Objective-C is unsupported.
+
+The API-08 acceptance criteria are therefore satisfied:
+
+- the maintainer-approved decision is durable;
+- README, DocC, package claims, tests, and issue dispositions agree;
+- all wrapper source, tests, and support claims were deliberately removed; and
+- no release describes Objective-C support.
 
 ## Reconsideration
 

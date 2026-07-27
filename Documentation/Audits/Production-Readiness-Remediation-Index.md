@@ -356,16 +356,20 @@ the release will make.
 `API-08` is the policy fork. It must be resolved early enough that consumer
 tests and documentation do not target a half-supported facade.
 
-The maintainer approved the Swift-only removal path on July 26, 2026:
+The maintainer approved the Swift-only removal path on July 26, 2026. The
+decision record merged in
+[PR #82](https://github.com/plx/hdxl-uri-template/pull/82), the complete removal
+merged in [PR #85](https://github.com/plx/hdxl-uri-template/pull/85), and
+conditional facade issue
+[#53](https://github.com/plx/hdxl-uri-template/issues/53) closed with the native
+`not_planned` disposition:
 
-- merge the nonclosing `API-08` decision record, then complete `API-10`;
-- close `API-09` using the native not-planned/superseded disposition and link
-  the removal decision and implementation evidence;
-- remove the wrappers, misleading support claims, and Objective-C-specific
-  archive surface before the public contract is declared;
-- keep `QA-04` as a public Swift consumer fixture and mark only the `.m`
-  portion not applicable with a link to `API-08`;
-- make `DOC-01`, `DOC-02`, and `AUDIT-01` state explicitly that Objective-C is
+- `API-08` records the final decision and evidence, and `API-10` removed the
+  wrappers, misleading support claims, Objective-C-specific archive surface,
+  interop target, fixture, and wrapper-only tests;
+- `QA-04` remains a required public Swift consumer fixture, while its `.m`
+  portion is not applicable under `API-08`;
+- `DOC-01`, `DOC-02`, and `AUDIT-01` must state explicitly that Objective-C is
   unsupported.
 
 `HARD-02` remains required because the Swift value model must preserve its own
