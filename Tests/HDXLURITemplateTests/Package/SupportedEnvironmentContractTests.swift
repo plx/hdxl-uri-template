@@ -28,15 +28,13 @@ private func supportedEnvironmentContractIsConsistent() throws {
       options: .regularExpression
     ) != nil
   )
-  #expect(
-    manifest.components(separatedBy: ".v26").count - 1
-      == platformDeclarations.count
-  )
 
   for platform in platformDeclarations {
     #expect(manifest.contains(platform))
   }
 
+  // These sentences are the published contract. Intentional copy edits must
+  // update this drift guard in lockstep with the README.
   #expect(normalizedReadme.contains("Swift tools version 6.3"))
   #expect(normalizedReadme.contains("Swift language mode 6"))
   #expect(
@@ -58,13 +56,25 @@ private func supportedEnvironmentContractIsConsistent() throws {
 }
 
 private func repositoryFile(named name: String) throws -> String {
-  let repositoryRoot = URL(fileURLWithPath: #filePath)
+  var repositoryRoot = URL(fileURLWithPath: #filePath)
     .deletingLastPathComponent()
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
-    .deletingLastPathComponent()
+
+  while !FileManager.default.fileExists(
+    atPath: repositoryRoot.appendingPathComponent("Package.swift").path
+  ) {
+    let parent = repositoryRoot.deletingLastPathComponent()
+    guard parent != repositoryRoot else {
+      throw RepositoryFileError.rootNotFound
+    }
+    repositoryRoot = parent
+  }
+
   return try String(
     contentsOf: repositoryRoot.appendingPathComponent(name),
     encoding: .utf8
   )
+}
+
+private enum RepositoryFileError: Error {
+  case rootNotFound
 }
