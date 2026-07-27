@@ -47,6 +47,7 @@ private struct SymbolGraph: Decodable {
 
 private enum PublicAPICheckError: Error, CustomStringConvertible {
   case commandFailed(command: String, status: Int32)
+  case documentationViolations([String])
   case missingObjectiveCHeader(module: String, directory: String)
   case missingSymbolGraph(module: String, directory: String)
   case unexpectedObjectiveCHeaders(module: String, paths: [String])
@@ -57,6 +58,8 @@ private enum PublicAPICheckError: Error, CustomStringConvertible {
     switch self {
     case .commandFailed(let command, let status):
       "Command failed with status \(status): \(command)"
+    case .documentationViolations(let violations):
+      violations.joined(separator: "\n")
     case .missingObjectiveCHeader(let module, let directory):
       "No canonical \(module)-Swift.h was emitted beneath \(directory)."
     case .missingSymbolGraph(let module, let directory):
@@ -120,12 +123,16 @@ private func generatedObjectiveCHeaders(
 
 private func runSwift(
   arguments: [String],
-  in repositoryRoot: URL
+  in repositoryRoot: URL,
+  discardingStandardOutput: Bool = false
 ) throws {
   let process = Process()
   process.executableURL = URL(fileURLWithPath: "/usr/bin/env")
   process.arguments = ["swift"] + arguments
   process.currentDirectoryURL = repositoryRoot
+  if discardingStandardOutput {
+    process.standardOutput = FileHandle.nullDevice
+  }
   try process.run()
   process.waitUntilExit()
 
@@ -135,6 +142,121 @@ private func runSwift(
       status: process.terminationStatus
     )
   }
+}
+
+private func swiftCodeBlocks(in markdown: String) -> [String] {
+  var blocks: [String] = []
+  var currentBlock: [Substring]?
+
+  for line in markdown.split(
+    separator: "\n",
+    omittingEmptySubsequences: false
+  ) {
+    guard var block = currentBlock else {
+      if line == "```swift" {
+        currentBlock = []
+      }
+      continue
+    }
+
+    if line == "```" {
+      blocks.append(block.joined(separator: "\n"))
+      currentBlock = nil
+    } else {
+      block.append(line)
+      currentBlock = block
+    }
+  }
+
+  return blocks
+}
+
+private func validateREADMEExamples(
+  at readmeURL: URL,
+  consumerSourceDirectory: URL,
+  scratchDirectory: URL,
+  repositoryRoot: URL
+) throws {
+  let readme = try String(contentsOf: readmeURL, encoding: .utf8)
+  let blocks = swiftCodeBlocks(in: readme)
+  var violations: [String] = []
+
+  guard blocks.count == 3 else {
+    throw PublicAPICheckError.documentationViolations([
+      "Expected exactly three Swift examples in README.md, found \(blocks.count)."
+    ])
+  }
+
+  let expectedSources = [
+    (
+      marker: "func readmeQuickStart() throws",
+      filename: "READMEQuickStart.swift"
+    ),
+    (
+      marker: "func readmeVariableValues() throws",
+      filename: "READMEVariableValues.swift"
+    ),
+  ]
+
+  for expectedSource in expectedSources {
+    let matchingBlocks = blocks.filter {
+      $0.contains(expectedSource.marker)
+    }
+    guard matchingBlocks.count == 1 else {
+      violations.append(
+        "Expected exactly one README.md example containing "
+          + "\(expectedSource.marker), found \(matchingBlocks.count)."
+      )
+      continue
+    }
+
+    let sourceURL =
+      consumerSourceDirectory
+      .appendingPathComponent(expectedSource.filename)
+    let source = try String(contentsOf: sourceURL, encoding: .utf8)
+      .trimmingCharacters(in: .newlines)
+    if matchingBlocks[0] != source {
+      violations.append(
+        "README.md example \(expectedSource.marker) must exactly match "
+          + sourceURL.path
+      )
+    }
+  }
+
+  let manifestBlocks = blocks.filter {
+    $0.contains("let package = Package(")
+  }
+  guard manifestBlocks.count == 1 else {
+    violations.append(
+      "Expected exactly one README.md SwiftPM manifest example, found "
+        + "\(manifestBlocks.count)."
+    )
+    throw PublicAPICheckError.documentationViolations(violations)
+  }
+
+  guard violations.isEmpty else {
+    throw PublicAPICheckError.documentationViolations(violations)
+  }
+
+  let manifestDirectory =
+    scratchDirectory
+    .appendingPathComponent("readme-manifest", isDirectory: true)
+  try FileManager.default.createDirectory(
+    at: manifestDirectory,
+    withIntermediateDirectories: true
+  )
+  try Data((manifestBlocks[0] + "\n").utf8).write(
+    to: manifestDirectory.appendingPathComponent("Package.swift")
+  )
+  try runSwift(
+    arguments: [
+      "package",
+      "--package-path", manifestDirectory.path,
+      "dump-package",
+    ],
+    in: repositoryRoot,
+    discardingStandardOutput: true
+  )
 }
 
 private func emittedSymbolGraph(
@@ -292,6 +414,10 @@ private func main() throws {
     repositoryRoot
     .appendingPathComponent("Tests")
     .appendingPathComponent("PublicAPIConsumer")
+  let externalConsumerSourceURL =
+    externalConsumerURL
+    .appendingPathComponent("Sources")
+    .appendingPathComponent("HDXLURITemplatePublicAPIConsumer")
   let scratchDirectory = FileManager.default.temporaryDirectory
     .appendingPathComponent(
       "hdxl-uri-template-public-api-\(UUID().uuidString)",
@@ -306,6 +432,12 @@ private func main() throws {
     try? FileManager.default.removeItem(at: scratchDirectory)
   }
 
+  try validateREADMEExamples(
+    at: repositoryRoot.appendingPathComponent("README.md"),
+    consumerSourceDirectory: externalConsumerSourceURL,
+    scratchDirectory: scratchDirectory,
+    repositoryRoot: repositoryRoot
+  )
   try runSwift(
     arguments: [
       "build",
@@ -319,7 +451,7 @@ private func main() throws {
   )
   try runSwift(
     arguments: [
-      "build",
+      "run",
       "--package-path", externalConsumerURL.path,
       "--scratch-path",
       scratchDirectory.appendingPathComponent("external-consumer").path,
@@ -367,11 +499,12 @@ private func main() throws {
   )
 
   print(
-    "Public API contract passed for \(contract.module) "
+    "Public API contract and external consumer passed for \(contract.module) "
       + "(\(contract.declarations.count) Swift declarations and "
       + "\(contract.forbiddenObjectiveCDeclarations.count) "
       + "Objective-C absences checked across "
-      + "\(objectiveCHeaderURLs.count) generated headers)."
+      + "\(objectiveCHeaderURLs.count) generated headers; "
+      + "all README Swift examples synchronized)."
   )
 }
 
