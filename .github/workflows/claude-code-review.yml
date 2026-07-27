@@ -95,6 +95,7 @@ jobs:
           # Use the job token so the permissions above are the complete GitHub
           # authority; no OIDC/App-token exchange occurs.
           github_token: ${{ github.token }}
+          show_full_output: true
           prompt: |
             REPO: ${{ github.repository }}
             PR NUMBER: ${{ github.event.pull_request.number }}
