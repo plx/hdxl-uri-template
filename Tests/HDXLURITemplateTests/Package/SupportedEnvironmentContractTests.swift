@@ -4,6 +4,9 @@ import Testing
 @Test("Manifest and README agree on the supported environment floor")
 private func supportedEnvironmentContractIsConsistent() throws {
   let manifest = try repositoryFile(named: "Package.swift")
+  let publicConsumerManifest = try repositoryFile(
+    named: "Tests/PublicAPIConsumer/Package.swift"
+  )
   let readme = try repositoryFile(named: "README.md")
   let normalizedReadme =
     readme
@@ -22,6 +25,8 @@ private func supportedEnvironmentContractIsConsistent() throws {
     .map(String.init)
 
   #expect(manifest.hasPrefix("// swift-tools-version:6.3\n"))
+  #expect(publicConsumerManifest.hasPrefix("// swift-tools-version:6.3\n"))
+  #expect(publicConsumerManifest.contains(".macOS(.v26)"))
   #expect(
     manifest.range(
       of: #"swiftLanguageModes:\s*\[\s*\.v6\s*\]"#,
