@@ -78,6 +78,12 @@ without reopening either settled decision. The
 [implementation and validation evidence](Evidence/2026-07-27-api-07-value-payload-inspection.md)
 records the exact runtime inspection and persistence boundaries.
 
+DOC-02 documents the complete supported Swift surface and adds a warning-clean
+DocC, symbol-coverage, link, and compiled-example gate. The
+[implementation and validation evidence](Evidence/2026-07-27-doc-02-docc-public-documentation.md)
+records the baseline gaps, supported guide set, 100% abstract coverage, and
+failure-oriented detectors.
+
 ## Label taxonomy and application rules
 
 The prefixed labels below are the program taxonomy installed in GitHub. The

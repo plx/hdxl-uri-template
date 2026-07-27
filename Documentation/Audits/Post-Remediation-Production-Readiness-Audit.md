@@ -1263,6 +1263,13 @@ Compile every documentation code sample as a test or documentation build.
 Manually verify that a consumer can complete the basic example without
 `@testable import` or knowledge of internal types.
 
+The committed DOC-02 gate and its
+[implementation evidence](Evidence/2026-07-27-doc-02-docc-public-documentation.md)
+provide the reusable baseline. For the exact release-candidate commit, run
+`just check-docc` and `just test-check-docc` from the fresh audit checkout,
+preserve their output, and inspect the generated archive rather than relying
+only on the historical remediation result.
+
 ## Phase 12: CI and release mechanics
 
 ### 12.1 CI verification
