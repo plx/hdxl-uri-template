@@ -111,7 +111,7 @@ private func verifyPropertyListReferenceRoundTrips(
 }
 
 @Test(
-  "Pinned failure cases share the public parser acceptance boundary",
+  "Pinned failure cases share the parser boundary and classify every rejection",
   arguments: negativeCodableReferenceExamples
 )
 private func pinnedFailureCasesSharePublicParserAcceptanceBoundary(
@@ -192,6 +192,12 @@ private func verifyRejectedParserInput(
 ) throws {
   let directParseError = try #require(
     directError as? URITemplate.ParseError
+  )
+  #expect(directParseError.kind != .other)
+  #expect(directParseError.sourceRange.lowerBound >= 0)
+  #expect(
+    directParseError.sourceRange.upperBound
+      <= directParseError.template.utf8.count
   )
   do {
     _ = try JSONDecoder().decode(
