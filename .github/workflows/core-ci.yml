@@ -85,6 +85,13 @@ jobs:
           xcrun swift package resolve 2>&1 |
             tee "$CI_ARTIFACTS/package-resolve.log"
 
+      - name: Validate public consumer and API boundary
+        if: matrix.lane == 'debug'
+        run: |
+          set -o pipefail
+          xcrun swift Scripts/check-public-api.swift 2>&1 |
+            tee "$CI_ARTIFACTS/public-api-consumer.log"
+
       - name: Build ${{ matrix.name }}
         env:
           QA02_CONFIGURATION: ${{ matrix.configuration }}

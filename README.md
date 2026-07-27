@@ -336,13 +336,15 @@ xcrun swift test -c release
 
 The repository's `just` recipes use the same
 `DEVELOPER_DIR`/`xcrun` selection. `just test-all` also verifies fixture
-integrity, warning guards, and a separate public consumer that cannot access
-`internal` or `package` declarations.
+integrity, warning guards, and builds and runs a separate public consumer that
+cannot access `internal` or `package` declarations. The consumer executes the
+README examples from synchronized source files.
 
 Every pull request and `master` update runs the required
 `Required Swift 6.3 / Apple 26 gate` from a clean checkout. Its Xcode 26.6 /
 Swift 6.3.3 lanes run the complete suite in Debug, Release, and `HEAVY_DEBUG`;
-a Release smoke job also compiles for every declared Apple 26 platform.
+the Debug lane also runs the public consumer and API-boundary checks. A Release
+smoke job compiles for every declared Apple 26 platform.
 
 ## Project documentation
 

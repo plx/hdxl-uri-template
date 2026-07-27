@@ -3,9 +3,13 @@ import HDXLURITemplate
 
 @main
 struct PublicAPIConsumer {
-  static func main() throws {
+  static func main() async throws {
     try readmeQuickStart()
     try readmeVariableValues()
+    try publicPrefixExample()
+    try publicErrorExamples()
+    try publicCodableExamples()
+    try await publicConcurrencyExample()
 
     let template = try URITemplate(
       parsing: "https://example.com{/id}"
@@ -26,12 +30,6 @@ struct PublicAPIConsumer {
     precondition(templatesByName[template] == "example.com")
     requireSendable(template)
 
-    let decodedTemplate = try JSONDecoder().decode(
-      URITemplate.self,
-      from: JSONEncoder().encode(template)
-    )
-    precondition(decodedTemplate == template)
-
     let value = URIVariableValue.text("value")
     let equivalentValue = URIVariableValue.text("value")
     let values: Set<URIVariableValue> = [
@@ -46,12 +44,6 @@ struct PublicAPIConsumer {
     precondition(values.count == 1)
     precondition(valuesByName[value] == "text")
     requireSendable(value)
-
-    let decodedValue = try JSONDecoder().decode(
-      URIVariableValue.self,
-      from: JSONEncoder().encode(value)
-    )
-    precondition(decodedValue == value)
 
     let associationRawValue: UInt8 =
       URIVariableValueType.association.rawValue
