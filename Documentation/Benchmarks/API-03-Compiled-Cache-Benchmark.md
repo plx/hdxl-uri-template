@@ -232,6 +232,16 @@ Release compiler invocations. The largest relative MAD was 1.1677% for warm
 evidence and 4.3572% for fresh-process evidence, below the frozen 5% and 10%
 rerun thresholds. No sample was deleted.
 
+Post-measurement review hardened the harness without rewriting any accepted
+artifact: malformed partial warm comparisons now fail with a diagnostic,
+elapsed-duration overflow cannot collide with the launch-unavailable sentinel,
+fresh launch substitution is staged and validated before append, and full
+runs fail before artifact creation unless the recorded Xcode, Swift, and macOS
+environment matches the frozen protocol. The reviewed summarizer regenerated
+`summary.csv` byte-for-byte from the retained raw files. A disposable quick run
+also passed the complete harness validators. These checks validate the
+retained evidence; they do not replace or relabel the measured commit.
+
 The following values are milliseconds per operation. Parenthesized values are
 nearest-rank p95. A direct-parse speedup below 1 means the prototype sidecar is
 slower than direct parsing.

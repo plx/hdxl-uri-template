@@ -727,7 +727,11 @@ extension CompiledCachePrototype {
     if let colon = source.lastIndex(of: ":") {
       let prefixStart = source.index(after: colon)
       let prefixSource = source[prefixStart..<source.endIndex]
-      guard let prefixLength = Int(prefixSource) else {
+      guard
+        !prefixSource.isEmpty,
+        prefixSource.utf8.allSatisfy({ (0x30...0x39).contains($0) }),
+        let prefixLength = Int(prefixSource)
+      else {
         throw
           CompiledCachePrototypeError
           .compilerCouldNotRepresentSource(index: 0)

@@ -447,7 +447,7 @@ private func api03Run(_ arguments: API03Arguments) throws {
         at: api03FileURL($0, isDirectory: false)
       )
     }
-    let csv = api03SummaryCSV(records: records)
+    let csv = try api03SummaryCSV(records: records)
     if let outputPath = try arguments.optionalValue("--output") {
       try Data(csv.utf8).write(
         to: api03FileURL(outputPath, isDirectory: false),

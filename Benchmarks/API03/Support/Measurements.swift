@@ -22,6 +22,9 @@ package struct API03MeasurementRecord: Codable, Sendable {
   package let sampleIndex: Int
   package let repetitions: Int
   package let elapsedNanoseconds: UInt64
+  /// The runner emits the unavailable sentinel. For fresh-process records,
+  /// the shell driver replaces that sentinel with launch-to-exit time exactly
+  /// once before retaining the JSON line.
   package let launchElapsedNanoseconds: UInt64
   package let templateOperations: Int
   package let encodedBytes: Int
@@ -81,8 +84,11 @@ package struct API03Calibration<Result> {
 
 package enum API03MeasurementError: Error, CustomStringConvertible {
   case emptyInput(URL)
+  case emptyBootstrapPopulation(String)
+  case elapsedDurationOutOfRange
   case invalidRepetitionCount(Int)
   case malformedJSONLine(url: URL, line: Int, underlying: Error)
+  case mismatchedProcessIndices(direct: [Int], comparison: [Int])
   case repetitionLimitReached(Int)
   case unsupportedSchemaVersion(Int)
 
@@ -90,10 +96,19 @@ package enum API03MeasurementError: Error, CustomStringConvertible {
     switch self {
     case .emptyInput(let url):
       return "measurement input is empty: \(url.path)"
+    case .emptyBootstrapPopulation(let context):
+      return "cannot bootstrap an empty measurement population: \(context)"
+    case .elapsedDurationOutOfRange:
+      return "measured duration cannot be represented as whole nanoseconds"
     case .invalidRepetitionCount(let count):
       return "repetition count must be positive, got \(count)"
     case .malformedJSONLine(let url, let line, let underlying):
       return "invalid JSON measurement at \(url.path):\(line): \(underlying)"
+    case .mismatchedProcessIndices(let direct, let comparison):
+      return """
+        warm direct-parse speedup confidence intervals require matching \
+        processIndex sets; direct=\(direct), comparison=\(comparison)
+        """
     case .repetitionLimitReached(let count):
       return "calibration reached the safe repetition limit at \(count)"
     case .unsupportedSchemaVersion(let version):
@@ -122,7 +137,7 @@ package func api03MeasureBatch<Result>(
   let elapsed = start.duration(to: clock.now)
 
   return API03TimedBatch(
-    elapsedNanoseconds: api03WholeNanoseconds(elapsed),
+    elapsedNanoseconds: try api03WholeNanoseconds(elapsed),
     lastResult: lastResult
   )
 }
@@ -210,7 +225,7 @@ package func api03DecodeMeasurementRecords(
 
 package func api03SummaryCSV(
   records: [API03MeasurementRecord]
-) -> String {
+) throws -> String {
   let header = [
     "benchmark_commit",
     "mode",
@@ -257,7 +272,7 @@ package func api03SummaryCSV(
       groups[key].map { (key, API03SummaryStatistics(samples: $0)) }
     }
   )
-  let lines = groups.keys.sorted().compactMap { key -> String? in
+  let lines = try groups.keys.sorted().compactMap { key -> String? in
     guard
       let samples = groups[key],
       let summary = statistics[key],
@@ -270,12 +285,12 @@ package func api03SummaryCSV(
     switch key.mode {
     case .warm:
       medianConfidenceInterval =
-        api03BootstrapClusteredMedianConfidenceInterval(
+        try api03BootstrapClusteredMedianConfidenceInterval(
           summary.processClusters,
           seed: api03BootstrapSeed(for: key, purpose: "median")
         )
     case .freshProcess:
-      medianConfidenceInterval = api03BootstrapMedianConfidenceInterval(
+      medianConfidenceInterval = try api03BootstrapMedianConfidenceInterval(
         summary.normalizedNanoseconds,
         seed: api03BootstrapSeed(for: key, purpose: "median")
       )
@@ -294,14 +309,14 @@ package func api03SummaryCSV(
       switch key.mode {
       case .warm:
         speedupConfidenceInterval =
-          api03BootstrapPairedClusterSpeedupConfidenceInterval(
+          try api03BootstrapPairedClusterSpeedupConfidenceInterval(
             direct: directSummary.processClusters,
             comparison: summary.processClusters,
             seed: api03BootstrapSeed(for: key, purpose: "speedup")
           )
       case .freshProcess:
         speedupConfidenceInterval =
-          api03BootstrapSpeedupConfidenceInterval(
+          try api03BootstrapSpeedupConfidenceInterval(
             direct: directSummary.normalizedNanoseconds,
             comparison: summary.normalizedNanoseconds,
             seed: api03BootstrapSeed(for: key, purpose: "speedup")
@@ -326,7 +341,7 @@ package func api03SummaryCSV(
         launchSpeedupConfidenceInterval = (1, 1)
       } else {
         launchSpeedupConfidenceInterval =
-          api03BootstrapSpeedupConfidenceInterval(
+          try api03BootstrapSpeedupConfidenceInterval(
             direct: directSummary.launchNanoseconds,
             comparison: summary.launchNanoseconds,
             seed: api03BootstrapSeed(
@@ -599,7 +614,7 @@ private struct API03BootstrapGenerator {
 private func api03BootstrapMedianConfidenceInterval(
   _ values: [Double],
   seed: UInt64
-) -> (lower: Double, upper: Double) {
+) throws -> (lower: Double, upper: Double) {
   var generator = API03BootstrapGenerator(seed: seed)
   var estimates: [Double] = []
   estimates.reserveCapacity(api03BootstrapResampleCount)
@@ -607,7 +622,7 @@ private func api03BootstrapMedianConfidenceInterval(
   for _ in 0..<api03BootstrapResampleCount {
     estimates.append(
       api03Median(
-        api03BootstrapSample(values, using: &generator)
+        try api03BootstrapSample(values, using: &generator)
       )
     )
   }
@@ -621,8 +636,12 @@ private func api03BootstrapMedianConfidenceInterval(
 private func api03BootstrapClusteredMedianConfidenceInterval(
   _ clusters: [API03ProcessCluster],
   seed: UInt64
-) -> (lower: Double, upper: Double) {
-  precondition(!clusters.isEmpty)
+) throws -> (lower: Double, upper: Double) {
+  guard !clusters.isEmpty else {
+    throw API03MeasurementError.emptyBootstrapPopulation(
+      "clustered median"
+    )
+  }
 
   // Warm batches share process-level state. Resample workers first, then
   // resample batches independently within every selected worker.
@@ -633,7 +652,7 @@ private func api03BootstrapClusteredMedianConfidenceInterval(
   for _ in 0..<api03BootstrapResampleCount {
     estimates.append(
       api03Median(
-        api03HierarchicalBootstrapSample(
+        try api03HierarchicalBootstrapSample(
           clusters,
           using: &generator
         )
@@ -651,17 +670,17 @@ private func api03BootstrapSpeedupConfidenceInterval(
   direct: [Double],
   comparison: [Double],
   seed: UInt64
-) -> (lower: Double, upper: Double) {
+) throws -> (lower: Double, upper: Double) {
   var generator = API03BootstrapGenerator(seed: seed)
   var estimates: [Double] = []
   estimates.reserveCapacity(api03BootstrapResampleCount)
 
   for _ in 0..<api03BootstrapResampleCount {
     let directMedian = api03Median(
-      api03BootstrapSample(direct, using: &generator)
+      try api03BootstrapSample(direct, using: &generator)
     )
     let comparisonMedian = api03Median(
-      api03BootstrapSample(comparison, using: &generator)
+      try api03BootstrapSample(comparison, using: &generator)
     )
     estimates.append(
       comparisonMedian == 0 ? 0 : directMedian / comparisonMedian
@@ -678,18 +697,20 @@ private func api03BootstrapPairedClusterSpeedupConfidenceInterval(
   direct: [API03ProcessCluster],
   comparison: [API03ProcessCluster],
   seed: UInt64
-) -> (lower: Double, upper: Double) {
+) throws -> (lower: Double, upper: Double) {
   let directProcessIndices = direct.map(\.processIndex)
   let comparisonProcessIndices = comparison.map(\.processIndex)
-  precondition(
-    directProcessIndices == comparisonProcessIndices,
-    """
-    warm direct-parse speedup confidence intervals require matching \
-    processIndex sets; direct=\(directProcessIndices), \
-    comparison=\(comparisonProcessIndices)
-    """
-  )
-  precondition(!direct.isEmpty)
+  guard directProcessIndices == comparisonProcessIndices else {
+    throw API03MeasurementError.mismatchedProcessIndices(
+      direct: directProcessIndices,
+      comparison: comparisonProcessIndices
+    )
+  }
+  guard !direct.isEmpty else {
+    throw API03MeasurementError.emptyBootstrapPopulation(
+      "paired clustered speedup"
+    )
+  }
 
   // Pair the worker draw to preserve process-level covariance between lanes;
   // batch draws remain independent within the selected worker.
@@ -706,13 +727,13 @@ private func api03BootstrapPairedClusterSpeedupConfidenceInterval(
         generator.next() % UInt64(direct.count)
       )
       directSample.append(
-        contentsOf: api03BootstrapSample(
+        contentsOf: try api03BootstrapSample(
           direct[clusterIndex].values,
           using: &generator
         )
       )
       comparisonSample.append(
-        contentsOf: api03BootstrapSample(
+        contentsOf: try api03BootstrapSample(
           comparison[clusterIndex].values,
           using: &generator
         )
@@ -737,7 +758,12 @@ private func api03BootstrapPairedClusterSpeedupConfidenceInterval(
 private func api03HierarchicalBootstrapSample(
   _ clusters: [API03ProcessCluster],
   using generator: inout API03BootstrapGenerator
-) -> [Double] {
+) throws -> [Double] {
+  guard !clusters.isEmpty else {
+    throw API03MeasurementError.emptyBootstrapPopulation(
+      "hierarchical bootstrap"
+    )
+  }
   var sample: [Double] = []
   sample.reserveCapacity(
     clusters.reduce(into: 0) { $0 += $1.values.count }
@@ -748,7 +774,7 @@ private func api03HierarchicalBootstrapSample(
       generator.next() % UInt64(clusters.count)
     )
     sample.append(
-      contentsOf: api03BootstrapSample(
+      contentsOf: try api03BootstrapSample(
         clusters[clusterIndex].values,
         using: &generator
       )
@@ -761,7 +787,12 @@ private func api03HierarchicalBootstrapSample(
 private func api03BootstrapSample(
   _ values: [Double],
   using generator: inout API03BootstrapGenerator
-) -> [Double] {
+) throws -> [Double] {
+  guard !values.isEmpty else {
+    throw API03MeasurementError.emptyBootstrapPopulation(
+      "scalar bootstrap"
+    )
+  }
   var sample: [Double] = []
   sample.reserveCapacity(values.count)
   for _ in values.indices {
@@ -798,10 +829,10 @@ private func api03BootstrapSeed(
   return seed ^ 0x4844_584C_4150_4903
 }
 
-private func api03WholeNanoseconds(_ duration: Duration) -> UInt64 {
+private func api03WholeNanoseconds(_ duration: Duration) throws -> UInt64 {
   let components = duration.components
   guard components.seconds >= 0, components.attoseconds >= 0 else {
-    return 0
+    throw API03MeasurementError.elapsedDurationOutOfRange
   }
 
   let seconds = UInt64(components.seconds)
@@ -810,12 +841,15 @@ private func api03WholeNanoseconds(_ duration: Duration) -> UInt64 {
     by: 1_000_000_000
   )
   guard !multipliedOverflow else {
-    return UInt64.max
+    throw API03MeasurementError.elapsedDurationOutOfRange
   }
   let (result, additionOverflow) = wholeNanoseconds.addingReportingOverflow(
     subsecondNanoseconds
   )
-  return additionOverflow ? UInt64.max : result
+  guard !additionOverflow else {
+    throw API03MeasurementError.elapsedDurationOutOfRange
+  }
+  return result
 }
 
 private func api03Median(_ sortedValues: [Double]) -> Double {

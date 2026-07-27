@@ -24,6 +24,55 @@ api03_progress() {
   printf 'API-03: %s\n' "$*" >&2
 }
 
+api03_first_line() {
+  case "$1" in
+    *'
+'*)
+      printf '%s\n' "${1%%'
+'*}"
+      ;;
+    *)
+      printf '%s\n' "$1"
+      ;;
+  esac
+}
+
+api03_after_first_line() {
+  case "$1" in
+    *'
+'*)
+      printf '%s\n' "${1#*'
+'}"
+      ;;
+    *)
+      printf '\n'
+      ;;
+  esac
+}
+
+api03_sha256_file() {
+  api03_sha256_output=$(/usr/bin/shasum -a 256 "$1") || return
+  printf '%s\n' "${api03_sha256_output%% *}"
+}
+
+api03_sha256_text() {
+  api03_sha256_output=$(
+    /usr/bin/shasum -a 256 <<EOF
+$1
+EOF
+  ) || return
+  printf '%s\n' "${api03_sha256_output%% *}"
+}
+
+api03_join_lines() {
+  printf '%s\n' "$1" \
+    | /usr/bin/awk '
+        NR > 1 { printf " | " }
+        { printf "%s", $0 }
+        END { print "" }
+      '
+}
+
 api03_script_directory=$(
   unset CDPATH
   cd -- "$(dirname -- "$0")"
@@ -70,6 +119,55 @@ api03_developer_directory=/Applications/Xcode.app/Contents/Developer
 export DEVELOPER_DIR=$api03_developer_directory
 export LANG=C
 export LC_ALL=C
+
+api03_xcode_output=$(/usr/bin/xcodebuild -version) \
+  || api03_fail "could not inspect the stable Xcode version"
+api03_xcode_version_line=$(api03_first_line "$api03_xcode_output")
+api03_xcode_build_line=$(
+  api03_after_first_line "$api03_xcode_output"
+)
+api03_xcode_version=${api03_xcode_version_line#Xcode }
+api03_xcode_build_version=${api03_xcode_build_line#Build version }
+
+api03_swift_output=$(/usr/bin/xcrun swift --version) \
+  || api03_fail "could not inspect the stable Swift version"
+api03_swift_version=$(api03_first_line "$api03_swift_output")
+api03_swift_target=$(
+  api03_after_first_line "$api03_swift_output"
+)
+
+api03_product_name=$(/usr/bin/sw_vers -productName) \
+  || api03_fail "could not inspect the macOS product name"
+api03_product_version=$(/usr/bin/sw_vers -productVersion) \
+  || api03_fail "could not inspect the macOS product version"
+api03_product_build_version=$(/usr/bin/sw_vers -buildVersion) \
+  || api03_fail "could not inspect the macOS build version"
+
+# Full evidence is the frozen protocol run. Quick mode remains a portable
+# correctness smoke test and records, but does not constrain, its environment.
+if [ "$api03_quick" = false ]; then
+  [ "$api03_xcode_version" = 26.6 ] \
+    || api03_fail "full evidence requires Xcode 26.6; found $api03_xcode_version"
+  [ "$api03_xcode_build_version" = 17F113 ] \
+    || api03_fail \
+      "full evidence requires Xcode build 17F113; found $api03_xcode_build_version"
+  case "$api03_swift_version" in
+    'Apple Swift version 6.3.3 '*)
+      ;;
+    *)
+      api03_fail \
+        "full evidence requires Apple Swift 6.3.3; found $api03_swift_version"
+      ;;
+  esac
+  [ "$api03_product_name" = macOS ] \
+    || api03_fail "full evidence requires macOS; found $api03_product_name"
+  [ "$api03_product_version" = 27.0 ] \
+    || api03_fail \
+      "full evidence requires macOS 27.0; found $api03_product_version"
+  [ "$api03_product_build_version" = 26A5378n ] \
+    || api03_fail \
+      "full evidence requires macOS build 26A5378n; found $api03_product_build_version"
+fi
 
 api03_environment_file="$api03_output_directory/environment.json"
 api03_validation_file="$api03_output_directory/correctness-validation.txt"
@@ -144,13 +242,10 @@ api03_check_fixture() {
   api03_fixture_expected_bytes=$2
   api03_fixture_expected_sha256=$3
   api03_fixture_actual_bytes=$(
-    /usr/bin/wc -c <"$api03_repository_root/$api03_fixture_path" \
-      | /usr/bin/awk '{ print $1 }'
+    /usr/bin/wc -c <"$api03_repository_root/$api03_fixture_path"
   )
   api03_fixture_actual_sha256=$(
-    /usr/bin/shasum -a 256 \
-      "$api03_repository_root/$api03_fixture_path" \
-      | /usr/bin/awk '{ print $1 }'
+    api03_sha256_file "$api03_repository_root/$api03_fixture_path"
   )
   printf \
     'fixture %s bytes=%s sha256=%s\n' \
@@ -231,8 +326,7 @@ if [ "$api03_validation_status" -ne 0 ]; then
   api03_fail "pre-timing correctness validation failed"
 fi
 api03_validation_sha256=$(
-  /usr/bin/shasum -a 256 "$api03_validation_file" \
-    | /usr/bin/awk '{ print $1 }'
+  api03_sha256_file "$api03_validation_file"
 )
 api03_validation_completed_at=$(
   /bin/date -u '+%Y-%m-%dT%H:%M:%SZ'
@@ -320,8 +414,7 @@ fi
     }
   ' "$api03_build_log" >"$api03_swiftc_invocations_file"
 api03_invocation_count=$(
-  /usr/bin/wc -l <"$api03_swiftc_invocations_file" \
-    | /usr/bin/awk '{ print $1 }'
+  /usr/bin/wc -l <"$api03_swiftc_invocations_file"
 )
 [ "$api03_invocation_count" -eq 3 ] \
   || api03_fail "could not extract all three Swift compiler invocations"
@@ -338,12 +431,10 @@ api03_binary="$api03_binary_directory/HDXLURITemplateAPI03Benchmark"
   || api03_fail "Release benchmark executable was not produced"
 
 api03_binary_sha256=$(
-  /usr/bin/shasum -a 256 "$api03_binary" \
-    | /usr/bin/awk '{ print $1 }'
+  api03_sha256_file "$api03_binary"
 )
 api03_swiftc_invocations_sha256=$(
-  /usr/bin/shasum -a 256 "$api03_swiftc_invocations_file" \
-    | /usr/bin/awk '{ print $1 }'
+  api03_sha256_file "$api03_swiftc_invocations_file"
 )
 api03_inputs="$api03_scratch/inputs"
 
@@ -377,6 +468,16 @@ api03_plutil_insert_bool() {
     "$api03_environment_file"
 }
 
+api03_xctrace_output=$(/usr/bin/xcrun xctrace version 2>/dev/null) \
+  || api03_fail "could not inspect the xctrace version"
+api03_xctrace_version=$(api03_first_line "$api03_xctrace_output")
+api03_ac_power_before_output=$(/usr/bin/pmset -g batt 2>/dev/null) \
+  || api03_fail "could not inspect AC power state before measurement"
+api03_ac_power_before=$(api03_first_line "$api03_ac_power_before_output")
+api03_thermal_before_output=$(/usr/bin/pmset -g therm 2>/dev/null) \
+  || api03_fail "could not inspect thermal state before measurement"
+api03_thermal_before=$(api03_join_lines "$api03_thermal_before_output")
+
 /usr/bin/plutil -create xml1 "$api03_environment_file"
 api03_plutil_insert_integer schemaVersion 1
 api03_plutil_insert_string benchmarkCommit "$api03_commit"
@@ -402,10 +503,9 @@ api03_plutil_insert_string swiftCompilerInvocationsFile \
 api03_plutil_insert_string swiftCompilerInvocationsSHA256 \
   "$api03_swiftc_invocations_sha256"
 api03_plutil_insert_string binarySHA256 "$api03_binary_sha256"
-api03_plutil_insert_string productName "$(/usr/bin/sw_vers -productName)"
-api03_plutil_insert_string productVersion "$(/usr/bin/sw_vers -productVersion)"
-api03_plutil_insert_string productBuildVersion \
-  "$(/usr/bin/sw_vers -buildVersion)"
+api03_plutil_insert_string productName "$api03_product_name"
+api03_plutil_insert_string productVersion "$api03_product_version"
+api03_plutil_insert_string productBuildVersion "$api03_product_build_version"
 api03_plutil_insert_string architecture "$(/usr/bin/uname -m)"
 api03_plutil_insert_string kernelRelease "$(/usr/bin/uname -r)"
 api03_plutil_insert_string machineModel "$(/usr/sbin/sysctl -n hw.model)"
@@ -417,39 +517,13 @@ api03_plutil_insert_integer logicalCoreCount \
   "$(/usr/sbin/sysctl -n hw.logicalcpu)"
 api03_plutil_insert_integer memoryBytes \
   "$(/usr/sbin/sysctl -n hw.memsize)"
-api03_plutil_insert_string xcodeVersion \
-  "$(
-    /usr/bin/xcodebuild -version \
-      | /usr/bin/awk 'NR == 1 { sub(/^Xcode /, ""); print }'
-  )"
-api03_plutil_insert_string xcodeBuildVersion \
-  "$(
-    /usr/bin/xcodebuild -version \
-      | /usr/bin/awk 'NR == 2 { sub(/^Build version /, ""); print }'
-  )"
-api03_plutil_insert_string swiftVersion \
-  "$(/usr/bin/xcrun swift --version | /usr/bin/awk 'NR == 1 { print }')"
-api03_plutil_insert_string swiftTarget \
-  "$(/usr/bin/xcrun swift --version | /usr/bin/awk 'NR == 2 { print }')"
-api03_plutil_insert_string xctraceVersion \
-  "$(
-    /usr/bin/xcrun xctrace version 2>/dev/null \
-      | /usr/bin/awk 'NR == 1 { print }'
-  )"
-api03_plutil_insert_string acPowerBefore \
-  "$(
-    /usr/bin/pmset -g batt 2>/dev/null \
-      | /usr/bin/awk 'NR == 1 { print }'
-  )"
-api03_plutil_insert_string thermalStateBefore \
-  "$(
-    /usr/bin/pmset -g therm 2>/dev/null \
-      | /usr/bin/awk '
-          NR > 1 { printf " | " }
-          { printf "%s", $0 }
-          END { print "" }
-        '
-  )"
+api03_plutil_insert_string xcodeVersion "$api03_xcode_version"
+api03_plutil_insert_string xcodeBuildVersion "$api03_xcode_build_version"
+api03_plutil_insert_string swiftVersion "$api03_swift_version"
+api03_plutil_insert_string swiftTarget "$api03_swift_target"
+api03_plutil_insert_string xctraceVersion "$api03_xctrace_version"
+api03_plutil_insert_string acPowerBefore "$api03_ac_power_before"
+api03_plutil_insert_string thermalStateBefore "$api03_thermal_before"
 
 api03_progress "collecting warm samples"
 api03_worker=0
@@ -566,25 +640,32 @@ api03_collect_fresh_sample() {
   api03_require_unsigned_integer \
     launchElapsedNanoseconds "$api03_launch_nanoseconds"
 
-  /usr/bin/awk -v launch="$api03_launch_nanoseconds" '
-    BEGIN {
-      token = "\"launchElapsedNanoseconds\":18446744073709551615"
-      replacement = "\"launchElapsedNanoseconds\":" launch
-      replacements = 0
-    }
-    {
-      if (index($0, token) != 0) {
-        sub(token, replacement)
-        replacements += 1
+  api03_spliced_child_json="$api03_scratch/spliced-child.json"
+  if /usr/bin/awk -v launch="$api03_launch_nanoseconds" '
+      BEGIN {
+        token = "\"launchElapsedNanoseconds\":18446744073709551615"
+        replacement = "\"launchElapsedNanoseconds\":" launch
+        replacements = 0
       }
-      print
-    }
-    END {
-      if (replacements != 1) {
-        exit 42
+      {
+        if (index($0, token) != 0) {
+          sub(token, replacement)
+          replacements += 1
+        }
+        print
       }
-    }
-  ' "$api03_child_json" >>"$api03_fresh_file"
+      END {
+        if (replacements != 1) {
+          exit 42
+        }
+      }
+    ' "$api03_child_json" >"$api03_spliced_child_json"
+  then
+    /bin/cat "$api03_spliced_child_json" >>"$api03_fresh_file"
+  else
+    api03_fail \
+      "fresh record did not contain exactly one unavailable launch sentinel"
+  fi
 
   printf \
     '{"benchmarkCommit":"%s","launchElapsedNanoseconds":%s,"maximumResidentSetSizeBytes":%s,"operation":"%s","peakMemoryFootprintBytes":%s,"processIndex":%s,"sampleIndex":0,"schemaVersion":1,"timeRealSecondsCoarse":"%s","workloadID":"%s"}\n' \
@@ -606,10 +687,8 @@ api03_append_fresh_configuration() {
   api03_plan_workload=$1
   api03_plan_operation=$2
   api03_plan_rank=$(
-    printf '%s\n' \
-      "0x4844584C41504903|$api03_plan_workload|$api03_plan_operation" \
-      | /usr/bin/shasum -a 256 \
-      | /usr/bin/awk '{ print $1 }'
+    api03_sha256_text \
+      "0x4844584C41504903|$api03_plan_workload|$api03_plan_operation"
   )
   printf '%s\t%s\t%s\n' \
     "$api03_plan_rank" \
@@ -661,10 +740,8 @@ while [ "$api03_round" -lt "$api03_fresh_samples" ]; do
     [ -n "$api03_plan_rank" ] \
       || api03_fail "fresh-process plan contains an empty rank"
     api03_round_rank=$(
-      printf '%s\n' \
-        "0x4844584C41504903|$api03_round|$api03_workload|$api03_operation" \
-        | /usr/bin/shasum -a 256 \
-        | /usr/bin/awk '{ print $1 }'
+      api03_sha256_text \
+        "0x4844584C41504903|$api03_round|$api03_workload|$api03_operation"
     )
     printf '%d\t%s\t%s\t%s\n' \
       "$api03_round" \
@@ -711,6 +788,73 @@ else
   api03_expected_warm_batches=6
 fi
 
+api03_operation_contract_awk='
+  function isPrimary(operation) {
+    return operation == "direct-parse" \
+      || operation == "semantic-json" \
+      || operation == "semantic-binary-property-list" \
+      || operation == "prototype-cache"
+  }
+  function isFallback(operation) {
+    return operation == "prototype-cache-truncated-fallback" \
+      || operation == "prototype-cache-corrupt-fallback" \
+      || operation == "prototype-cache-wrong-version-fallback" \
+      || operation == "prototype-cache-stale-fallback" \
+      || operation == "prototype-cache-source-mismatch-fallback" \
+      || operation == "prototype-cache-unknown-operator-fallback" \
+      || operation == "prototype-cache-unknown-modifier-fallback" \
+      || operation == "prototype-cache-invalid-prefix-fallback" \
+      || operation == "prototype-cache-empty-expression-fallback"
+  }
+  function isExpectedConfiguration(workload, operation) {
+    if (profile == "quick") {
+      return workload == "balanced-100" \
+        && (isPrimary(operation) || isFallback(operation))
+    }
+    if (isPrimary(operation)) {
+      return workload == "balanced-1" \
+        || workload == "balanced-10" \
+        || workload == "balanced-100" \
+        || workload == "balanced-1000" \
+        || workload == "balanced-10000" \
+        || workload == "all-repeated-1000" \
+        || workload == "all-unique-1000" \
+        || workload == "all-repeated-10000" \
+        || workload == "all-unique-10000"
+    }
+    return isFallback(operation) \
+      && (workload == "balanced-1000" \
+        || workload == "balanced-10000")
+  }
+  function expectedOutcome(operation) {
+    if (operation == "direct-parse" \
+      || operation == "semantic-json" \
+      || operation == "semantic-binary-property-list")
+    {
+      return "not-applicable"
+    }
+    if (operation == "prototype-cache") {
+      return "hit"
+    }
+    if (operation == "prototype-cache-truncated-fallback") {
+      return "fallback-decode-or-truncated"
+    }
+    if (operation == "prototype-cache-corrupt-fallback") {
+      return "fallback-integrity-mismatch"
+    }
+    if (operation == "prototype-cache-wrong-version-fallback") {
+      return "fallback-unsupported-version"
+    }
+    if (operation == "prototype-cache-stale-fallback") {
+      return "fallback-authoritative-source-mismatch"
+    }
+    if (operation == "prototype-cache-source-mismatch-fallback") {
+      return "fallback-payload-source-mismatch"
+    }
+    return "fallback-structural-validation"
+  }
+'
+
 api03_validate_raw_file() {
   api03_raw_path=$1
   api03_raw_mode=$2
@@ -726,7 +870,7 @@ api03_validate_raw_file() {
     -v expectedConfigurations="$api03_raw_expected_configurations" \
     -v expectedProcesses="$api03_raw_expected_processes" \
     -v expectedBatches="$api03_raw_expected_batches" \
-    -v profile="$api03_mode" '
+    -v profile="$api03_mode" "$api03_operation_contract_awk"'
       function fail(message) {
         print "raw evidence validation: " message >"/dev/stderr"
         failed = 1
@@ -753,70 +897,6 @@ api03_validate_raw_file() {
           return "\034"
         }
         return substr(remainder, 1, RLENGTH)
-      }
-      function isPrimary(operation) {
-        return operation == "direct-parse" \
-          || operation == "semantic-json" \
-          || operation == "semantic-binary-property-list" \
-          || operation == "prototype-cache"
-      }
-      function isFallback(operation) {
-        return operation == "prototype-cache-truncated-fallback" \
-          || operation == "prototype-cache-corrupt-fallback" \
-          || operation == "prototype-cache-wrong-version-fallback" \
-          || operation == "prototype-cache-stale-fallback" \
-          || operation == "prototype-cache-source-mismatch-fallback" \
-          || operation == "prototype-cache-unknown-operator-fallback" \
-          || operation == "prototype-cache-unknown-modifier-fallback" \
-          || operation == "prototype-cache-invalid-prefix-fallback" \
-          || operation == "prototype-cache-empty-expression-fallback"
-      }
-      function isExpectedConfiguration(workload, operation) {
-        if (profile == "quick") {
-          return workload == "balanced-100" \
-            && (isPrimary(operation) || isFallback(operation))
-        }
-        if (isPrimary(operation)) {
-          return workload == "balanced-1" \
-            || workload == "balanced-10" \
-            || workload == "balanced-100" \
-            || workload == "balanced-1000" \
-            || workload == "balanced-10000" \
-            || workload == "all-repeated-1000" \
-            || workload == "all-unique-1000" \
-            || workload == "all-repeated-10000" \
-            || workload == "all-unique-10000"
-        }
-        return isFallback(operation) \
-          && (workload == "balanced-1000" \
-            || workload == "balanced-10000")
-      }
-      function expectedOutcome(operation) {
-        if (operation == "direct-parse" \
-          || operation == "semantic-json" \
-          || operation == "semantic-binary-property-list")
-        {
-          return "not-applicable"
-        }
-        if (operation == "prototype-cache") {
-          return "hit"
-        }
-        if (operation == "prototype-cache-truncated-fallback") {
-          return "fallback-decode-or-truncated"
-        }
-        if (operation == "prototype-cache-corrupt-fallback") {
-          return "fallback-integrity-mismatch"
-        }
-        if (operation == "prototype-cache-wrong-version-fallback") {
-          return "fallback-unsupported-version"
-        }
-        if (operation == "prototype-cache-stale-fallback") {
-          return "fallback-authoritative-source-mismatch"
-        }
-        if (operation == "prototype-cache-source-mismatch-fallback") {
-          return "fallback-payload-source-mismatch"
-        }
-        return "fallback-structural-validation"
       }
       BEGIN {
         expectedSize["balanced-1"] = 1
@@ -1136,74 +1216,10 @@ if api03_noise_count=$(
     -v expectedWarmProcesses="$api03_worker_count" \
     -v expectedFreshProcesses="$api03_expected_process_count" \
     -v expectedWarmBatches="$api03_expected_warm_batches" \
-    -v profile="$api03_mode" '
+    -v profile="$api03_mode" "$api03_operation_contract_awk"'
       function fail(message) {
         print "summary validation: " message >"/dev/stderr"
         failed = 1
-      }
-      function isPrimary(operation) {
-        return operation == "direct-parse" \
-          || operation == "semantic-json" \
-          || operation == "semantic-binary-property-list" \
-          || operation == "prototype-cache"
-      }
-      function isFallback(operation) {
-        return operation == "prototype-cache-truncated-fallback" \
-          || operation == "prototype-cache-corrupt-fallback" \
-          || operation == "prototype-cache-wrong-version-fallback" \
-          || operation == "prototype-cache-stale-fallback" \
-          || operation == "prototype-cache-source-mismatch-fallback" \
-          || operation == "prototype-cache-unknown-operator-fallback" \
-          || operation == "prototype-cache-unknown-modifier-fallback" \
-          || operation == "prototype-cache-invalid-prefix-fallback" \
-          || operation == "prototype-cache-empty-expression-fallback"
-      }
-      function isExpectedConfiguration(workload, operation) {
-        if (profile == "quick") {
-          return workload == "balanced-100" \
-            && (isPrimary(operation) || isFallback(operation))
-        }
-        if (isPrimary(operation)) {
-          return workload == "balanced-1" \
-            || workload == "balanced-10" \
-            || workload == "balanced-100" \
-            || workload == "balanced-1000" \
-            || workload == "balanced-10000" \
-            || workload == "all-repeated-1000" \
-            || workload == "all-unique-1000" \
-            || workload == "all-repeated-10000" \
-            || workload == "all-unique-10000"
-        }
-        return isFallback(operation) \
-          && (workload == "balanced-1000" \
-            || workload == "balanced-10000")
-      }
-      function expectedOutcome(operation) {
-        if (operation == "direct-parse" \
-          || operation == "semantic-json" \
-          || operation == "semantic-binary-property-list")
-        {
-          return "not-applicable"
-        }
-        if (operation == "prototype-cache") {
-          return "hit"
-        }
-        if (operation == "prototype-cache-truncated-fallback") {
-          return "fallback-decode-or-truncated"
-        }
-        if (operation == "prototype-cache-corrupt-fallback") {
-          return "fallback-integrity-mismatch"
-        }
-        if (operation == "prototype-cache-wrong-version-fallback") {
-          return "fallback-unsupported-version"
-        }
-        if (operation == "prototype-cache-stale-fallback") {
-          return "fallback-authoritative-source-mismatch"
-        }
-        if (operation == "prototype-cache-source-mismatch-fallback") {
-          return "fallback-payload-source-mismatch"
-        }
-        return "fallback-structural-validation"
       }
       NR == 1 {
         headerCount = NF
@@ -1407,6 +1423,13 @@ if [ "$api03_quick" = false ] && [ "$api03_noise_count" -gt 0 ]; then
   api03_evidence_validation_status=noise-threshold-exceeded
 fi
 
+api03_ac_power_after_output=$(/usr/bin/pmset -g batt 2>/dev/null) \
+  || api03_fail "could not inspect AC power state after measurement"
+api03_ac_power_after=$(api03_first_line "$api03_ac_power_after_output")
+api03_thermal_after_output=$(/usr/bin/pmset -g therm 2>/dev/null) \
+  || api03_fail "could not inspect thermal state after measurement"
+api03_thermal_after=$(api03_join_lines "$api03_thermal_after_output")
+
 api03_ended_at=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')
 /usr/bin/plutil -insert endedAtUTC -string "$api03_ended_at" -s \
   "$api03_environment_file"
@@ -1419,21 +1442,9 @@ api03_ended_at=$(/bin/date -u '+%Y-%m-%dT%H:%M:%SZ')
 /usr/bin/plutil -insert noiseThresholdExceededConfigurationCount -integer \
   "$api03_noise_count" \
   -s "$api03_environment_file"
-/usr/bin/plutil -insert acPowerAfter -string \
-  "$(
-    /usr/bin/pmset -g batt 2>/dev/null \
-      | /usr/bin/awk 'NR == 1 { print }'
-  )" \
+/usr/bin/plutil -insert acPowerAfter -string "$api03_ac_power_after" \
   -s "$api03_environment_file"
-/usr/bin/plutil -insert thermalStateAfter -string \
-  "$(
-    /usr/bin/pmset -g therm 2>/dev/null \
-      | /usr/bin/awk '
-          NR > 1 { printf " | " }
-          { printf "%s", $0 }
-          END { print "" }
-        '
-  )" \
+/usr/bin/plutil -insert thermalStateAfter -string "$api03_thermal_after" \
   -s "$api03_environment_file"
 /usr/bin/plutil -convert json "$api03_environment_file"
 

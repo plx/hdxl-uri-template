@@ -356,8 +356,8 @@ private func api03SummariesRetainDeterministicStatistics() throws {
     )
   }
 
-  let firstSummary = api03SummaryCSV(records: records)
-  let secondSummary = api03SummaryCSV(records: records)
+  let firstSummary = try api03SummaryCSV(records: records)
+  let secondSummary = try api03SummaryCSV(records: records)
   #expect(firstSummary == secondSummary)
 
   let table = try api03ParseSimpleCSV(firstSummary)
@@ -414,8 +414,8 @@ private func api03WarmSummariesRetainClusteredStatistics() throws {
     }
   }
 
-  let firstSummary = api03SummaryCSV(records: records)
-  let secondSummary = api03SummaryCSV(records: records)
+  let firstSummary = try api03SummaryCSV(records: records)
+  let secondSummary = try api03SummaryCSV(records: records)
   #expect(firstSummary == secondSummary)
 
   let table = try api03ParseSimpleCSV(firstSummary)
@@ -439,6 +439,52 @@ private func api03WarmSummariesRetainClusteredStatistics() throws {
     #expect(!row[table.column("median_ci95_upper_nanoseconds")].isEmpty)
     #expect(!row[table.column("direct_parse_speedup_ci95_lower")].isEmpty)
     #expect(!row[table.column("direct_parse_speedup_ci95_upper")].isEmpty)
+  }
+}
+
+@Test("API-03 partial warm comparisons fail with a diagnostic")
+private func api03PartialWarmComparisonsFailWithDiagnostic() {
+  let records = [
+    api03SyntheticWarmMeasurement(
+      operation: BenchmarkOperation.directParse.rawValue,
+      processIndex: 0,
+      sampleIndex: 0,
+      elapsedNanoseconds: 200,
+      encodedBytes: 100,
+      outcome: BenchmarkCacheOutcome.notApplicable.rawValue
+    ),
+    api03SyntheticWarmMeasurement(
+      operation: BenchmarkOperation.directParse.rawValue,
+      processIndex: 1,
+      sampleIndex: 0,
+      elapsedNanoseconds: 210,
+      encodedBytes: 100,
+      outcome: BenchmarkCacheOutcome.notApplicable.rawValue
+    ),
+    api03SyntheticWarmMeasurement(
+      operation: BenchmarkOperation.prototypeCache.rawValue,
+      processIndex: 0,
+      sampleIndex: 0,
+      elapsedNanoseconds: 100,
+      encodedBytes: 300,
+      outcome: BenchmarkCacheOutcome.hit.rawValue
+    ),
+  ]
+
+  do {
+    _ = try api03SummaryCSV(records: records)
+    Issue.record("A partial warm comparison unexpectedly summarized.")
+  } catch let error as API03MeasurementError {
+    guard
+      case .mismatchedProcessIndices(let direct, let comparison) = error
+    else {
+      Issue.record("Unexpected measurement error: \(error)")
+      return
+    }
+    #expect(direct == [0, 1])
+    #expect(comparison == [0])
+  } catch {
+    Issue.record("Unexpected error: \(String(reflecting: error))")
   }
 }
 

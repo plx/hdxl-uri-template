@@ -136,14 +136,6 @@ package struct OperationResult:
   package let cacheOutcome: BenchmarkCacheOutcome
   package let encodedBytes: Int
 
-  package var stableDigest: String {
-    digest
-  }
-
-  package var count: Int {
-    templateCount
-  }
-
   package init(
     digest: String,
     templateCount: Int,
