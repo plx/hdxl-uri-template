@@ -47,8 +47,10 @@ operations against the same deterministic digest.
 The checked runner mixes all four pinned conformance suites with structured
 generation, string mutation, malformed near-misses, Unicode, percent
 triplets, every operator, modifiers, value shapes, and JSON/property-list
-decode probes. It reports the root seed, corpus digest, requested and completed
-iterations, counters, duration, and result digest.
+decode probes. Every generated variable value round-trips through both
+serializations. The report records that round-trip count alongside the root
+seed, corpus digest, requested and completed iterations, outcome counters,
+duration, and result digest.
 
 Run the scheduled budget locally:
 
