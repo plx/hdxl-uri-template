@@ -5,11 +5,13 @@ extension URITemplateVariable {
   internal func evaluate(
     parameters: [String: URIVariableValue],
     expansionType: URIValueExpansionType
-  ) throws -> String {
-    guard let expansion = try evaluateIfDefined(
-      parameters: parameters,
-      expansionType: expansionType
-    ) else {
+  ) throws(URIVariableValue.ExpansionError) -> String {
+    guard
+      let expansion = try evaluateIfDefined(
+        parameters: parameters,
+        expansionType: expansionType
+      )
+    else {
       return ""
     }
 
@@ -19,7 +21,7 @@ extension URITemplateVariable {
   internal func evaluateIfDefined(
     parameters: [String: URIVariableValue],
     expansionType: URIValueExpansionType
-  ) throws -> String? {
+  ) throws(URIVariableValue.ExpansionError) -> String? {
     guard
       let value = parameters[variableName.rawValue],
       value.isDefined

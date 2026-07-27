@@ -207,17 +207,17 @@ private func manualVariableExpansionCoverage() throws {
   // Text expansion examples cover unescaped variable names, query-style escaped names, empty suffixes, and prefix modifiers.
   let name = URITemplateVariableName(rawValue: "name")
   let text = URIVariableTextValue(rawValue: "hello/world")
-  #expect(try text.escapedContents(expansionType: .simple) == "hello%2Fworld")
+  #expect(text.escapedContents(expansionType: .simple) == "hello%2Fworld")
   #expect(
-    try text.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified)
+    text.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified)
       == "hello%2Fworld"
   )
   #expect(
-    try text.expansion(expansionType: .query, variableName: name, expansionModifier: .prefix(5))
+    text.expansion(expansionType: .query, variableName: name, expansionModifier: .prefix(5))
       == "name=hello"
   )
   #expect(
-    try URIVariableTextValue(rawValue: "").expansion(
+    URIVariableTextValue(rawValue: "").expansion(
       expansionType: .query,
       variableName: name,
       expansionModifier: .unmodified
@@ -229,22 +229,22 @@ private func manualVariableExpansionCoverage() throws {
   // List and association expansion have distinct exploded/unexploded rules across path, parameter, and query operators.
   let list = URIVariableListValue(strings: ["red", "", "blue"])
   #expect(
-    try list.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified)
+    list.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified)
       == "red,,blue"
   )
   #expect(
-    try list.expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified)
+    list.expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified)
       == "name=red,,blue"
   )
   #expect(
-    try list.expansion(
+    list.expansion(
       expansionType: .pathParameter,
       variableName: name,
       expansionModifier: .explode
     ) == "name=red;name;name=blue"
   )
   #expect(
-    try URIVariableListValue().expansion(
+    URIVariableListValue().expansion(
       expansionType: .query,
       variableName: name,
       expansionModifier: .explode
@@ -255,35 +255,35 @@ private func manualVariableExpansionCoverage() throws {
     validatingStrings: [("a", "1"), ("b", ""), ("c", "3")]
   )
   #expect(
-    try association.expansion(
+    association.expansion(
       expansionType: .simple,
       variableName: name,
       expansionModifier: .unmodified
     ) == "a,1,b,,c,3"
   )
   #expect(
-    try association.expansion(
+    association.expansion(
       expansionType: .query,
       variableName: name,
       expansionModifier: .unmodified
     ) == "name=a,1,b,,c,3"
   )
   #expect(
-    try association.expansion(
+    association.expansion(
       expansionType: .query,
       variableName: name,
       expansionModifier: .explode
     ) == "a=1&b=&c=3"
   )
   #expect(
-    try association.expansion(
+    association.expansion(
       expansionType: .pathParameter,
       variableName: name,
       expansionModifier: .explode
     ) == "a=1;b;c=3"
   )
   #expect(
-    try URIVariableAssociationValue().expansion(
+    URIVariableAssociationValue().expansion(
       expansionType: .query,
       variableName: name,
       expansionModifier: .explode
@@ -315,19 +315,6 @@ private func manualVariableExpansionCoverage() throws {
     try URIVariableValue.undefined.evaluate(expansionType: .query, templateVariable: variable) == ""
   )
 
-  // Error descriptions are part of the diagnostics contract, even though escaping failure is rare for valid Swift strings.
-  #expect(
-    URIVariableTextValue.ExpansionError.unableToEscapeTextValue("x", .simple).localizedDescription
-      .contains("Unable to escape text")
-  )
-  #expect(
-    URIVariableTextValue.ExpansionError.unableToEscapeVariableName("x", .query).localizedDescription
-      .contains("Unable to escape variable-name")
-  )
-  #expect(
-    URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("x", "v", .query, .explode)
-      .localizedDescription.contains("Unable to escape")
-  )
 }
 
 @Test(
@@ -341,12 +328,12 @@ private func propertyVariableExpansionCoverage() throws {
   for expansionType in URIValueExpansionType.allCases {
     for rawValue in values {
       let text = URIVariableTextValue(rawValue: rawValue)
-      let unmodified = try text.expansion(
+      let unmodified = text.expansion(
         expansionType: expansionType,
         variableName: name,
         expansionModifier: .unmodified
       )
-      let viaVariable = try text.expansion(
+      let viaVariable = text.expansion(
         expansionType: expansionType,
         templateVariable: URITemplateVariable(variableName: name, expansionModifier: .unmodified)
       )
@@ -358,7 +345,7 @@ private func propertyVariableExpansionCoverage() throws {
 
     let list = URIVariableListValue(strings: values)
     #expect(
-      try list.expansion(
+      list.expansion(
         expansionType: expansionType,
         templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)
       ).isEmpty == false
@@ -377,7 +364,7 @@ private func propertyVariableExpansionCoverage() throws {
       validatingStrings: [("a", "1"), ("b", "2")]
     )
     #expect(
-      try association.expansion(
+      association.expansion(
         expansionType: expansionType,
         templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)
       ).isEmpty == false

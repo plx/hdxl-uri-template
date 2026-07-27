@@ -607,6 +607,12 @@ value is:
 Include `{keys:1}` and `{+keys:1}`. Confirm scalar prefix expansion still works.
 The test must distinguish expected non-applicability from an unrelated failure.
 
+Use the
+[ARCH-03 expansion-error call graph](Evidence/2026-07-27-arch-03-expansion-error-call-graph.md)
+to verify that total escaping and value-formatting leaves remain nonthrowing,
+the composite-prefix category is the only internal expansion error, and URL
+construction retains its distinct public failure path.
+
 ### 4.6 Unicode and percent-encoded prefix boundaries
 
 Verify prefix length counts Unicode code points and never:

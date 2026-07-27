@@ -1,21 +1,14 @@
-import Foundation
-
 extension URIVariableAssociationValue {
-
-  internal enum ExpansionError : Error, LocalizedError {
-    case internalAssociationKeyFailedToEscape([(String,String)], String, String, URIValueExpansionType)
-    case internalAssociationValueFailedToEscape([(String,String)], String, String, URIValueExpansionType)
-  }
 
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(templateVariable.isValid)
     pedanticAssert(isValid)
 #endif
-    return try expansion(
+    return expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -26,7 +19,7 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(expansionModifier.isValid)
@@ -37,17 +30,17 @@ extension URIVariableAssociationValue {
     }
     return switch expansionModifier {
     case .unmodified:
-      try unexplodedExpansion(
+      unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .explode:
-      try explodedExpansion(
+      explodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .prefix(_):
-      try unexplodedExpansion(
+      unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
@@ -57,7 +50,7 @@ extension URIVariableAssociationValue {
   internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
@@ -83,18 +76,18 @@ extension URIVariableAssociationValue {
   internal func unexplodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
 #endif
-    let joinedPairs = try storage
+    let joinedPairs = storage
       .lazy
       .map {
         pair
         in
-        let escapedKey = try pair.key.escapedContents(expansionType: expansionType)
-        let escapedValue = try pair.value.escapedContents(expansionType: expansionType)
+        let escapedKey = pair.key.escapedContents(expansionType: expansionType)
+        let escapedValue = pair.value.escapedContents(expansionType: expansionType)
         return "\(escapedKey),\(escapedValue)"
       }
       .joined(separator: ",")
