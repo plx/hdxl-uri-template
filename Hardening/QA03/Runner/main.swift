@@ -8,7 +8,7 @@ struct HDXLURITemplateQA03 {
   static func main() async {
     let command = CommandLine.arguments.dropFirst().first ?? "help"
     do {
-      let arguments = try Arguments(
+      var arguments = try QA03Arguments(
         Array(CommandLine.arguments.dropFirst(2))
       )
       let commit =
@@ -86,6 +86,7 @@ struct HDXLURITemplateQA03 {
       default:
         throw QA03Error("Unknown QA-03 command \(command).\n\(usage)")
       }
+      try arguments.requireNoUnusedOptions()
     } catch {
       let failure = FailureReport(
         schemaVersion: 1,
@@ -96,70 +97,6 @@ struct HDXLURITemplateQA03 {
       try? writeJSON(failure, to: .standardError)
       exit(EXIT_FAILURE)
     }
-  }
-}
-
-private struct Arguments {
-  private var values: [String: String] = [:]
-
-  init(_ rawArguments: [String]) throws {
-    guard rawArguments.count.isMultiple(of: 2) else {
-      throw QA03Error("Every QA-03 option requires one value.")
-    }
-    var index = 0
-    while index < rawArguments.count {
-      let name = rawArguments[index]
-      let value = rawArguments[index + 1]
-      guard name.hasPrefix("--"), values[name] == nil else {
-        throw QA03Error("Invalid or duplicate QA-03 option \(name).")
-      }
-      values[name] = value
-      index += 2
-    }
-  }
-
-  func seed(named name: String) throws -> UInt64 {
-    let rawValue = try required(named: name)
-    let digits =
-      rawValue.hasPrefix("0x") || rawValue.hasPrefix("0X")
-      ? String(rawValue.dropFirst(2))
-      : rawValue
-    guard let value = UInt64(digits, radix: 16) else {
-      throw QA03Error("\(name) must be a hexadecimal UInt64.")
-    }
-    return value
-  }
-
-  func integer(named name: String, minimum: Int) throws -> Int {
-    guard
-      let value = Int(try required(named: name)),
-      value >= minimum
-    else {
-      throw QA03Error("\(name) must be an integer at least \(minimum).")
-    }
-    return value
-  }
-
-  func optionalInteger(named name: String, minimum: Int) throws -> Int? {
-    guard values[name] != nil else {
-      return nil
-    }
-    return try integer(named: name, minimum: minimum)
-  }
-
-  func url(named name: String) throws -> URL {
-    URL(fileURLWithPath: try required(named: name))
-  }
-
-  func optionalURL(named name: String) -> URL? {
-    values[name].map(URL.init(fileURLWithPath:))
-  }
-
-  private func required(named name: String) throws -> String {
-    guard let value = values[name], !value.isEmpty else {
-      throw QA03Error("Missing required option \(name).")
-    }
-    return value
   }
 }
 

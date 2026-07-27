@@ -57,6 +57,16 @@ package enum QA03FuzzRunner {
         throw QA03Error("Fuzz replay index is outside the iteration range.")
       }
     }
+    if let injectedFailureIndex = configuration.injectedFailureIndex {
+      guard
+        injectedFailureIndex >= 0,
+        injectedFailureIndex < configuration.iterations
+      else {
+        throw QA03Error(
+          "Injected fuzz failure index is outside the iteration range."
+        )
+      }
+    }
 
     let corpus = try makeCorpus(
       fixtureDirectory: configuration.fixtureDirectory
@@ -530,6 +540,9 @@ package enum QA03FuzzRunner {
     }
     if source.utf8.count >= 8, diagnostic.contains(source) {
       throw QA03Error("Public diagnostic exposed source payload.")
+    }
+    if diagnostic.contains("SENSITIVE_VALUE_") {
+      throw QA03Error("Public diagnostic exposed variable-value payload.")
     }
   }
 

@@ -69,6 +69,48 @@ func qa03FuzzFailureReplaysExactSeedAndIndex() throws {
   #expect(firstFailure.contains("case-seed="))
 }
 
+@Test("QA-03 rejects an injected fuzz failure outside the iteration range")
+func qa03RejectsOutOfRangeInjectedFailure() throws {
+  let configuration = QA03FuzzConfiguration(
+    seed: 0x4844_584C_5141_3033,
+    iterations: 64,
+    fixtureDirectory: nil,
+    injectedFailureIndex: 64
+  )
+
+  #expect(throws: QA03Error.self) {
+    try QA03FuzzRunner.run(
+      configuration: configuration,
+      commit: "qa-03-unit-test"
+    )
+  }
+}
+
+@Test("QA-03 CLI arguments consume valid options and reject unknown options")
+func qa03CLIArgumentsRejectUnknownOptions() throws {
+  var valid = try QA03Arguments([
+    "--seed", "0x10",
+    "--iterations", "64",
+  ])
+  #expect(try valid.seed(named: "--seed") == 0x10)
+  #expect(try valid.integer(named: "--iterations", minimum: 1) == 64)
+  try valid.requireNoUnusedOptions()
+
+  let unknown = try QA03Arguments(["--typo", "value"])
+  #expect(throws: QA03Error.self) {
+    try unknown.requireNoUnusedOptions()
+  }
+
+  var malformedSeed = try QA03Arguments(["--seed", "not-hex"])
+  #expect(throws: QA03Error.self) {
+    try malformedSeed.seed(named: "--seed")
+  }
+
+  #expect(throws: QA03Error.self) {
+    _ = try QA03Arguments(["--seed", "0x1", "--seed", "0x2"])
+  }
+}
+
 private func capturedFailure(
   _ configuration: QA03FuzzConfiguration
 ) throws -> String {
