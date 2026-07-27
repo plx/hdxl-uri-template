@@ -92,9 +92,8 @@ jobs:
         if: matrix.lane == 'debug'
         run: |
           set -o pipefail
-          sh -n \
-            Scripts/check-remote-consumer.sh \
-            Scripts/test-check-remote-consumer.sh
+          sh -n Scripts/check-remote-consumer.sh
+          sh -n Scripts/test-check-remote-consumer.sh
           ./Scripts/test-check-remote-consumer.sh 2>&1 |
             tee "$CI_ARTIFACTS/remote-consumer-guard-tests.log"
 
