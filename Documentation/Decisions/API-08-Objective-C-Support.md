@@ -76,7 +76,7 @@ SwiftPM Objective-C test target now builds. Retention would become preferable
 if a named current or committed consumer required it. No such consumer or
 compatibility horizon was identified.
 
-Removal can inconvenience an unrecorded private Objective-C caller and makes
+Removal can inconvenience an unrecorded private Objective-C caller and can make
 existing wrapper archives unreadable once the wrappers disappear. That cost is
 accepted for the pre-release contract. The package does not promise migration
 of wrapper objects or archives.
@@ -92,7 +92,8 @@ Issue #81 owns one complete, reviewable removal:
 - remove the Objective-C interop package target, `.m` bridge fixture, and
   wrapper-double tests;
 - preserve or migrate Swift association-invariant coverage;
-- prove the removed symbols are absent from the generated interface; and
+- prove the wrapper symbols are absent from the generated interface after
+  removal; and
 - make README, DocC, package claims, tests, and audit scope agree that
   Objective-C is unsupported.
 
