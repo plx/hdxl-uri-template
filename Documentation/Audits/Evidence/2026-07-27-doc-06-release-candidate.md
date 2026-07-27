@@ -89,6 +89,8 @@ Before opening the preparation pull request:
   action workflow syntax, package-manifest evaluation, and whitespace checks
   passed;
 - the manifest reported Swift tools 6.3 and no package dependencies;
+- the remote-consumer guard's syntax and malformed-revision regression
+  checks passed;
 - the remote-consumer script rejected an abbreviated SHA, then resolved,
   built, and ran the exact baseline revision
   `dea681ea83187ea32691f55f5f272ffc02d0e5ff`;

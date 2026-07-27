@@ -84,6 +84,18 @@ trap 'exit 143' TERM
   'let decoded = try JSONDecoder().decode(URITemplate.self, from: data)' \
   'precondition(decoded == template)' \
   'precondition(parameters["id"]?.textValue == "42")' \
+  'do {' \
+  '  _ = try URITemplate(parsing: "{")' \
+  '  preconditionFailure("Expected strict parsing to reject the source.")' \
+  '} catch let error as URITemplate.ParseError {' \
+  '  precondition(error.kind == .unterminatedExpression)' \
+  '  precondition(error.sourceRange == 1..<1)' \
+  '  precondition(' \
+  '    error.localizedDescription == "The URI template could not be parsed."' \
+  '  )' \
+  '} catch {' \
+  '  preconditionFailure("Expected URITemplate.ParseError.")' \
+  '}' \
   'print("candidate consumer passed: \(output)")' \
   >"$scratch/Sources/CandidateConsumer/main.swift"
 
