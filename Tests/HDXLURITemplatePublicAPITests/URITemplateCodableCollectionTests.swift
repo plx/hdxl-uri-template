@@ -33,6 +33,34 @@ private func publicCollectionsRoundTripThroughSupportedCoders() throws {
   }
 }
 
+@Test("Property lists reject a bare top-level semantic template string")
+private func propertyListsRejectBareTopLevelTemplates() throws {
+  let template = try URITemplate(parsing: "{x}")
+
+  for outputFormat in publicContractPropertyListFormats {
+    let encoder = PropertyListEncoder()
+    encoder.outputFormat = outputFormat
+
+    do {
+      _ = try encoder.encode(template)
+      Issue.record(
+        "Expected \(outputFormat) property-list encoding to reject a bare template."
+      )
+    } catch EncodingError.invalidValue(_, let context) {
+      #expect(context.codingPath.isEmpty)
+      #expect(
+        context.debugDescription.contains(
+          "top-level value as a property list"
+        )
+      )
+    } catch {
+      Issue.record(
+        "Expected EncodingError.invalidValue, but received \(error)."
+      )
+    }
+  }
+}
+
 private func verifyJSONCollections(
   sources: [String],
   templates: [URITemplate],
