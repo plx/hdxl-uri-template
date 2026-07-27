@@ -96,7 +96,8 @@ Issue #81 was scoped to own one complete, reviewable removal:
 - make README, DocC, package claims, tests, and audit scope agree that
   Objective-C is unsupported.
 
-The removal issue was a native child of epic #8 and a native blocker of #52. It
+The removal issue is a native child of epic #8. Its native blocker relationship
+to #52 records the now-satisfied implementation prerequisite. While open, it
 was deliberately not blocked by then-open #52; the merged nonclosing decision
 record was its contract prerequisite, and a reverse native dependency would
 have created a cycle.
