@@ -37,6 +37,12 @@ test-release:
 check-public-api:
     {{ swift }} Scripts/check-public-api.swift
 
-test-all: check-public-api test-debug test-heavy-debug test-release
+check-pinned-fixtures:
+    ./Scripts/check-pinned-fixtures.sh
+
+test-check-pinned-fixtures:
+    ./Scripts/test-check-pinned-fixtures.sh
+
+test-all: check-pinned-fixtures check-public-api test-debug test-heavy-debug test-release
 
 check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug build-release test-release

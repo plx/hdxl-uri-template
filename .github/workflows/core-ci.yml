@@ -1,0 +1,233 @@
+---
+name: Core CI
+
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "17 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: core-ci-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+
+jobs:
+  primary:
+    name: Swift 6.3 / ${{ matrix.name }}
+    runs-on: macos-26
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - lane: debug
+            name: Debug
+            configuration: debug
+          - lane: release
+            name: Release
+            configuration: release
+          - lane: heavy-debug
+            name: HEAVY_DEBUG
+            configuration: debug
+    env:
+      CI_ARTIFACTS: >-
+        /tmp/hdxl-qa-02-${{ github.run_id }}-${{ matrix.lane }}
+
+    steps:
+      - name: Checkout clean repository
+        # Dependabot updates immutable pins and version comments. Review the
+        # upstream release notes and commit diff before merging each update.
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify Swift 6.3 toolchain
+        run: |
+          mkdir -p "$CI_ARTIFACTS"
+          {
+            sw_vers
+            xcodebuild -version
+            xcrun swift --version
+          } 2>&1 | tee "$CI_ARTIFACTS/environment.log"
+          test -d "$DEVELOPER_DIR"
+          xcrun swift --version |
+            grep -Eq 'Swift version 6\.3([.[:space:]]|$)'
+
+      - name: Verify pinned fixture snapshot
+        run: |
+          set -o pipefail
+          ./Scripts/check-pinned-fixtures.sh 2>&1 |
+            tee "$CI_ARTIFACTS/fixture-snapshot.log"
+          ./Scripts/test-check-pinned-fixtures.sh 2>&1 |
+            tee "$CI_ARTIFACTS/fixture-guard-tests.log"
+
+      - name: Resolve package
+        run: |
+          set -o pipefail
+          xcrun swift package resolve 2>&1 |
+            tee "$CI_ARTIFACTS/package-resolve.log"
+
+      - name: Build ${{ matrix.name }}
+        env:
+          QA02_CONFIGURATION: ${{ matrix.configuration }}
+          QA02_LANE: ${{ matrix.lane }}
+        run: |
+          set -o pipefail
+          swift_flags=()
+          if [[ "$QA02_LANE" == "heavy-debug" ]]; then
+            swift_flags=(-Xswiftc -DHEAVY_DEBUG)
+          fi
+          ./Scripts/run-without-warnings.sh \
+            xcrun swift build -c "$QA02_CONFIGURATION" \
+            "${swift_flags[@]}" 2>&1 |
+            tee "$CI_ARTIFACTS/build.log"
+
+      - name: Test ${{ matrix.name }}
+        env:
+          QA02_CONFIGURATION: ${{ matrix.configuration }}
+          QA02_LANE: ${{ matrix.lane }}
+        run: |
+          set -o pipefail
+          swift_flags=()
+          if [[ "$QA02_LANE" == "heavy-debug" ]]; then
+            swift_flags=(-Xswiftc -DHEAVY_DEBUG)
+          fi
+          ./Scripts/run-without-warnings.sh \
+            xcrun swift test -c "$QA02_CONFIGURATION" \
+            --xunit-output "$CI_ARTIFACTS/test-results.xml" \
+            "${swift_flags[@]}" 2>&1 |
+            tee "$CI_ARTIFACTS/test.log"
+
+      - name: Retain failure logs and test results
+        if: failure()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-02-${{ matrix.lane }}-failure-${{ github.run_attempt }}
+          path: ${{ env.CI_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 14
+
+  platform_smoke:
+    name: Apple 26 SDK release smoke
+    runs-on: macos-26
+    timeout-minutes: 30
+    env:
+      CI_ARTIFACTS: >-
+        /tmp/hdxl-qa-02-${{ github.run_id }}-apple-platforms
+      CI_DERIVED_DATA: >-
+        /tmp/hdxl-qa-02-${{ github.run_id }}-derived-data
+
+    steps:
+      - name: Checkout clean repository
+        # Dependabot updates immutable pins and version comments. Review the
+        # upstream release notes and commit diff before merging each update.
+        # yamllint disable-line rule:line-length
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1  # v7.0.1
+        with:
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Verify Swift 6.3 and Apple 26 SDKs
+        run: |
+          mkdir -p "$CI_ARTIFACTS" "$CI_DERIVED_DATA"
+          {
+            sw_vers
+            xcodebuild -version
+            xcrun swift --version
+            for sdk in macosx iphoneos appletvos watchos xros; do
+              sdk_version="$(xcrun --sdk "$sdk" --show-sdk-version)"
+              printf '%s SDK %s\n' "$sdk" "$sdk_version"
+              case "$sdk_version" in
+                26|26.*) ;;
+                *)
+                  printf 'error: expected Apple 26 SDK for %s\n' "$sdk" >&2
+                  exit 1
+                  ;;
+              esac
+            done
+          } 2>&1 | tee "$CI_ARTIFACTS/environment.log"
+          test -d "$DEVELOPER_DIR"
+          xcrun swift --version |
+            grep -Eq 'Swift version 6\.3([.[:space:]]|$)'
+
+      - name: Resolve package
+        run: |
+          set -o pipefail
+          xcrun swift package resolve 2>&1 |
+            tee "$CI_ARTIFACTS/package-resolve.log"
+
+      - name: Compile all declared Apple platforms
+        run: |
+          set -o pipefail
+          platform_names=(
+            macos
+            ios
+            maccatalyst
+            tvos
+            watchos
+            visionos
+          )
+          platform_destinations=(
+            'platform=macOS'
+            'generic/platform=iOS'
+            'generic/platform=macOS,variant=Mac Catalyst'
+            'generic/platform=tvOS'
+            'generic/platform=watchOS'
+            'generic/platform=visionOS'
+          )
+
+          for platform_index in "${!platform_names[@]}"; do
+            platform_name="${platform_names[$platform_index]}"
+            destination="${platform_destinations[$platform_index]}"
+            xcrun xcodebuild \
+              -scheme HDXLURITemplate \
+              -configuration Release \
+              -destination "$destination" \
+              -derivedDataPath "$CI_DERIVED_DATA/$platform_name" \
+              -resultBundlePath \
+              "$CI_ARTIFACTS/$platform_name.xcresult" \
+              CODE_SIGNING_ALLOWED=NO \
+              build 2>&1 |
+              tee "$CI_ARTIFACTS/$platform_name-build.log"
+          done
+
+      - name: Retain failure logs and result bundles
+        if: failure()
+        # yamllint disable-line rule:line-length
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a  # v7.0.1
+        with:
+          name: qa-02-apple-platforms-failure-${{ github.run_attempt }}
+          path: ${{ env.CI_ARTIFACTS }}
+          if-no-files-found: error
+          retention-days: 14
+
+  required_gate:
+    name: Required Swift 6.3 / Apple 26 gate
+    if: always()
+    needs:
+      - primary
+      - platform_smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+
+    steps:
+      - name: Require every supported lane
+        env:
+          QA02_PLATFORM_RESULT: ${{ needs.platform_smoke.result }}
+          QA02_PRIMARY_RESULT: ${{ needs.primary.result }}
+        run: |
+          test "$QA02_PRIMARY_RESULT" = success
+          test "$QA02_PLATFORM_RESULT" = success
