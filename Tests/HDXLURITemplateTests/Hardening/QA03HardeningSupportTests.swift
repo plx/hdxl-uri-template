@@ -42,6 +42,19 @@ func qa03ScalingDetectorRejectsQuadraticGrowth() throws {
   #expect(abs(analysis.fittedExponent - 2.0) < 0.000_001)
 }
 
+@Test("QA-03 process CPU clock measures active work")
+func qa03ProcessCPUClockMeasuresActiveWork() throws {
+  var checksum: UInt64 = 0
+  let elapsed = try qa03MeasureProcessCPUTime {
+    for value in 0..<100_000 {
+      checksum &+= UInt64(value)
+    }
+  }
+
+  #expect(checksum == 4_999_950_000)
+  #expect(elapsed > 0)
+}
+
 @Test("QA-03 diagnostic oracle distinguishes sentinels from ordinary prose")
 func qa03DiagnosticOracleDistinguishesSentinelsFromProse() throws {
   try qa03ExerciseDiagnosticPrivacyCanaries(index: 270_217)

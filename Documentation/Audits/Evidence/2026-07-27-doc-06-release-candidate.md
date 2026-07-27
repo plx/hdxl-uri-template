@@ -76,7 +76,7 @@ Any failure or subsequent change reopens DOC-06 and invalidates that record.
 
 ## Invalidated candidate history
 
-Candidate preparation rejected two predecessor SHAs without reusing their
+Candidate preparation rejected three predecessor SHAs without reusing their
 evidence:
 
 - `0ab5bb81099db3aab648df2353715f21addd91a0` failed post-merge Release
@@ -92,9 +92,19 @@ evidence:
   evaluation, and URL error-bearing components while retaining
   bounded-diagnostic checks; the exact replay and complete one-million-case
   seed pass locally.
+- `5fe3c7001f1a7988ebdee892dc291baa119d51b5` passed the corrected fuzz
+  gate but failed candidate Release scaling for three unrelated workloads.
+  The retained runner record showed about `0.95` seconds of user CPU across
+  `27.81` seconds wall time and `1,233` involuntary context switches. The
+  independent hardening runner still grouped wall-clock samples by size even
+  though the Release unit-test oracle had been stabilized. The follow-up warms
+  every size, rotates size order across rounds, and uses process CPU time while
+  preserving the frozen workloads, repetitions, sample count, and rejection
+  thresholds.
 
-Both issues were reproduced, recorded on DOC-06/#43, and corrected through
-separately reviewed changes. Neither SHA is a candidate, tag, or release.
+All three failures were reproduced, recorded on DOC-06/#43, and corrected
+through separately reviewed changes. None of these SHAs is a candidate, tag,
+or release.
 
 ## Validation boundary
 
