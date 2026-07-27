@@ -67,22 +67,6 @@ extension URITemplate : Hashable { }
 extension URITemplate : Codable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: URITemplate - Comparable
-// -------------------------------------------------------------------------- //
-
-extension URITemplate : Comparable {
-  
-  @inlinable
-  public static func <(
-    lhs: URITemplate,
-    rhs: URITemplate
-  ) -> Bool {
-    lhs.storage < rhs.storage
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 

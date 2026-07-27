@@ -182,29 +182,6 @@ extension URITemplateStorage : Equatable {
 }
 
 // -------------------------------------------------------------------------- //
-// MARK: - Comparable
-// -------------------------------------------------------------------------- //
-
-extension URITemplateStorage : Comparable {
-  
-  @inlinable
-  internal static func <(
-    lhs: URITemplateStorage,
-    rhs: URITemplateStorage
-  ) -> Bool {
-    #if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-    #endif
-    guard lhs !== rhs else {
-      return false
-    }
-    return lhs.templateRepresentation < rhs.templateRepresentation
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: - Hashable
 // -------------------------------------------------------------------------- //
 

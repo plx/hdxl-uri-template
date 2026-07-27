@@ -117,37 +117,6 @@ extension URIVariableValueData : Equatable { }
 extension URIVariableValueData : Hashable { }
 
 // -------------------------------------------------------------------------- //
-// MARK: - Comparable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueData : Comparable {
-  
-  @inlinable
-  internal static func <(
-    lhs: URIVariableValueData,
-    rhs: URIVariableValueData
-  ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return switch (lhs,rhs) {
-    case (.undefined, .undefined):
-      false
-    case (.text(let l), .text(let r)):
-      l < r
-    case (.list(let l), .list(let r)):
-      l < r
-    case (.association(let l), .association(let r)):
-      l < r
-    default:
-      lhs.valueType < rhs.valueType
-    }
-  }
-  
-}
-
-// -------------------------------------------------------------------------- //
 // MARK: URIVariableValueData - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 

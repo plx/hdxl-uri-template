@@ -11,13 +11,9 @@ extension Tag {
   .tags(.uriVariableValue)
 )
 private func validateFixtures() {
-  verifyOrderedAscending(texts)
-  verifyOrderedAscending(lists)
-  verifyOrderedAscending(associations)
   verifyOrderedAscending(keys)
   verifyOrderedAscending(values)
   verifyOrderedAscending(pairs)
-  verifyOrderedAscending(probes)
   #expect(associations.count == associationPairSubsets.count)
   
   verifyAllSatisfy(
@@ -27,39 +23,6 @@ private func validateFixtures() {
   )
   
   verifyPairwiseDistinct(probes)
-}
-
-@Test(
-  "`URIVariableValue` ordering logic",
-  .tags(.uriVariableValue)
-)
-private func validateOrdering() {
-  for undefined in undefined {
-    for text in texts {
-      #expect(undefined < text)
-    }
-    for text in lists {
-      #expect(undefined < text)
-    }
-    for association in associations {
-      #expect(undefined < association)
-    }
-  }
-  
-  for text in texts {
-    for list in lists {
-      #expect(text < list)
-    }
-    for association in associations {
-      #expect(text < association)
-    }
-  }
-  
-  for list in lists {
-    for association in associations {
-      #expect(list < association)
-    }
-  }
 }
 
 @Test(
@@ -104,8 +67,6 @@ private func characterizationLogic(probe: URIVariableValue) {
 
 // MARK: Fixtures
 
-private let undefined: [URIVariableValue] = [.undefined]
-
 private let texts: [URIVariableValue] = [
   "a",
   "ab",
@@ -131,7 +92,6 @@ private let lists: [URIVariableValue] = [
       storage: .list(URIVariableListValue(values: $0))
     )
   }
-  .sorted()
 
 private let keys: [URIVariableTextValue] = [
   "a",
@@ -172,12 +132,11 @@ private let associations: [URIVariableValue] = associationPairSubsets
   .map {
     URIVariableValue(storage: .association($0))
   }
-  .sorted()
 
 private let probes: [URIVariableValue] = {
   var result : [URIVariableValue] = [.undefined]
   result.append(contentsOf: texts)
   result.append(contentsOf: lists)
   result.append(contentsOf: associations)
-  return result.sorted()
+  return result
 }()
