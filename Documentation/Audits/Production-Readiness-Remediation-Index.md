@@ -334,6 +334,13 @@ these refactors. Architectural cleanup must not redefine settled behavior.
 - Complete `DOC-03` after CI and workflow hardening so documented processes
   match reality.
 
+Epic [#7](https://github.com/plx/hdxl-uri-template/issues/7) also remains
+blocked by `QA-03` and `DOC-01`. The three `HARD-*` children complete its
+production fixes, but #7 stays open until `QA-03` makes the temporary
+sanitizer, fuzz, concurrency, and adversarial-performance probes permanent and
+`DOC-01` publishes the user-facing delimiter-injection and
+unsafe-resulting-scheme guidance required by the epic's exit criteria.
+
 ### Phase 6: prepare an immutable candidate
 
 Use `DOC-06` to choose the initial `0.x` version, identify an immutable
