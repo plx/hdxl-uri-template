@@ -1,0 +1,17 @@
+version: 2
+
+updates:
+  # Keep immutable action pins current. Dependabot updates both the commit SHA
+  # and the human-readable version comment. Do not group or auto-merge these
+  # updates; review each canonical tag, release, and source diff before merging.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "09:00"
+      timezone: America/Chicago
+    open-pull-requests-limit: 5
+    labels:
+      - component:ci
+      - domain:security
