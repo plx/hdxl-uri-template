@@ -7,14 +7,14 @@ undefined, text, list, and ordered-association variables.
 
 ## Status
 
-This package is pre-release. The complete pinned RFC 6570 corpus passes, but
-the production-readiness program, candidate preparation, and independent
-final audit are still in progress. The repository has no
-published release tag, so it does not yet make a production-suitability or
-source-stability promise.
+This package is pre-release. The proposed `0.1.0`
+[candidate](Documentation/Release/0.1.0-Candidate.md) is deliberately
+untagged and unpublished while the independent final audit remains open. The
+repository therefore makes no production-suitability, source-stability, or
+release promise yet.
 
 Use the mutable `master` branch only for evaluation. Production adopters should
-wait for a versioned release and review the
+wait for an audited, versioned release and review the
 [open readiness work](Documentation/Audits/Production-Readiness-Remediation-Index.md)
 against their own requirements.
 
@@ -100,8 +100,11 @@ let package = Package(
 ```
 
 A branch dependency is mutable and is not a reproducible production pin.
-Replace it with the supported version requirement documented by the first
-release.
+Candidate verification and the independent audit instead use the full revision
+recorded in the
+[candidate identity](Documentation/Release/0.1.0-Candidate.md). That commit is
+still not a release. Replace either evaluation form with the supported version
+requirement documented by the first authorized release.
 
 ## Quick start
 
@@ -384,6 +387,8 @@ A Release smoke job compiles for every declared Apple 26 platform.
   governs project spaces.
 - [CHANGELOG](CHANGELOG.md) records project changes and the `0.x`
   compatibility policy. The
+  [0.1.0 candidate record](Documentation/Release/0.1.0-Candidate.md),
+  [draft release notes](Documentation/Release/0.1.0-Draft-Release-Notes.md),
   [Release Checklist](Documentation/Release/Release-Checklist.md) and
   [Canary and Rollback Template](Documentation/Release/Canary-and-Rollback-Template.md)
   define evidence-based release and operational gates.

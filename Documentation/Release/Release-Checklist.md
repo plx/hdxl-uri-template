@@ -8,6 +8,11 @@ create a tag, GitHub Release, registry artifact, or public production claim
 until the maintainer explicitly approves the exact version and audited
 candidate.
 
+The current proposed preparation is the untagged
+[`0.1.0` candidate](0.1.0-Candidate.md), with
+[draft release notes](0.1.0-Draft-Release-Notes.md). Its exact squash SHA and
+hosted candidate runs are recorded on DOC-06/#43 after merge.
+
 ## 1. Establish the candidate
 
 - [ ] Select a proposed Semantic Versioning `0.x` version.
@@ -68,7 +73,8 @@ another commit's run is not reusable.
 ## 4. Public contract review
 
 - [ ] Run `just check-public-api`.
-- [ ] Build and run a fresh remote consumer pinned by full revision SHA.
+- [ ] Build and run a fresh remote consumer pinned by full revision SHA with
+      `./Scripts/check-remote-consumer.sh "$candidate_sha"`.
 - [ ] Review the public symbol graph and documentation.
 - [ ] Review the `URITemplate` persistence format and confirm
       `URIVariableValue` and `URIVariableValueType` remain non-`Codable` under

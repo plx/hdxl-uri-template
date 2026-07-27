@@ -37,6 +37,9 @@ There are no published versions yet.
 - Added a checked Swift 6.3 formatting policy, isolated mechanical baseline,
   nonmutating CI lint gate, idempotence detector, and explicit exclusions for
   generated output and vendored JSON fixtures.
+- Prepared an explicitly untagged, audit-pending `0.1.0` candidate record,
+  compatibility policy, evidence bundle, draft release notes, residual-risk
+  register, and rollback/withdrawal procedures.
 
 ### Changed
 

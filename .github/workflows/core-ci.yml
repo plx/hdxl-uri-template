@@ -88,6 +88,15 @@ jobs:
           ./Scripts/test-run-without-warnings.sh 2>&1 |
             tee "$CI_ARTIFACTS/warning-guard-tests.log"
 
+      - name: Test remote-consumer guard
+        if: matrix.lane == 'debug'
+        run: |
+          set -o pipefail
+          sh -n Scripts/check-remote-consumer.sh
+          sh -n Scripts/test-check-remote-consumer.sh
+          ./Scripts/test-check-remote-consumer.sh 2>&1 |
+            tee "$CI_ARTIFACTS/remote-consumer-guard-tests.log"
+
       - name: Resolve package
         run: |
           set -o pipefail
