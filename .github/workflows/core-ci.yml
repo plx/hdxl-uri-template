@@ -72,6 +72,13 @@ jobs:
           ./Scripts/test-check-pinned-fixtures.sh 2>&1 |
             tee "$CI_ARTIFACTS/fixture-guard-tests.log"
 
+      - name: Test warning guard
+        if: matrix.lane == 'debug'
+        run: |
+          set -o pipefail
+          ./Scripts/test-run-without-warnings.sh 2>&1 |
+            tee "$CI_ARTIFACTS/warning-guard-tests.log"
+
       - name: Resolve package
         run: |
           set -o pipefail

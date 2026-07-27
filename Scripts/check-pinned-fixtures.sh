@@ -9,6 +9,7 @@ fixture_guard_repository_root=$(
 )
 fixture_guard_directory=${1:-"$fixture_guard_repository_root/Tests/HDXLURITemplateTests/Resources"}
 
+# Keep these values aligned with Resources/README.md on an intentional update.
 check_fixture() {
   fixture_guard_name=$1
   fixture_guard_expected_cases=$2
