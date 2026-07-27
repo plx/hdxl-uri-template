@@ -90,18 +90,18 @@ func verifyPairwiseDistinct<Element>(
   _ elements: some Collection<Element>,
   sourceLocation: Testing.SourceLocation = #_sourceLocation
 ) where Element: Equatable {
-//  for (upperOffset, upperIndex) in elements.indices.enumerated() {
-//    let upperElement = elements[upperIndex]
-//    for (lowerOffset, lowerElement) in elements[..<upperIndex].enumerated() {
-//      #expect(
-//        lowerElement != upperElement,
-//        """
-//        Expected pairwise-distinctness, but found matching elements: \(lowerElement) == \(upperElement) @ positions (\(lowerOffset), \(upperOffset)).  
-//        """,
-//        sourceLocation: sourceLocation
-//      )
-//    }
-//  }
+  for (upperOffset, upperIndex) in elements.indices.enumerated() {
+    let upperElement = elements[upperIndex]
+    for (lowerOffset, lowerElement) in elements[..<upperIndex].enumerated() {
+      #expect(
+        lowerElement != upperElement,
+        """
+        Expected pairwise-distinctness, but found matching elements: \(lowerElement) == \(upperElement) @ positions (\(lowerOffset), \(upperOffset)).
+        """,
+        sourceLocation: sourceLocation
+      )
+    }
+  }
 }
 
 func countOfTrue(_ arguments: Bool...) -> Int {

@@ -16,7 +16,9 @@ private func textFixtureIsOk() {
   verifyOrderedAscending(variableNames)
   verifyOrderedAscending(probes)
   verifyPairwiseDistinct(variableNameSubsets)
-  verifyPairwiseDistinct(variableSubsets)
+  // Empty name subsets collapse to the same empty variable subset for every
+  // modifier; they are intentionally excluded when constructing `probes`.
+  verifyPairwiseDistinct(variableSubsets.filter { !$0.isEmpty })
 
   verifyAllSatisfy(
     probes,
@@ -116,4 +118,3 @@ private let probes: [URITemplateExpressionComponent] = {
   
   return result.sorted()
 }()
-
