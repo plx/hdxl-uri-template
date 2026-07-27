@@ -196,3 +196,50 @@ HDXLObjCAssociationSecureCodingRoundTrips(void) {
   }
   return YES;
 }
+
+BOOL
+HDXLObjCErrorDiagnosticsAreSafe(
+  NSError *error,
+  NSArray<NSString *> *excludedStrings,
+  NSUInteger maximumUTF8Length
+) {
+  NSMutableArray<NSString *> *diagnostics = [NSMutableArray arrayWithArray:@[
+    error.description,
+    error.debugDescription,
+    error.domain,
+    [NSString stringWithFormat:@"%ld", error.code],
+    error.localizedDescription,
+    error.userInfo.description
+  ]];
+  if (error.localizedFailureReason != nil) {
+    [diagnostics addObject:error.localizedFailureReason];
+  }
+  if (error.localizedRecoverySuggestion != nil) {
+    [diagnostics addObject:error.localizedRecoverySuggestion];
+  }
+  if (error.helpAnchor != nil) {
+    [diagnostics addObject:error.helpAnchor];
+  }
+  if (error.localizedRecoveryOptions != nil) {
+    [diagnostics addObjectsFromArray:error.localizedRecoveryOptions];
+  }
+  for (id key in error.userInfo) {
+    [diagnostics addObject:[key description]];
+    [diagnostics addObject:[error.userInfo[key] description]];
+  }
+
+  for (NSString *diagnostic in diagnostics) {
+    if (
+      [diagnostic lengthOfBytesUsingEncoding:NSUTF8StringEncoding]
+      > maximumUTF8Length
+    ) {
+      return NO;
+    }
+    for (NSString *excludedString in excludedStrings) {
+      if ([diagnostic containsString:excludedString]) {
+        return NO;
+      }
+    }
+  }
+  return YES;
+}

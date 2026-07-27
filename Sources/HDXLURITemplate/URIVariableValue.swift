@@ -293,11 +293,6 @@ extension URIVariableValue {
     storage.isAssociationValue
   }
   
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    storage.errorMessageRepresentation
-  }
-  
 }
 
 // -------------------------------------------------------------------------- //

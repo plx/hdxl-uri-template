@@ -176,6 +176,7 @@ private func verifyCompositePrefixFailure(
   guard
     case .prefixModifierNotApplicable(
       let variableName,
+      let expansionType,
       let expansionModifier,
       let valueType
     ) = underlyingError
@@ -189,13 +190,26 @@ private func verifyCompositePrefixFailure(
   #expect(variableName == "x")
   #expect(expansionModifier == .prefix(1))
   #expect(valueType == probe.valueType)
+  #expect(error.kind == .prefixModifierNotApplicable)
+  #expect(error.failingVariableName == "x")
+  #expect(error.expressionOperatorToken == expansionType.formatString)
+  #expect(error.prefixModifierCodePointCount == 1)
+  #expect(error.failingValueType == probe.valueType)
+  #expect(error.failureReason?.contains(":1") == true)
+  #expect(error.failureReason?.contains(expansionType.description) == true)
+  #expect(
+    error.failureReason?.contains(probe.valueType.description) == true
+  )
 
   let defaultDescription = underlyingError.localizedDescription
   #expect(defaultDescription.contains("Prefix modifier"))
-  #expect(defaultDescription.contains("`x`"))
+  #expect(defaultDescription.contains(":1"))
+  #expect(defaultDescription.contains(expansionType.description))
   #expect(defaultDescription.contains(probe.valueType.description))
+  #expect(!defaultDescription.contains("`x`"))
   #expect(!defaultDescription.contains(compositeContentSentinel))
   #expect(!defaultDescription.contains("COMPOSITE-KEY-SENTINEL"))
+  #expect(!String(reflecting: underlyingError).contains("`x`"))
   #expect(
     !String(reflecting: underlyingError).contains(compositeContentSentinel)
   )

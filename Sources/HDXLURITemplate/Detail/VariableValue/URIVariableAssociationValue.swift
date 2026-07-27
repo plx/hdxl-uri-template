@@ -254,10 +254,4 @@ extension URIVariableAssociationValue {
     storage.first(where: { key == $0.key })?.value
   }
   
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    let memberErrorRepresentation = storage.lazy.map { $0.errorMessageRepresentation }.joined(separator: ", ")
-    return "[ \(memberErrorRepresentation) ]"
-  }
-
 }

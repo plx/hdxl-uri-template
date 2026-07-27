@@ -353,21 +353,6 @@ extension URIVariableValueData {
     }
   }
   
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    switch self {
-    case .undefined:
-      ".undefined"
-    case .text(let text):
-      text.errorMessageRepresentation
-    case .list(let list):
-      list.errorMessageRepresentation
-    case .association(let association):
-      association.errorMessageRepresentation
-    }
-  }
-
-
 }
 
 // -------------------------------------------------------------------------- //

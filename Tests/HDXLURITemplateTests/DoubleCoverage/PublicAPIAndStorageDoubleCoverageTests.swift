@@ -35,6 +35,8 @@ private func manualPublicTemplateAPICoverage() throws {
   } catch let error as URITemplate.EvaluationError {
     #expect(error.template.templateRepresentation == "https://[")
     #expect(error.underlyingError is URLError)
+    #expect(error.kind == .invalidURL)
+    #expect(error.kind.description == "invalidURL")
   }
 
   // Codable, equality, and hashing are part of the package's public value
@@ -59,12 +61,24 @@ private func manualPublicTemplateAPICoverage() throws {
   // it wraps an internal downstream failure.
   let noUnderlyingError = URITemplate.EvaluationError(template: template, parameters: parameters)
   #expect(noUnderlyingError.errorDescription == "The URI template could not be evaluated.")
+  #expect(noUnderlyingError.kind == .other)
+  #expect(noUnderlyingError.failingVariableName == nil)
+  #expect(noUnderlyingError.expressionOperatorToken == nil)
+  #expect(noUnderlyingError.prefixModifierCodePointCount == nil)
+  #expect(noUnderlyingError.failingValueType == nil)
+  #expect(noUnderlyingError.failureReason?.contains("specific") == true)
+  #expect(String(describing: noUnderlyingError.kind) == "other")
+  #expect(
+    String(reflecting: noUnderlyingError.kind)
+      == "URITemplate.EvaluationError.Kind.other"
+  )
   let underlyingError = URITemplate.EvaluationError(
     template: template,
     parameters: parameters,
     underlyingError: URLError(.badURL)
   )
   #expect(underlyingError.errorDescription == "The URI template could not be evaluated.")
+  #expect(underlyingError.kind == .other)
 }
 
 @Test(

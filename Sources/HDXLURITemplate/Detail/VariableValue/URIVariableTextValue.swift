@@ -152,10 +152,4 @@ extension URIVariableTextValue {
   @inlinable
   internal var isEmpty: Bool { rawValue.isEmpty }
   
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    rawValue
-  }
-  
 }
-

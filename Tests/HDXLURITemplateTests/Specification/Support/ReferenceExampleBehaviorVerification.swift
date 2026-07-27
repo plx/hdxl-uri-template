@@ -76,7 +76,8 @@ struct ReferenceExampleCaseContext: Hashable, Sendable {
 
   var diagnosticDescription: String {
     let renderedParameters = parameters.keys.sorted().map { key in
-      let value = parameters[key]?.errorMessageRepresentation ?? "<missing>"
+      let value =
+        parameters[key]?.fixtureDiagnosticRepresentation ?? "<missing>"
       return "  \(String(reflecting: key)): \(value)"
     }
     .joined(separator: "\n")

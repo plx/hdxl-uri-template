@@ -180,10 +180,4 @@ extension URIVariableListValue {
     storage[index]
   }
   
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    let memberErrorRepresentation = storage.lazy.map { $0.errorMessageRepresentation }.joined(separator: ", ")
-    return "[ \(memberErrorRepresentation) ]"
-  }
-  
 }

@@ -122,12 +122,3 @@ extension URIVariablePairValue {
 // -------------------------------------------------------------------------- //
 // MARK: - Core API
 // -------------------------------------------------------------------------- //
-
-extension URIVariablePairValue {
-  
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    "\(key.errorMessageRepresentation): \(value.errorMessageRepresentation)"
-  }
-
-}
