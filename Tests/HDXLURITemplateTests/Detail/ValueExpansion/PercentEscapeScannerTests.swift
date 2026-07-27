@@ -243,26 +243,50 @@ private func referenceEscaped(
     sampleCount: Int
   ) throws -> [Double] {
     let clock = ContinuousClock()
-    return try zip(tripletCounts, repetitions).map { configuration in
-      let (tripletCount, repetitionCount) = configuration
+    let configurations = zip(tripletCounts, repetitions).map {
+      let (tripletCount, repetitionCount) = $0
       let input = String(repeating: "%20", count: tripletCount)
       let parameters: [String: URIVariableValue] = ["x": .text(input)]
-      var samples: [Double] = []
-      samples.reserveCapacity(sampleCount)
+      return (
+        input: input,
+        parameters: parameters,
+        repetitionCount: repetitionCount
+      )
+    }
+    var samples = Array(
+      repeating: [Double](),
+      count: configurations.count
+    )
+    for index in samples.indices {
+      samples[index].reserveCapacity(sampleCount)
+      let output = try template.evaluateAsString(
+        parameters: configurations[index].parameters
+      )
+      #expect(output.utf8.elementsEqual(configurations[index].input.utf8))
+    }
 
-      for _ in 0..<sampleCount {
+    // Rotate the measurement order so transient process-wide load cannot bias
+    // every sample for one input size while leaving the other sizes quiet.
+    for sampleIndex in 0..<sampleCount {
+      for offset in configurations.indices {
+        let index = (sampleIndex + offset) % configurations.count
+        let configuration = configurations[index]
         var output = ""
         let elapsed = try clock.measure {
-          for _ in 0..<repetitionCount {
-            output = try template.evaluateAsString(parameters: parameters)
+          for _ in 0..<configuration.repetitionCount {
+            output = try template.evaluateAsString(
+              parameters: configuration.parameters
+            )
           }
         }
-        #expect(output.utf8.elementsEqual(input.utf8))
-        samples.append(elapsed.seconds / Double(repetitionCount))
+        #expect(output.utf8.elementsEqual(configuration.input.utf8))
+        samples[index].append(
+          elapsed.seconds / Double(configuration.repetitionCount)
+        )
       }
-
-      return samples.sorted()[sampleCount / 2]
     }
+
+    return samples.map { $0.sorted()[sampleCount / 2] }
   }
 
   private func fittedScalingExponent(

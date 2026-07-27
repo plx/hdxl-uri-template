@@ -101,6 +101,9 @@ There are no published versions yet.
   truncation, composite-prefix rejection, ordered association invariants, and
   public error boundaries covered by the pinned conformance and regression
   suites.
+- Stabilized the frozen percent-triplet scaling oracle by warming every input
+  size and rotating measurement order across sample rounds, without changing
+  its workloads, repetition counts, sample count, or rejection thresholds.
 
 ### Security
 
