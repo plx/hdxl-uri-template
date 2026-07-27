@@ -3,24 +3,24 @@ import Testing
 @testable import HDXLURITemplate
 
 @Test(
- "`/user{/id}{?token,tab}{&keys*}` (from spec)",
- .tags(.variableExpansion, .uriVariableAssociationValue, .takenFromSpecification)
+  "`/user{/id}{?token,tab}{&keys*}` (from spec)",
+  .tags(.variableExpansion, .uriVariableAssociationValue, .takenFromSpecification)
 )
 private func variableAssocationValueHandCheckOnUserIDTokenTabKeys() throws {
   let template = try URITemplate(parsing: "/user{/id}{?token,tab}{&keys*}")
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "id": .text("admin"),
     "token": .text("12345"),
     "keys": try .association([
       ("key1", "val1"),
-      ("key2", "val2")
+      ("key2", "val2"),
     ]),
-    "tab": .text("overview")
+    "tab": .text("overview"),
   ]
 
   let expected: [String] = [
     "/user/admin?token=12345&tab=overview&key1=val1&key2=val2",
-    "/user/admin?token=12345&tab=overview&key2=val2&key1=val1"
+    "/user/admin?token=12345&tab=overview&key2=val2&key1=val1",
   ]
 
   let observed = try template.evaluateAsString(parameters: parameters)
@@ -32,10 +32,10 @@ private func variableAssocationValueHandCheckOnUserIDTokenTabKeys() throws {
   .tags(.variableExpansion, .uriVariableAssociationValue, .takenFromSpecification)
 )
 private func unexplodedAssociativeArrayUsesCommaDelimitedPairs() throws {
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "keys": try .association([
       ("a", "1"),
-      ("b", "2")
+      ("b", "2"),
     ])
   ]
 
@@ -50,14 +50,13 @@ private func unexplodedAssociativeArrayUsesCommaDelimitedPairs() throws {
   )
 }
 
-
 @Test(
   "`{/id*}` (from spec)",
   .tags(.variableExpansion, .uriVariableListValue, .takenFromSpecification)
 )
 private func variableListValueHandCheckOnIDStar() throws {
   let template = try URITemplate(parsing: "{/id*}")
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "q": .text("URI Templates"),
     "id": .list(["person", "albums"]),
     "token": .text("12345"),
@@ -66,7 +65,7 @@ private func variableListValueHandCheckOnIDStar() throws {
     "page": .text("10"),
     "start": .text("5"),
     "geocode": .list(["37.76", "-122.427"]),
-    "fields": .list(["id", "name", "picture"])
+    "fields": .list(["id", "name", "picture"]),
   ]
 
   let expected: String = "/person/albums"
@@ -81,7 +80,7 @@ private func variableListValueHandCheckOnIDStar() throws {
 )
 private func variableListValueHandCheckOnIDStarFieldsToken() throws {
   let template = try URITemplate(parsing: "{/id*}{?fields,token}")
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "q": .text("URI Templates"),
     "id": .list(["person", "albums"]),
     "token": .text("12345"),
@@ -90,7 +89,7 @@ private func variableListValueHandCheckOnIDStarFieldsToken() throws {
     "page": .text("10"),
     "start": .text("5"),
     "geocode": .list(["37.76", "-122.427"]),
-    "fields": .list(["id", "name", "picture"])
+    "fields": .list(["id", "name", "picture"]),
   ]
 
   let expected: String = "/person/albums?fields=id,name,picture&token=12345"
@@ -105,7 +104,7 @@ private func variableListValueHandCheckOnIDStarFieldsToken() throws {
 )
 private func textVariableOnReservedNotPct() throws {
   let template = try URITemplate(parsing: "{+not_pct}")
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "keys": try .association([
       ("key1", "val1%2F"),
       ("key2", "val2%2F"),
@@ -115,8 +114,8 @@ private func textVariableOnReservedNotPct() throws {
     "list": .list([
       "red%25",
       "%2Fgreen",
-      "blue"
-    ])
+      "blue",
+    ]),
   ]
 
   let expected: String = "%25foo"
@@ -130,9 +129,9 @@ private func textVariableOnReservedNotPct() throws {
   .tags(.variableExpansion, .uriVariableTextValue, .takenFromSpecification)
 )
 private func undefinedVariablesAreSkippedWithoutSwallowingEmptyStrings() throws {
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "var": .text("value"),
-    "empty": .text("")
+    "empty": .text(""),
   ]
 
   let pathWithUndefined = try URITemplate(parsing: "{/var,undef}")
@@ -152,7 +151,7 @@ private func undefinedVariablesAreSkippedWithoutSwallowingEmptyStrings() throws 
 )
 private func pathParameterEmptyStringOmitsEquals() throws {
   let template = try URITemplate(parsing: "{;empty}")
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "empty": .text("")
   ]
 
@@ -167,7 +166,7 @@ private func pathParameterEmptyStringOmitsEquals() throws {
   .tags(.variableExpansion, .uriVariableTextValue, .takenFromSpecification)
 )
 private func emptyStringsStillEmitOperatorPrefixes() throws {
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "empty": .text("")
   ]
 
@@ -188,10 +187,10 @@ private func emptyStringsStillEmitOperatorPrefixes() throws {
 )
 private func textVariableQueryContinuationXYEmpty() throws {
   let template = try URITemplate(parsing: "{&x,y,empty}")
-  let parameters: [String:URIVariableValue] = [
+  let parameters: [String: URIVariableValue] = [
     "x": .text("1024"),
     "y": .text("768"),
-    "empty": .text("")
+    "empty": .text(""),
   ]
 
   let expected: String = "&x=1024&y=768&empty="

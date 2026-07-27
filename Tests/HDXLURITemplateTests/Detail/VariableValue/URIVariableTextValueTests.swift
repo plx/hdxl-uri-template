@@ -13,13 +13,13 @@ extension Tag {
 private func validateFixtures() {
   verifyOrderedAscending(probeStrings)
   verifyOrderedAscending(probes)
-  
+
   verifyAllSatisfy(
     probes,
     explanation: "Expect all probes to be valid.",
     predicate: \.isValid
   )
-  
+
   verifyPairwiseDistinct(probes)
 }
 
@@ -61,10 +61,9 @@ private let probeStrings: [String] = [
   "a",
   "ab",
   "abc",
-  "abcde"
+  "abcde",
 ]
 
 private let probes: [URIVariableTextValue] = probeStrings.map {
   URIVariableTextValue(rawValue: $0)
 }
-

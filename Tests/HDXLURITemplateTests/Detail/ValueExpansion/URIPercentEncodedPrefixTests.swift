@@ -28,7 +28,7 @@ private func encodedScalarsRemainComplete() throws {
     "%F0%90%80%80",
     "%F0%9D%84%9E",
     "%F4%8F%BF%BF",
-    "%c3%a9"
+    "%c3%a9",
   ]
 
   for source in cases {
@@ -50,7 +50,7 @@ private func rawAndEncodedUnicodeUseSameBoundaries() throws {
   let cases = [
     (raw: "é", encoded: "%C3%A9"),
     (raw: "€", encoded: "%E2%82%AC"),
-    (raw: "𝄞", encoded: "%F0%9D%84%9E")
+    (raw: "𝄞", encoded: "%F0%9D%84%9E"),
   ]
   let template = try URITemplate(parsing: "{+x:1}")
 
@@ -87,13 +87,13 @@ private func mixedValuesTruncateAtLogicalBoundaries() throws {
     "A",
     "A%C3%A9",
     "A%C3%A9B",
-    "A%C3%A9B"
+    "A%C3%A9B",
   ]
   let rawExpectations = [
     "A",
     "A%C3%A9",
     "A%C3%A9B",
-    "A%C3%A9B"
+    "A%C3%A9B",
   ]
 
   for prefixLength in 1...4 {
@@ -120,12 +120,12 @@ private func combiningSequencesCountCodePoints() throws {
   let rawExpectations = [
     "e",
     "e%CC%81",
-    "e%CC%81Z"
+    "e%CC%81Z",
   ]
   let encodedExpectations = [
     "%65",
     "%65%CC%81",
-    "%65%CC%81Z"
+    "%65%CC%81Z",
   ]
 
   for prefixLength in 1...3 {
@@ -155,7 +155,7 @@ private func everyOperatorUsesDecodedPrefixBoundaries() throws {
     "{/x:1}": "/%25C3%25A9",
     "{;x:1}": ";x=%25C3%25A9",
     "{?x:1}": "?x=%25C3%25A9",
-    "{&x:1}": "&x=%25C3%25A9"
+    "{&x:1}": "&x=%25C3%25A9",
   ]
 
   for (source, expected) in expectedByTemplate {
@@ -176,7 +176,7 @@ private func reservedCharactersRetainTheirInputSpelling() throws {
     (source: "%2F", expected: "%2F"),
     (source: "%2f", expected: "%2f"),
     (source: "?", expected: "?"),
-    (source: "%3F", expected: "%3F")
+    (source: "%3F", expected: "%3F"),
   ]
 
   for testCase in cases {
@@ -212,7 +212,7 @@ private func malformedPercentInputHasDeterministicFallback() throws {
     (source: "%F0%90%41%80Z", prefixLength: 1, expected: "%F0"),
     (source: "%F0%90%80%41Z", prefixLength: 1, expected: "%F0"),
     (source: "%F4%90%80%80Z", prefixLength: 1, expected: "%F4"),
-    (source: "%F5%80%80%80Z", prefixLength: 1, expected: "%F5")
+    (source: "%F5%80%80%80Z", prefixLength: 1, expected: "%F5"),
   ]
 
   for testCase in cases {

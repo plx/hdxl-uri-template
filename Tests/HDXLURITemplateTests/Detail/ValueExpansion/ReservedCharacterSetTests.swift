@@ -56,7 +56,7 @@ private let publicOperatorCases = [
     template: "{&x}",
     prefix: "&x=",
     preservesReservedCharacters: false
-  )
+  ),
 ]
 
 private func expectedExpansion(
@@ -65,10 +65,8 @@ private func expectedExpansion(
 ) -> String {
   let shouldRemainUnescaped =
     rfc3986UnreservedCharacters.utf8.contains(byte)
-    || (
-      preservingReservedCharacters
-        && rfc3986ReservedCharacters.utf8.contains(byte)
-    )
+    || (preservingReservedCharacters
+      && rfc3986ReservedCharacters.utf8.contains(byte))
   guard !shouldRemainUnescaped else {
     return String(UnicodeScalar(byte))
   }
@@ -92,11 +90,10 @@ private func rfc3986ASCIICharacterSetsAndOperatorSetsAreExact() {
     for expansionType in URIValueExpansionType.allCases {
       let preservesReservedCharacters =
         expansionType == .reserved || expansionType == .fragment
-      let expectedAllowed = isUnreserved
-        || (
-          preservesReservedCharacters
-            && (isReserved || byte == 0x25)
-        )
+      let expectedAllowed =
+        isUnreserved
+        || (preservesReservedCharacters
+          && (isReserved || byte == 0x25))
       #expect(
         CharacterSet.allowedCharacters(
           forValueExpansionType: expansionType
@@ -134,11 +131,13 @@ private func everyASCIIByteFollowsEveryPublicOperatorCharacterSet() throws {
     let parameters: [String: URIVariableValue] = ["x": .text(value)]
 
     for entry in templates {
-      let expected = entry.testCase.prefix + expectedExpansion(
-        ofASCIIByte: byte,
-        preservingReservedCharacters:
-          entry.testCase.preservesReservedCharacters
-      )
+      let expected =
+        entry.testCase.prefix
+        + expectedExpansion(
+          ofASCIIByte: byte,
+          preservingReservedCharacters:
+            entry.testCase.preservesReservedCharacters
+        )
       #expect(
         try entry.template.evaluateAsString(parameters: parameters)
           == expected,
@@ -153,7 +152,8 @@ private func everyASCIIByteFollowsEveryPublicOperatorCharacterSet() throws {
 
 @Test("Reserved and fragment expansion preserve triplets and encode nonmembers")
 private func reservedAndFragmentExpansionPreserveTripletsAndEncodeNonmembers()
-  throws {
+  throws
+{
   let simple = try URITemplate(parsing: "{x}")
   let reserved = try URITemplate(parsing: "{+x}")
   let fragment = try URITemplate(parsing: "{#x}")

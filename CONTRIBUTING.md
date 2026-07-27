@@ -94,14 +94,28 @@ A local smoke run does not replace the hosted candidate profile.
 
 ## Formatting and clean output
 
-Repository-wide formatting enforcement remains tracked separately in
-[#24](https://github.com/plx/hdxl-uri-template/issues/24). Until that policy
-lands, format and strictly lint each Swift file you change:
+The repository-owned [`.swift-format`](.swift-format) policy is authoritative
+under the supported Xcode 26.6/Swift 6.3 toolchain. Format every checked source
+root, then run the nonmutating strict gate:
 
 ```sh
-xcrun swift-format format --in-place path/to/Changed.swift
-xcrun swift-format lint --strict path/to/Changed.swift
+just format-swift
+just check-swift-format
+just test-swift-format
 ```
+
+The exact commands are `./Scripts/swift-format.sh format` and
+`./Scripts/swift-format.sh lint`. They cover `Package.swift`, `Benchmarks`,
+`Hardening`, `Scripts`, `Sources`, and `Tests`. Those explicit roots exclude
+`.build` and other generated output; the `.swift` file selection also excludes
+the vendored JSON conformance fixtures. The detector proves that unformatted
+Swift fails, a second formatting pass is idempotent, and excluded build output
+and JSON fixtures remain byte-for-byte unchanged.
+
+The formatting policy requires documentation on public declarations. DocC
+owns the deeper public-symbol, link, structured-comment, and compiled-example
+validation, so formatter rules that would duplicate or conflict with that
+semantic gate stay disabled.
 
 Do not submit new compiler warnings, unhandled-resource warnings, debug prints,
 or generated build output. The warning guard can be exercised across all

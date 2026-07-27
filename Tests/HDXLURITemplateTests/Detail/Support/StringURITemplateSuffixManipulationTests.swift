@@ -27,7 +27,7 @@ private func degenerateScenarios() {
     from: "abc",
     yields: "abc"
   )
-  
+
   // empty-target
   verifyRemoval(
     ofSuffix: "ab",
@@ -93,7 +93,7 @@ private func progammaticMixtures() {
         yields: target
       )
       // this, too, should thus be a no-op:
-      #expect(!(suffix+target).hasSuffix(suffix))
+      #expect(!(suffix + target).hasSuffix(suffix))
       verifyRemoval(
         ofSuffix: suffix,
         from: (suffix + target),
@@ -121,7 +121,7 @@ private func verifyRemoval(
   let result = target.conditionallyRemoving(
     suffix: suffix
   )
-  
+
   #expect(
     result == expectation,
     """
@@ -129,11 +129,11 @@ private func verifyRemoval(
     """,
     sourceLocation: sourceLocation
   )
-  
+
   let mutableResult = target.mutated {
     $0.conditionallyRemove(suffix: suffix)
   }
-  
+
   #expect(
     expectation == mutableResult,
     """

@@ -28,7 +28,7 @@ private func everyCompositePrefixCombinationFailsPublicly() throws {
       label: "empty association",
       value: .emptyAssociation,
       valueType: .association
-    )
+    ),
   ]
 
   for expansionOperator in expansionOperators {
@@ -81,7 +81,7 @@ private func textPrefixesAndUndefinedVariablesRemainValid() throws {
 
     for emptyComposite in [
       URIVariableValue.emptyList,
-      .emptyAssociation
+      .emptyAssociation,
     ] {
       for modifier in ["", "*"] {
         let emptyCompositeTemplate = try URITemplate(
@@ -133,7 +133,7 @@ private let expansionOperators = [
   (label: "path", token: "/"),
   (label: "matrix", token: ";"),
   (label: "query", token: "?"),
-  (label: "continuation", token: "&")
+  (label: "continuation", token: "&"),
 ]
 
 private enum PublicEvaluationEntryPoint: CaseIterable {

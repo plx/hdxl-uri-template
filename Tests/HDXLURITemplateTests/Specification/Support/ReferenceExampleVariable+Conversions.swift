@@ -1,7 +1,7 @@
 @testable import HDXLURITemplate
 
 extension ReferenceExamplePrimitiveJSONValue {
-  
+
   var stringRepresentation: String {
     switch self {
     case .null:
@@ -21,11 +21,11 @@ extension ReferenceExamplePrimitiveJSONValue {
       string
     }
   }
-  
+
 }
 
 extension ReferenceExampleVariable {
-  
+
   var variableValue: URIVariableValue {
     get throws {
       switch self {
@@ -59,5 +59,5 @@ extension ReferenceExampleVariable {
       }
     }
   }
-  
+
 }

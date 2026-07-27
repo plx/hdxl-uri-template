@@ -17,8 +17,7 @@ private func completeRunnerLoadsEveryPinnedCaseInstance() {
   let expectationCounts = examples.reduce(
     into: [ReferenceExpectationKind: Int]()
   ) { counts, example in
-    counts[ReferenceExpectationKind(example.testCase.expectation), default: 0]
-      += 1
+    counts[ReferenceExpectationKind(example.testCase.expectation), default: 0] += 1
   }
 
   #expect(referenceExampleSuiteNames.count == 4)
@@ -27,14 +26,14 @@ private func completeRunnerLoadsEveryPinnedCaseInstance() {
       "spec-examples": 64,
       "spec-examples-by-section": 117,
       "extended-tests": 53,
-      "negative-tests": 36
+      "negative-tests": 36,
     ]
   )
   #expect(
     expectationCounts == [
       .exactMatch: 193,
       .multiplePossibleMatches: 41,
-      .evaluationFailure: 36
+      .evaluationFailure: 36,
     ]
   )
   #expect(examples.count == 270)
@@ -61,7 +60,7 @@ private func runnerContractsLockEveryPinnedSuiteCount() {
         ReferenceExampleSuiteContract(
           name: "negative-tests",
           expectedCaseCount: 36
-        )
+        ),
       ]
   )
 }
@@ -321,7 +320,7 @@ private func expectUnexpectedBoundaryFailure(
   }
 }
 
-private struct BehaviorVerificationProbeError: Error { }
+private struct BehaviorVerificationProbeError: Error {}
 
 private enum ReferenceExpectationKind: Hashable {
   case evaluationFailure

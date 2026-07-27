@@ -1,7 +1,7 @@
 import Foundation
 
 extension URL {
-  
+
   static let extendedTestsJSONURL: URL = mandatory(
     value: Bundle.module.url(
       forResource: "extended-tests",
@@ -46,6 +46,6 @@ private func mandatory<T>(
       line: line
     )
   }
-  
+
   return value
 }

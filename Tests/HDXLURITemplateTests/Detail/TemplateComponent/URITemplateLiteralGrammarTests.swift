@@ -32,7 +32,7 @@ private func publicParsingAndExpansionAcceptApostrophe() throws {
     "in'ternal",
     "~leading",
     "trailing~",
-    "in~ternal"
+    "in~ternal",
   ]
 )
 private func correctedLiteralsAreValidInEveryPosition(
@@ -52,7 +52,7 @@ private func correctedLiteralsAreValidInEveryPosition(
     "'{var}",
     "{var}'",
     "~{var}",
-    "{var}~"
+    "{var}~",
   ]
 )
 private func correctedLiteralsAreValidNextToExpressions(
@@ -100,7 +100,7 @@ private func literalValidationRejectsExactGrammarBoundaries(
     _ = try URITemplateLiteralComponent(parsing: source)
   }
   #if !HEAVY_DEBUG
-  #expect(!URITemplateLiteralComponent(rawValue: source).isValid)
+    #expect(!URITemplateLiteralComponent(rawValue: source).isValid)
   #endif
 
   if !source.isEmpty {
@@ -111,28 +111,28 @@ private func literalValidationRejectsExactGrammarBoundaries(
 }
 
 private let validLiteralBoundarySamples = [
-  "!", // U+0021
-  "#", // U+0023
-  "$", // U+0024
-  "&", // U+0026
-  "'", // U+0027: verified RFC 6570 erratum 6937
-  "(", // U+0028
-  ";", // U+003B
-  "=", // U+003D
-  "?", // U+003F
-  "A", // U+0041
-  "[", // U+005B
-  "]", // U+005D
-  "_", // U+005F
-  "a", // U+0061
-  "s", // U+0073
-  "z", // U+007A
-  "~", // U+007E
-  "\u{00A0}", // First RFC `ucschar`
+  "!",  // U+0021
+  "#",  // U+0023
+  "$",  // U+0024
+  "&",  // U+0026
+  "'",  // U+0027: verified RFC 6570 erratum 6937
+  "(",  // U+0028
+  ";",  // U+003B
+  "=",  // U+003D
+  "?",  // U+003F
+  "A",  // U+0041
+  "[",  // U+005B
+  "]",  // U+005D
+  "_",  // U+005F
+  "a",  // U+0061
+  "s",  // U+0073
+  "z",  // U+007A
+  "~",  // U+007E
+  "\u{00A0}",  // First RFC `ucschar`
   "%00",
   "%2F",
   "%af",
-  "é"
+  "é",
 ]
 
 private let invalidLiteralBoundarySamples = [
@@ -155,5 +155,5 @@ private let invalidLiteralBoundarySamples = [
   "`",
   "{",
   "|",
-  "}"
+  "}",
 ]

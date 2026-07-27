@@ -83,22 +83,23 @@ struct ReferenceExampleCaseContext: Hashable, Sendable {
     .joined(separator: "\n")
 
     return """
-    - suite: \(source)
-    - group: \(caption)
-    - template: \(String(reflecting: template))
-    - variables:
-    \(renderedParameters)
-    - expectation: \(expectation.diagnosticDescription)
-    """
+      - suite: \(source)
+      - group: \(caption)
+      - template: \(String(reflecting: template))
+      - variables:
+      \(renderedParameters)
+      - expectation: \(expectation.diagnosticDescription)
+      """
   }
 }
 
 struct ReferenceExampleBehaviorDriver: Sendable {
   let parse: @Sendable (String) throws -> URITemplate
-  let expand: @Sendable (
-    URITemplate,
-    [String: URIVariableValue]
-  ) throws -> String
+  let expand:
+    @Sendable (
+      URITemplate,
+      [String: URIVariableValue]
+    ) throws -> String
 
   static let publicAPI = ReferenceExampleBehaviorDriver(
     parse: { source in
@@ -113,7 +114,8 @@ struct ReferenceExampleBehaviorDriver: Sendable {
 protocol ReferenceExampleDiagnosticError:
   Error,
   CustomStringConvertible,
-  LocalizedError { }
+  LocalizedError
+{}
 
 extension ReferenceExampleDiagnosticError {
   var errorDescription: String? {
@@ -148,7 +150,8 @@ struct ReferenceExampleEvaluationFailure: ReferenceExampleDiagnosticError {
 }
 
 struct ReferenceExampleExactExpansionMismatch:
-  ReferenceExampleDiagnosticError {
+  ReferenceExampleDiagnosticError
+{
   let context: ReferenceExampleCaseContext
   let expected: String
   let observed: String
@@ -164,7 +167,8 @@ struct ReferenceExampleExactExpansionMismatch:
 }
 
 struct ReferenceExampleAlternateMismatch:
-  ReferenceExampleDiagnosticError {
+  ReferenceExampleDiagnosticError
+{
   let context: ReferenceExampleCaseContext
   let acceptableExpansions: [String]
   let observed: String
@@ -180,7 +184,8 @@ struct ReferenceExampleAlternateMismatch:
 }
 
 struct ReferenceExampleUnexpectedSuccess:
-  ReferenceExampleDiagnosticError {
+  ReferenceExampleDiagnosticError
+{
   let context: ReferenceExampleCaseContext
   let parsedTemplateRepresentation: String
   let observedExpansion: String
@@ -201,7 +206,8 @@ enum ReferenceExampleVerificationBoundary: String {
 }
 
 struct ReferenceExampleBoundaryError:
-  ReferenceExampleDiagnosticError {
+  ReferenceExampleDiagnosticError
+{
   let context: ReferenceExampleCaseContext
   let boundary: ReferenceExampleVerificationBoundary
   let underlyingError: any Error

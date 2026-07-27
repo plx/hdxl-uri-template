@@ -232,7 +232,7 @@ feature implementation.
 | `QA-03` | [#21 — Add recurring sanitizer, fuzz, concurrency, and performance regression jobs](https://github.com/plx/hdxl-uri-template/issues/21) | P1 task |
 | `QA-04` | [#22 — Add real public Swift and Objective-C consumer fixtures](https://github.com/plx/hdxl-uri-template/issues/22) | P1 task |
 | `QA-05` | [#23 — Eliminate test-resource warnings and excessive parameterized-test output](https://github.com/plx/hdxl-uri-template/issues/23) | P2 task |
-| `QA-06` | [#24 — Adopt and enforce a repository Swift formatting policy](https://github.com/plx/hdxl-uri-template/issues/24) | P3 task |
+| [`QA-06`](Evidence/2026-07-27-qa-06-swift-format-policy.md) | [#24 — Adopt and enforce a repository Swift formatting policy](https://github.com/plx/hdxl-uri-template/issues/24) | P3 task |
 | `WORKFLOW-01` | [#16 — Harden GitHub Actions permissions and pin third-party actions immutably](https://github.com/plx/hdxl-uri-template/issues/16) | P1 task |
 
 ### Packaging, documentation, provenance, and final audit

@@ -12,9 +12,9 @@ struct ReferenceExampleSuite {
   }
 }
 
-extension ReferenceExampleSuite: Sendable { }
-extension ReferenceExampleSuite: Equatable { }
-extension ReferenceExampleSuite: Hashable { }
+extension ReferenceExampleSuite: Sendable {}
+extension ReferenceExampleSuite: Equatable {}
+extension ReferenceExampleSuite: Hashable {}
 
 extension ReferenceExampleSuite: Codable {
 

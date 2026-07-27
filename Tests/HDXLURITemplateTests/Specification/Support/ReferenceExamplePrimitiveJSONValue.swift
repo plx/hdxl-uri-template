@@ -1,4 +1,3 @@
-
 enum ReferenceExamplePrimitiveJSONValue {
   case string(String)
   case boolean(Bool)
@@ -7,12 +6,12 @@ enum ReferenceExamplePrimitiveJSONValue {
   case null
 }
 
-extension ReferenceExamplePrimitiveJSONValue : Sendable { }
-extension ReferenceExamplePrimitiveJSONValue : Equatable { }
-extension ReferenceExamplePrimitiveJSONValue : Hashable { }
+extension ReferenceExamplePrimitiveJSONValue: Sendable {}
+extension ReferenceExamplePrimitiveJSONValue: Equatable {}
+extension ReferenceExamplePrimitiveJSONValue: Hashable {}
 
-extension ReferenceExamplePrimitiveJSONValue : Codable {
-  
+extension ReferenceExamplePrimitiveJSONValue: Codable {
+
   func encode(to encoder: any Encoder) throws {
     var container = encoder.singleValueContainer()
     switch self {
@@ -28,14 +27,14 @@ extension ReferenceExamplePrimitiveJSONValue : Codable {
       try container.encodeNil()
     }
   }
-  
+
   init(from decoder: any Decoder) throws {
     let container = try decoder.singleValueContainer()
     guard !container.decodeNil() else {
       self = .null
       return
     }
-    
+
     if let string = try? container.decode(String.self) {
       self = .string(string)
     } else if let boolean = try? container.decode(Bool.self) {
@@ -52,7 +51,7 @@ extension ReferenceExamplePrimitiveJSONValue : Codable {
           debugDescription: "Unsupported JSON type \(String(reflecting: container))!"
         )
       )
-    } else if let dictionary = try? container.decode([String:Self].self) {
+    } else if let dictionary = try? container.decode([String: Self].self) {
       print("failure (unexpected-dictionary) @ \(container.codingPath): \(dictionary)")
       throw DecodingError.dataCorrupted(
         DecodingError.Context(
@@ -70,5 +69,5 @@ extension ReferenceExamplePrimitiveJSONValue : Codable {
       )
     }
   }
-  
+
 }

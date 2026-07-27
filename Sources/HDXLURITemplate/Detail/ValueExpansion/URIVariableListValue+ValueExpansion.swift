@@ -1,30 +1,30 @@
 extension URIVariableListValue {
-  
+
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(templateVariable.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(templateVariable.isValid)
+      pedanticAssert(isValid)
+    #endif
     return expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
     )
   }
-  
+
   internal func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(expansionModifier.isValid)
+      pedanticAssert(isValid)
+    #endif
     guard !isEmpty else {
       return ""
     }
@@ -46,14 +46,14 @@ extension URIVariableListValue {
       )
     }
   }
-  
+
   internal func explodedRepresentation(
     of text: URIVariableTextValue,
     expansionType: URIValueExpansionType,
     escapedVariableName: String
   ) -> String {
     let escapedText = text.escapedContents(expansionType: expansionType)
-    
+
     return switch expansionType {
     case .simple:
       escapedText
@@ -73,15 +73,15 @@ extension URIVariableListValue {
       "\(escapedVariableName)=\(escapedText)"
     }
   }
-  
+
   internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(isValid)
+    #endif
     let escapedName = variableName.escapedAsLiteral
     return storage
       .lazy
@@ -91,26 +91,26 @@ extension URIVariableListValue {
           expansionType: expansionType,
           escapedVariableName: escapedName
         )
-    }.joined(
-      separator: expansionType.separatorForExpandedVariableList
-    )
+      }.joined(
+        separator: expansionType.separatorForExpandedVariableList
+      )
   }
 
   internal func unexplodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(isValid)
+    #endif
     let joinedValues = storage
       .lazy
       .map { text in
         text.rawValue.escaped(forValueExpansionType: expansionType)
-    }.joined(
-      separator: ","
-    )
+      }.joined(
+        separator: ","
+      )
     switch variableName.escapedVariableName(forExpansionType: expansionType) {
     case .unnecessary:
       return joinedValues

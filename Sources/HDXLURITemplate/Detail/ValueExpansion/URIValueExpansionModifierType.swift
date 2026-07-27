@@ -4,30 +4,30 @@ import Foundation
 // MARK: URIValueExpansionModifierType - Definition
 // -------------------------------------------------------------------------- //
 
-internal enum URIValueExpansionModifierType : UInt8 {
-  
+internal enum URIValueExpansionModifierType: UInt8 {
+
   case unmodified = 1
   case explode = 2
   case prefix = 4
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifierType : Sendable { }
-extension URIValueExpansionModifierType : Equatable { }
-extension URIValueExpansionModifierType : Hashable { }
-extension URIValueExpansionModifierType : CaseIterable { }
+extension URIValueExpansionModifierType: Sendable {}
+extension URIValueExpansionModifierType: Equatable {}
+extension URIValueExpansionModifierType: Hashable {}
+extension URIValueExpansionModifierType: CaseIterable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifierType : Comparable {
-  
-  internal static func <(
+extension URIValueExpansionModifierType: Comparable {
+
+  internal static func < (
     lhs: URIValueExpansionModifierType,
     rhs: URIValueExpansionModifierType
   ) -> Bool {
@@ -40,8 +40,8 @@ extension URIValueExpansionModifierType : Comparable {
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifierType : CustomStringConvertible {
-  
+extension URIValueExpansionModifierType: CustomStringConvertible {
+
   internal var description: String {
     switch self {
     case .unmodified:
@@ -58,8 +58,8 @@ extension URIValueExpansionModifierType : CustomStringConvertible {
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifierType : CustomDebugStringConvertible {
-  
+extension URIValueExpansionModifierType: CustomDebugStringConvertible {
+
   internal var debugDescription: String {
     switch self {
     case .unmodified:

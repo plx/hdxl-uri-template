@@ -51,14 +51,13 @@ private func regularExpressionCompiles() throws {
   // ^ test is this doesn't throw
 }
 
-
 // MARK: Fixtures
 
 private let probeStrings: [String] = [
   "a",
   "ab",
   "abc",
-  "abcde"
+  "abcde",
 ]
 
 private let probes: [URITemplateVariableName] = probeStrings.map {

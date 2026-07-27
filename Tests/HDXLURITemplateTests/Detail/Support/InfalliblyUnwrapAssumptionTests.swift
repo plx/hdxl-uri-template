@@ -34,7 +34,8 @@ private func firstRangeViolatingUnicodeScalarInvariants(
   for range in ranges {
     guard range.lowerBound <= range.upperBound else { return range }
     guard range.upperBound <= unicodeMaximum else { return range }
-    let overlapsSurrogateGap = range.lowerBound <= utf16SurrogateGap.upperBound
+    let overlapsSurrogateGap =
+      range.lowerBound <= utf16SurrogateGap.upperBound
       && range.upperBound >= utf16SurrogateGap.lowerBound
     if overlapsSurrogateGap { return range }
   }
@@ -102,18 +103,18 @@ private let percentEncodingSanityStrings: [String] = [
   "Ω≈ç√∫˜µ≤≥÷",
   "👨‍👩‍👧‍👦",
   "👋🏽",
-  "e\u{0301}",                    // combining acute accent
-  "a\u{0301}\u{0302}\u{0303}",    // multiple combining marks
+  "e\u{0301}",  // combining acute accent
+  "a\u{0301}\u{0302}\u{0303}",  // multiple combining marks
   "%20already%encoded%2F",
   "100% pure",
   "\t\n\r\u{0000}\u{0001}\u{007F}",
-  "\u{E000}\u{F8FF}",              // BMP private use area
-  "\u{10000}",                     // first non-BMP scalar
-  "\u{FFFD}",                      // replacement character
-  "\u{1F600}\u{1F4A9}",            // supplementary-plane emoji
-  "\u{F0000}\u{FFFFD}",            // supplementary private-use plane A
-  "\u{100000}\u{10FFFD}",          // supplementary private-use plane B
-  String(repeating: "x", count: 1024)
+  "\u{E000}\u{F8FF}",  // BMP private use area
+  "\u{10000}",  // first non-BMP scalar
+  "\u{FFFD}",  // replacement character
+  "\u{1F600}\u{1F4A9}",  // supplementary-plane emoji
+  "\u{F0000}\u{FFFFD}",  // supplementary private-use plane A
+  "\u{100000}\u{10FFFD}",  // supplementary private-use plane B
+  String(repeating: "x", count: 1024),
 ]
 
 @Test(

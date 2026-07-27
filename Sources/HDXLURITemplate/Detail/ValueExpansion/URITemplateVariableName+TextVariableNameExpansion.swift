@@ -14,9 +14,9 @@ extension URITemplateVariableName {
     forExpansionType expansionType: URIValueExpansionType,
     forced: Bool = false
   ) -> TextVariableNameEscapeResult {
-#if HEAVY_DEBUG
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(isValid)
+    #endif
     guard forced || shouldEscapeName(forExpansionType: expansionType) else {
       return .unnecessary
     }

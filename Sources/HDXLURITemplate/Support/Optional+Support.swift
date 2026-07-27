@@ -1,4 +1,3 @@
-
 extension Optional {
   mutating func obtainAssuredValue(
     guaranteedBy fallback: @autoclosure () -> Wrapped

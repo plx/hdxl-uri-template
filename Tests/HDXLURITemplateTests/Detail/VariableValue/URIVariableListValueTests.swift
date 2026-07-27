@@ -13,16 +13,15 @@ extension Tag {
 private func validateFixtures() {
   verifyOrderedAscending(probeStrings)
   verifyOrderedAscending(probes)
-  
+
   verifyAllSatisfy(
     probes,
     explanation: "Expect all probes to be valid.",
     predicate: \.isValid
   )
-  
+
   verifyPairwiseDistinct(probes)
 }
-
 
 @Test(
   "`URIVariableListValue` has unique descriptions",
@@ -65,7 +64,7 @@ private let probeStrings: [String] = [
   "abcd",
   "abcde",
   "abcdef",
-  "abcdefg"
+  "abcdefg",
 ]
 
 private let probes: [URIVariableListValue] = probeStrings

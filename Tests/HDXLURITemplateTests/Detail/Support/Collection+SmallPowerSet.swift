@@ -1,6 +1,5 @@
-
 extension Collection {
-  
+
   var smallPowerSet: [[Element]] {
     guard !isEmpty else {
       return []
@@ -12,12 +11,12 @@ extension Collection {
         """
       )
     }
-    
+
     let elements = Array(self)
-    
+
     let upperBound: Int = (1 << count) - 1
     assert(upperBound >= 0)
-    
+
     var results: [[Element]] = []
     for bitMask in 0...upperBound {
       var subset: [Element] = []
@@ -30,5 +29,5 @@ extension Collection {
     }
     return results
   }
-  
+
 }

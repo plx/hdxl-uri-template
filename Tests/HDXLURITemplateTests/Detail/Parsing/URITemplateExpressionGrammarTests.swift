@@ -35,7 +35,7 @@ private func everyExpressionOperatorAcceptsValidVariableLists(
 ) throws {
   for (variableList, expectedNames) in [
     ("x", Set(["x"])),
-    ("x,y", Set(["x", "y"]))
+    ("x,y", Set(["x", "y"])),
   ] {
     let source = "{\(expressionOperator)\(variableList)}"
     let template = try URITemplate(parsing: source)
@@ -66,7 +66,7 @@ private let expressionOperators = [
   "/",
   ";",
   "?",
-  "&"
+  "&",
 ]
 
 private let malformedExpressionTemplates =
@@ -78,7 +78,7 @@ private let malformedExpressionTemplates =
       "{\(expressionOperator),x}",
       "{\(expressionOperator)x,}",
       "{\(expressionOperator)x,,y}",
-      "{\(expressionOperator)x, y}"
+      "{\(expressionOperator)x, y}",
     ]
   }
   + [
@@ -101,7 +101,7 @@ private let malformedExpressionTemplates =
     "{x,\u{2029}y}",
     "{x,\u{202F}y}",
     "{x,\u{205F}y}",
-    "{x,\u{3000}y}"
+    "{x,\u{3000}y}",
   ]
 
 private struct ValidExpressionCase: CustomTestStringConvertible, Sendable {
@@ -133,5 +133,5 @@ private let validExpressionCases = [
   ValidExpressionCase(
     source: "{x,y*,z:12}",
     variableNames: ["x", "y", "z"]
-  )
+  ),
 ]

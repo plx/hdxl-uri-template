@@ -4,9 +4,9 @@ enum ReferenceExampleExpectation {
   case multiplePossibleMatches([String])
 }
 
-extension ReferenceExampleExpectation: Sendable { }
-extension ReferenceExampleExpectation: Equatable { }
-extension ReferenceExampleExpectation: Hashable { }
+extension ReferenceExampleExpectation: Sendable {}
+extension ReferenceExampleExpectation: Equatable {}
+extension ReferenceExampleExpectation: Hashable {}
 
 extension ReferenceExampleExpectation {
 

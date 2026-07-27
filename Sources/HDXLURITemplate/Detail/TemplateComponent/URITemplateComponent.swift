@@ -3,37 +3,37 @@
 // -------------------------------------------------------------------------- //
 
 internal enum URITemplateComponent {
-  
+
   case literal(URITemplateLiteralComponent)
   case expression(URITemplateExpressionComponent)
-    
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Synthesized Properties
 // -------------------------------------------------------------------------- //
 
-extension URITemplateComponent : Sendable {}
-extension URITemplateComponent : Equatable {}
-extension URITemplateComponent : Hashable {}
+extension URITemplateComponent: Sendable {}
+extension URITemplateComponent: Equatable {}
+extension URITemplateComponent: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
-extension URITemplateComponent : Comparable {
+extension URITemplateComponent: Comparable {
 
-  internal static func <(
+  internal static func < (
     lhs: URITemplateComponent,
     rhs: URITemplateComponent
   ) -> Bool {
-#if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
-#endif
-    return switch (lhs,rhs) {
+    #if HEAVY_DEBUG
+      pedanticAssert(lhs.isValid)
+      pedanticAssert(rhs.isValid)
+    #endif
+    return switch (lhs, rhs) {
     case (.literal(let l), .literal(let r)):
-       l < r
+      l < r
     case (.literal(_), .expression(_)):
       true
     case (.expression(_), .literal(_)):
@@ -48,8 +48,8 @@ extension URITemplateComponent : Comparable {
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URITemplateComponent : CustomStringConvertible {
-  
+extension URITemplateComponent: CustomStringConvertible {
+
   internal var description: String {
     switch self {
     case .literal(let literal):
@@ -58,14 +58,14 @@ extension URITemplateComponent : CustomStringConvertible {
       ".expression(\"\(expression.description)\")"
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URITemplateComponent : CustomDebugStringConvertible {
+extension URITemplateComponent: CustomDebugStringConvertible {
 
   internal var debugDescription: String {
     switch self {
@@ -75,7 +75,7 @@ extension URITemplateComponent : CustomDebugStringConvertible {
       "URITemplateComponent.expression(\(expression.debugDescription))"
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -83,7 +83,7 @@ extension URITemplateComponent : CustomDebugStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
-  
+
   internal var isLiteralComponent: Bool {
     switch self {
     case .literal:
@@ -92,7 +92,7 @@ extension URITemplateComponent {
       false
     }
   }
-  
+
   internal var isExpressionComponent: Bool {
     switch self {
     case .literal:
@@ -101,7 +101,7 @@ extension URITemplateComponent {
       true
     }
   }
-  
+
   internal var templateRepresentation: String {
     switch self {
     case .literal(let literal):
@@ -110,7 +110,7 @@ extension URITemplateComponent {
       "{\(expression.templateRepresentation)}"
     }
   }
-  
+
   internal var templateComponentType: URITemplateComponentType {
     switch self {
     case .literal:
@@ -119,18 +119,18 @@ extension URITemplateComponent {
       .expression
     }
   }
-  
+
   internal func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     switch self {
     case .literal(_):
-      (); // nothing
+      ();  // nothing
     case .expression(let expression):
       expression.injectTemplateVariables(
         into: &receiver
       )
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -138,7 +138,7 @@ extension URITemplateComponent {
 // -------------------------------------------------------------------------- //
 
 extension URITemplateComponent {
-  
+
   internal var isValid: Bool {
     switch self {
     case .literal(let literal):
@@ -147,5 +147,5 @@ extension URITemplateComponent {
       expression.isValid
     }
   }
-  
+
 }

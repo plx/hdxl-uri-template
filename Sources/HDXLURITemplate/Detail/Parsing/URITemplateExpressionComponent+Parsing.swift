@@ -1,12 +1,12 @@
 import Foundation
 
 extension URITemplateExpressionComponent {
-   
-  internal enum ParseError : Error {
+
+  internal enum ParseError: Error {
     case invalidEmptyString
     case noVariablesFound(String)
   }
-  
+
   internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString
@@ -18,7 +18,8 @@ extension URITemplateExpressionComponent {
     guard !variableListString.isEmpty else {
       throw ParseError.noVariablesFound(string)
     }
-    let variables = try variableListString
+    let variables =
+      try variableListString
       .split(
         separator: ",",
         omittingEmptySubsequences: false
@@ -31,5 +32,5 @@ extension URITemplateExpressionComponent {
       variables: variables
     )
   }
-  
+
 }

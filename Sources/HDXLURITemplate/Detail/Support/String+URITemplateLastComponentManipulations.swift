@@ -1,7 +1,7 @@
 import Foundation
 
 extension String {
-  
+
   /// This method returns the *range* of the last component vis-a-vis `separator`.
   /// In other words, if you call `"abc,def,ghi".rangeOfLastComponent(forSeparator: ",")`,
   /// then you'll get the range of `ghi` (which'd be equivalent to `9..<12`, here,
@@ -23,28 +23,28 @@ extension String {
       let rangeOfLastSeparator = range(of: separator, options: .backwards),
       rangeOfLastSeparator.upperBound < endIndex
     else {
-        return nil
+      return nil
     }
     return rangeOfLastSeparator.upperBound..<endIndex
   }
-  
+
   func lastComponent(forSeparator separator: String) -> String? {
     guard let range = rangeOfLastComponent(forSeparator: separator) else {
       return nil
     }
     return String(self[range])
   }
-  
+
   func removingLastComponent(forSeparator separator: String) -> String {
     mutated {
       $0.removeLastComponent(forSeparator: separator)
     }
   }
-  
+
   mutating func removeLastComponent(forSeparator separator: String) {
     if let rangeToRemove = rangeOfLastComponent(forSeparator: separator) {
       removeSubrange(rangeToRemove)
     }
   }
-  
+
 }

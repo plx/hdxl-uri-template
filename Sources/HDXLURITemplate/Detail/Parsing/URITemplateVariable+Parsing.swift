@@ -1,11 +1,11 @@
 import Foundation
 
 extension URITemplateVariable {
-  
-  internal enum ParseError : Error {
+
+  internal enum ParseError: Error {
     case invalidEmptyString
   }
-  
+
   internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString
@@ -22,5 +22,5 @@ extension URITemplateVariable {
       expansionModifier: expansionModifier
     )
   }
-  
+
 }

@@ -14,16 +14,15 @@ private func validateFixtures() {
   verifyOrderedAscending(keys)
   verifyOrderedAscending(values)
   verifyOrderedAscending(probes)
-  
+
   verifyAllSatisfy(
     probes,
     explanation: "Expect all probes to be valid.",
     predicate: \.isValid
   )
-  
+
   verifyPairwiseDistinct(probes)
 }
-
 
 @Test(
   "`URIVariablePairValue` has unique descriptions",
@@ -54,7 +53,7 @@ private let keys: [URIVariableTextValue] = [
   "ab",
   "abc",
   "abcde",
-  "abcdefg"
+  "abcdefg",
 ].map {
   URIVariableTextValue(rawValue: $0)
 }
@@ -64,12 +63,12 @@ private let values: [URIVariableTextValue] = [
   "mn",
   "mno",
   "mnop",
-  "mnoq"
+  "mnoq",
 ].map {
   URIVariableTextValue(rawValue: $0)
 }
 
-private let probes: [URIVariablePairValue] = cartesianProduct(keys,values)
+private let probes: [URIVariablePairValue] = cartesianProduct(keys, values)
   .map {
     URIVariablePairValue(
       key: $0,

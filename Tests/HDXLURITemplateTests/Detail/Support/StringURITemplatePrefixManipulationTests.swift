@@ -28,7 +28,7 @@ private func degenerateScenarios() {
     from: "abc",
     yields: "abc"
   )
-  
+
   // empty-target
   verifyRemoval(
     ofPrefix: "ab",
@@ -41,7 +41,7 @@ private func degenerateScenarios() {
     yields: ""
   )
 }
-  
+
 @Test(
   "`String+URITemplatePrefixManipulation` canned scenarios",
   .tags(.stringManipulation, .uriTemplateLengthManipulation)
@@ -99,7 +99,7 @@ private func programmaticMixture() {
         yields: (target + prefix)
       )
       // whereas this *will* remove the unwanted prefix:
-      #expect((prefix+target).hasPrefix(prefix))
+      #expect((prefix + target).hasPrefix(prefix))
       verifyRemoval(
         ofPrefix: prefix,
         from: (prefix + target),

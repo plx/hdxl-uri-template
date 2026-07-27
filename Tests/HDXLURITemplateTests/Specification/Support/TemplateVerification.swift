@@ -22,7 +22,7 @@ let referenceExampleSuiteContracts = [
   ReferenceExampleSuiteContract(
     name: "negative-tests",
     expectedCaseCount: 36
-  )
+  ),
 ]
 
 let referenceExampleSuiteNames = referenceExampleSuiteContracts.map(\.name)

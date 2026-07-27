@@ -8,7 +8,7 @@ import Testing
     "extended-tests",
     "negative-tests",
     "spec-examples",
-    "spec-examples-by-section"
+    "spec-examples-by-section",
   ]
 )
 private func parseResources(fileName: String) throws {
@@ -148,7 +148,7 @@ private func referenceSuiteLoadingRejectsDriftAndDuplicates() throws {
         ReferenceExampleSuiteContract(
           name: "spec-examples",
           expectedCaseCount: 64
-        )
+        ),
       ],
       suiteLoader: { _ in specExamples }
     )

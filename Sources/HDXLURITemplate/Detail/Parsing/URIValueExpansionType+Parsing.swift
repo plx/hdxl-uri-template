@@ -1,11 +1,11 @@
 import Foundation
 
 extension URIValueExpansionType {
-  
-  internal enum ParseError : Error {
+
+  internal enum ParseError: Error {
     case invalidEmptyString
   }
-  
+
   internal init(parsing string: inout String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString
@@ -50,5 +50,5 @@ extension URIValueExpansionType {
       // no string modification necessary
     }
   }
-  
+
 }

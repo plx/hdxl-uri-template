@@ -88,7 +88,7 @@ private struct PrefixReferenceUnit {
     Self(source: "%80", ordinary: "%2580", reserved: "%80"),
     Self(source: "%C0", ordinary: "%25C0", reserved: "%C0"),
     Self(source: "%F5", ordinary: "%25F5", reserved: "%F5"),
-    Self(source: "%25", ordinary: "%2525", reserved: "%25")
+    Self(source: "%25", ordinary: "%2525", reserved: "%25"),
   ]
 
 }
@@ -148,7 +148,7 @@ private struct PrefixOperatorReference {
       expansionPrefix: "&",
       usesVariableName: true,
       preservesPercentEncoding: false
-    )
+    ),
   ]
 
   func template(prefixLength: Int) -> String {

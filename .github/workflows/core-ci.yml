@@ -64,6 +64,15 @@ jobs:
           xcrun swift --version |
             grep -Eq 'Swift version 6\.3([.[:space:]]|$)'
 
+      - name: Validate Swift formatting policy
+        if: matrix.lane == 'debug'
+        run: |
+          set -o pipefail
+          ./Scripts/swift-format.sh lint 2>&1 |
+            tee "$CI_ARTIFACTS/swift-format.log"
+          ./Scripts/test-swift-format.sh 2>&1 |
+            tee -a "$CI_ARTIFACTS/swift-format.log"
+
       - name: Verify pinned fixture snapshot
         run: |
           set -o pipefail

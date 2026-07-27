@@ -1,12 +1,12 @@
 import Foundation
 
 extension URITemplateLiteralComponent {
-  
-  internal enum ParseError : Error {
+
+  internal enum ParseError: Error {
     case unexpectedlyEmpty
     case invalidContent(String)
   }
-  
+
   internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.unexpectedlyEmpty
@@ -18,5 +18,5 @@ extension URITemplateLiteralComponent {
       rawValue: string
     )
   }
-  
+
 }

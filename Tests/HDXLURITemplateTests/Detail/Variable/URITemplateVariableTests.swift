@@ -47,7 +47,7 @@ private let probeStrings: [String] = [
   "a",
   "ab",
   "abc",
-  "abcde"
+  "abcde",
 ]
 
 private let probes: [URITemplateVariable] = cartesianProduct(

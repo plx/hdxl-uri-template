@@ -13,9 +13,9 @@ internal let rfcLiteralASCIIAllowedCharacterSet = CharacterSet(
 extension URITemplateLiteralComponent {
 
   internal var expansionRepresentation: String {
-#if HEAVY_DEBUG
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(isValid)
+    #endif
     return rawValue.escapedPreservingPercentEncodedTriplets(
       allowedCharacters: rfcLiteralASCIIAllowedCharacterSet
     )
