@@ -1,11 +1,10 @@
-
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableAssociationValue - Definition
 // -------------------------------------------------------------------------- //
 
 @usableFromInline
 internal struct URIVariableAssociationValue {
-  
+
   @usableFromInline
   internal let storage: [URIVariablePairValue]
 
@@ -16,18 +15,20 @@ internal struct URIVariableAssociationValue {
 
   @inlinable
   internal init(value: URIVariablePairValue) {
-#if HEAVY_DEBUG
-    pedanticAssert(value.isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(value.isValid)
+    #endif
     self.storage = [value]
   }
 
   @inlinable
   internal init<Values>(
     validating values: Values
-  ) throws where
+  ) throws
+  where
     Values: Sequence,
-    Values.Element == URIVariablePairValue {
+    Values.Element == URIVariablePairValue
+  {
     var storage: [URIVariablePairValue] = []
     storage.reserveCapacity(values.underestimatedCount)
 
@@ -35,9 +36,9 @@ internal struct URIVariableAssociationValue {
     firstIndicesByKey.reserveCapacity(values.underestimatedCount)
 
     for (index, value) in values.enumerated() {
-#if HEAVY_DEBUG
-      pedanticAssert(value.isValid)
-#endif
+      #if HEAVY_DEBUG
+        pedanticAssert(value.isValid)
+      #endif
       if let firstIndex = firstIndicesByKey[value.key] {
         throw URIVariableValue.AssociationError.duplicateKey(
           firstIndex: firstIndex,
@@ -49,9 +50,9 @@ internal struct URIVariableAssociationValue {
     }
 
     self.storage = storage
-#if HEAVY_DEBUG
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(isValid)
+    #endif
   }
 
   @inlinable
@@ -67,9 +68,11 @@ internal struct URIVariableAssociationValue {
   @inlinable
   internal init<Strings>(
     validatingStrings strings: Strings
-  ) throws where
+  ) throws
+  where
     Strings: Sequence,
-    Strings.Element == (String, String) {
+    Strings.Element == (String, String)
+  {
     try self.init(
       validating: strings.lazy.map {
         URIVariablePairValue(
@@ -85,7 +88,8 @@ internal struct URIVariableAssociationValue {
     dictionary: [String: String],
     orderingKeysWith areInIncreasingOrder: (String, String) -> Bool
   ) {
-    self.storage = dictionary
+    self.storage =
+      dictionary
       .sorted { lhs, rhs in
         let lhsPrecedesRhs = areInIncreasingOrder(lhs.key, rhs.key)
         let rhsPrecedesLhs = areInIncreasingOrder(rhs.key, lhs.key)
@@ -104,9 +108,9 @@ internal struct URIVariableAssociationValue {
           value: URIVariableTextValue(rawValue: $0.value)
         )
       }
-#if HEAVY_DEBUG
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(isValid)
+    #endif
   }
 
 }
@@ -115,72 +119,43 @@ internal struct URIVariableAssociationValue {
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIVariableAssociationValue: Sendable { }
-extension URIVariableAssociationValue: Equatable { }
-extension URIVariableAssociationValue: Hashable { }
-
-// -------------------------------------------------------------------------- //
-// MARK: - Codable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableAssociationValue: Codable {
-
-  @usableFromInline
-  internal enum CodingKeys: String, CodingKey {
-    case storage
-  }
-
-  @usableFromInline
-  internal func encode(to encoder: Encoder) throws {
-    var container = encoder.container(keyedBy: CodingKeys.self)
-    try container.encode(storage, forKey: .storage)
-  }
-
-  @usableFromInline
-  internal init(from decoder: Decoder) throws {
-    let container = try decoder.container(keyedBy: CodingKeys.self)
-    try self.init(
-      validating: container.decode(
-        [URIVariablePairValue].self,
-        forKey: .storage
-      )
-    )
-  }
-}
+extension URIVariableAssociationValue: Sendable {}
+extension URIVariableAssociationValue: Equatable {}
+extension URIVariableAssociationValue: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableAssociationValue - Comparable
 // -------------------------------------------------------------------------- //
 
-extension URIVariableAssociationValue : Comparable {
-  
+extension URIVariableAssociationValue: Comparable {
+
   @inlinable
-  internal static func <(
+  internal static func < (
     lhs: URIVariableAssociationValue,
     rhs: URIVariableAssociationValue
   ) -> Bool {
     #if HEAVY_DEBUG
-    pedanticAssert(lhs.isValid)
-    pedanticAssert(rhs.isValid)
+      pedanticAssert(lhs.isValid)
+      pedanticAssert(rhs.isValid)
     #endif
     return lhs.storage.lexicographicallyPrecedes(rhs.storage)
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableAssociationValue : CustomStringConvertible {
-  
+extension URIVariableAssociationValue: CustomStringConvertible {
+
   @usableFromInline
   internal var description: String {
     let variableDescriptions = storage
       .lazy
       .map { String(describing: $0) }
       .joined(separator: ", ")
-    
+
     return "[ \(variableDescriptions) ]"
   }
 }
@@ -189,8 +164,8 @@ extension URIVariableAssociationValue : CustomStringConvertible {
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableAssociationValue : CustomDebugStringConvertible {
-  
+extension URIVariableAssociationValue: CustomDebugStringConvertible {
+
   @usableFromInline
   internal var debugDescription: String {
     let variableDescriptions = storage
@@ -206,21 +181,21 @@ extension URIVariableAssociationValue : CustomDebugStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue {
-  
+
   @inlinable
   internal var isValid: Bool {
     storage.allSatisfy(\.isValid)
-    &&
-    allKeysAreDistinct
+      && allKeysAreDistinct
   }
-  
+
   @inlinable
   internal var allKeysAreDistinct: Bool {
-    count == Set(
-      storage.lazy.map(\.key)
-    ).count
+    count
+      == Set(
+        storage.lazy.map(\.key)
+      ).count
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -228,30 +203,30 @@ extension URIVariableAssociationValue {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableAssociationValue {
-  
+
   @inlinable
   internal var isEmpty: Bool {
     storage.isEmpty
   }
-  
+
   @inlinable
   internal var count: Int {
     storage.count
   }
-  
+
   @inlinable
   internal subscript(index: Int) -> URIVariablePairValue {
     storage[index]
   }
-  
+
   @inlinable
   internal subscript(key: String) -> URIVariableTextValue? {
     self[URIVariableTextValue(rawValue: key)]
   }
-  
+
   @inlinable
   internal subscript(key: URIVariableTextValue) -> URIVariableTextValue? {
     storage.first(where: { key == $0.key })?.value
   }
-  
+
 }

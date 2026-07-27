@@ -25,8 +25,8 @@ There are no published versions yet.
   CI gates plus recurring sanitizer, deterministic-fuzz, concurrency, and
   scaling evidence.
 - Added a standalone public Swift consumer that compiles and runs documented
-  examples, error bridging, `Codable`, and concurrent-use contracts without
-  `@testable`.
+  examples, error bridging, template `Codable`, value-model, and concurrent-use
+  contracts without `@testable`.
 
 ### Changed
 
@@ -56,13 +56,17 @@ There are no published versions yet.
 - Removed the public `Comparable` conformances and `<` operators from
   `URITemplate`, `URIVariableValue`, and `URIVariableValueType`. Their former
   structural ordering was an implementation detail rather than a semantic
-  contract. Their existing `Equatable`, `Hashable`, `Sendable`, and `Codable`
-  behavior remains available.
+  contract. Their existing `Equatable`, `Hashable`, and `Sendable` behavior
+  remains available.
+- Removed `Codable`, `Encodable`, and `Decodable` from
+  `URIVariableValue` and `URIVariableValueType`, together with private coding
+  machinery that existed only to support them. The pre-release numeric-tagged
+  encoding exposed private storage and is unsupported. Persist an
+  application-owned source DTO and construct runtime values through the public
+  factories; `URITemplate.Codable` is unchanged.
 - Removed `URITemplate.ParseError.underlyingError` and the public generic
   `DataValidationError<T>`. Inspect `ParseError.kind` and `sourceRange` instead
-  of private parser errors. Code decoding `URIVariableValue` should handle
-  standard `DecodingError` cases, plus
-  `URIVariableValue.AssociationError` for duplicate association keys.
+  of private parser errors.
 
 ### Fixed
 

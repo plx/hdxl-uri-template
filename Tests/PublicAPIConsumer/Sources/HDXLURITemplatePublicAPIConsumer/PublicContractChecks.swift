@@ -92,26 +92,13 @@ func publicErrorExamples() throws {
   }
 }
 
-func publicCodableExamples() throws {
+func publicTemplateCodableExamples() throws {
   let templates = [
     try URITemplate(parsing: "https://example.com{/path}{?query}"),
     try URITemplate(parsing: "{value:3}"),
   ]
-  let variableValues = [
-    URIVariableValue.undefined,
-    .text("value"),
-    .list(["first", "second"]),
-    try .association([
-      ("first", "one"),
-      ("second", "two"),
-    ]),
-  ]
 
   try requireJSONAndPropertyListRoundTrip(templates)
-  try requireJSONAndPropertyListRoundTrip(variableValues)
-  try requireJSONAndPropertyListRoundTrip(
-    URIVariableValueType.allCases
-  )
 }
 
 func publicConcurrencyExample() async throws {

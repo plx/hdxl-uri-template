@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import HDXLURITemplate
 
 extension Tag {
@@ -17,7 +18,7 @@ private func manualPublicTemplateAPICoverage() throws {
   let parameters: [String: URIVariableValue] = [
     "id": .text("users"),
     "q": .text("uri templates"),
-    "empty": .text("")
+    "empty": .text(""),
   ]
 
   #expect(template.isValid)
@@ -25,8 +26,14 @@ private func manualPublicTemplateAPICoverage() throws {
   #expect(template.variableNames == ["id", "q", "empty"])
   #expect(template.description.contains("https://example.com"))
   #expect(template.debugDescription.contains("URITemplate"))
-  #expect(try template.evaluateAsString(parameters: parameters) == "https://example.com/users?q=uri%20templates&empty=")
-  #expect(try template.evaluate(parameters: parameters) == URL(string: "https://example.com/users?q=uri%20templates&empty="))
+  #expect(
+    try template.evaluateAsString(parameters: parameters)
+      == "https://example.com/users?q=uri%20templates&empty="
+  )
+  #expect(
+    try template.evaluate(parameters: parameters)
+      == URL(string: "https://example.com/users?q=uri%20templates&empty=")
+  )
   // A rendered string that `URL` rejects surfaces as `EvaluationError` (with the
   // underlying `URLError` preserved), matching the uniform evaluation-failure contract.
   do {
@@ -39,9 +46,8 @@ private func manualPublicTemplateAPICoverage() throws {
     #expect(error.kind.description == "invalidURL")
   }
 
-  // Codable, equality, and hashing are part of the package's public value
-  // semantics, so this checks they preserve parsed structure rather than object
-  // identity.
+  // Codable, equality, and hashing are part of the public template semantics,
+  // so this checks they preserve parsed structure rather than object identity.
   let encoded = try JSONEncoder().encode(template)
   let decoded = try JSONDecoder().decode(URITemplate.self, from: encoded)
   #expect(decoded == template)
@@ -94,10 +100,13 @@ private func propertyPublicTemplateAPICoverage() throws {
     let variableList = activeNames.joined(separator: ",")
     let templateString = "https://example.com/{\(variableList)}"
     let template = try URITemplate(parsing: templateString)
-    let parameters = Dictionary(uniqueKeysWithValues: zip(names, values).map { ($0, URIVariableValue.text($1)) })
+    let parameters = Dictionary(
+      uniqueKeysWithValues: zip(names, values).map { ($0, URIVariableValue.text($1)) }
+    )
 
     let rendered = try template.evaluateAsString(parameters: parameters)
-    let renderedPieces = rendered
+    let renderedPieces =
+      rendered
       .replacingOccurrences(of: "https://example.com/", with: "")
       .split(separator: ",")
       .map(String.init)
@@ -124,7 +133,9 @@ private func manualStorageAndComponentCoverage() throws {
   #expect(emptyStorage.variableNames.isEmpty)
   #expect(emptyStorage.isValid)
 
-  let literalComponent = URITemplateComponent.literal(try URITemplateLiteralComponent(parsing: "prefix"))
+  let literalComponent = URITemplateComponent.literal(
+    try URITemplateLiteralComponent(parsing: "prefix")
+  )
   let variable = try URITemplateVariable(parsing: "id")
   let expression = URITemplateExpressionComponent(expansionType: .pathSegment, variable: variable)
   let expressionComponent = URITemplateComponent.expression(expression)
@@ -173,7 +184,9 @@ private func manualStorageAndComponentCoverage() throws {
   .tags(.doubleCoveragePublicAPI)
 )
 private func propertyStorageAndComponentCoverage() throws {
-  let literals = try ["a", "b", "c"].map { URITemplateComponent.literal(try URITemplateLiteralComponent(parsing: $0)) }
+  let literals = try ["a", "b", "c"].map {
+    URITemplateComponent.literal(try URITemplateLiteralComponent(parsing: $0))
+  }
   let variables = try ["a", "b", "c"].map { try URITemplateVariable(parsing: "\($0)*") }
   let expressions = variables.map {
     URITemplateComponent.expression(

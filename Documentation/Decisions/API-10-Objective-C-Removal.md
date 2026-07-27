@@ -6,6 +6,12 @@ Decision: [API-08 Objective-C support decision](./API-08-Objective-C-Support.md)
 
 Tracking issue: [#81](https://github.com/plx/hdxl-uri-template/issues/81)
 
+Current-status note: this record describes the API-10 revision. The later
+[API-06 decision](./API-06-URIVariableValue-Codable.md) removed
+`URIVariableValue` and `URIVariableValueType` coding conformances; its current
+persistence guidance supersedes this record's then-current value-coding
+observations.
+
 ## Outcome
 
 The unsupported pre-release Objective-C facade has been removed. The package
@@ -18,8 +24,8 @@ now exposes only its native Swift contract and no longer contains:
   fixture; or
 - wrapper-specific unit tests and archive proxies.
 
-No native Swift template, value, association-invariant, Codable, expansion, or
-error contract was removed.
+API-10 itself removed no native Swift template, value, association-invariant,
+coding, expansion, or error contract.
 
 ## Generated-interface comparison
 
@@ -85,11 +91,12 @@ Tests/HDXLURITemplateTests/DoubleCoverage/ObjCAssociationInvariantTests.swift
 Tests/HDXLURITemplateTests/DoubleCoverage/ObjCDoubleCoverageTests.swift
 ```
 
-Wrapper calls and archive tests were also removed from shared test files. The
-Swift association tests remain and continue to cover unique-key validation,
+Wrapper calls and archive tests were also removed from shared test files. At
+the API-10 revision, Swift association tests covered unique-key validation,
 duplicate rejection, insertion ordering, dictionary ordering, JSON and
 property-list decoding, round trips, expansion, large inputs, and privacy-safe
-bridged errors.
+bridged errors. API-06 later removed the value-coding cases while retaining
+the construction, expansion, large-input, and error coverage.
 
 ## Compatibility and migration
 
@@ -103,11 +110,14 @@ snapshot must migrate as follows:
   `list(_:)`, and the `association` factories;
 - inspect native values through `URIVariableValue.valueType` and the
   `is…Value` properties; and
-- replace wrapper archives with the documented native Swift Codable formats.
+- persist application-owned source DTOs when durable variable parameters are
+  required, then construct runtime values through those factories.
 
 Archives of `HDXLURITemplate` and `HDXLURIVariableValue` are unsupported and
 are not migrated or decoded by this package. An Objective-C application that
 needs URI-template behavior must own an application-specific Swift bridge.
+Native `URITemplate.Codable` remains available; native variable values are
+non-`Codable` under API-06.
 
 ## Validation
 

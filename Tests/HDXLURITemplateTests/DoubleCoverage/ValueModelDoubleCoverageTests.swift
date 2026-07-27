@@ -1,5 +1,5 @@
-import Foundation
 import Testing
+
 @testable import HDXLURITemplate
 
 extension Tag {
@@ -25,7 +25,7 @@ private func manualVariableValueModelCoverage() throws {
   let associationLiteral = try URIVariableAssociationValue(
     validating: [
       URIVariablePairValue(key: "a", value: "1"),
-      URIVariablePairValue(key: "b", value: "2")
+      URIVariablePairValue(key: "b", value: "2"),
     ]
   )
   let singletonAssociation = URIVariableAssociationValue(key: "single", value: "1")
@@ -39,7 +39,6 @@ private func manualVariableValueModelCoverage() throws {
   #expect(!text.isEmpty)
   #expect(emptyText.isEmpty)
   #expect(text.fixtureDiagnosticRepresentation == "hello")
-  #expect(try JSONDecoder().decode(URIVariableTextValue.self, from: JSONEncoder().encode(text)) == text)
 
   #expect(list.storage == [text, emptyText])
   #expect(listLiteral.storage.map(\.rawValue) == ["a", "b"])
@@ -52,7 +51,6 @@ private func manualVariableValueModelCoverage() throws {
   #expect(list.description == "[ \"hello\", \"\" ]")
   #expect(list.debugDescription.contains("URIVariableListValue"))
   #expect(list.fixtureDiagnosticRepresentation == "[ hello,  ]")
-  #expect(try JSONDecoder().decode(URIVariableListValue.self, from: JSONEncoder().encode(list)) == list)
 
   #expect(pair.key == "key")
   #expect(pair.value == "value")
@@ -91,7 +89,7 @@ private func manualVariableValueModelCoverage() throws {
     .list("solo"),
     .list(["a", "b"]),
     .association(key: "k", value: "v"),
-    .association([("a", "1"), ("b", "2")])
+    .association([("a", "1"), ("b", "2")]),
   ]
 
   #expect(values[0].isUndefined)
@@ -106,8 +104,6 @@ private func manualVariableValueModelCoverage() throws {
   #expect(Set(values).count == values.count)
 
   for value in values {
-    let roundTrip = try JSONDecoder().decode(URIVariableValue.self, from: JSONEncoder().encode(value))
-    #expect(roundTrip == value)
     #expect(value.isValid)
   }
 }
@@ -137,14 +133,12 @@ private func propertyVariableValueModelCoverage() throws {
   for text in textValues {
     #expect(text.isEmpty == text.rawValue.isEmpty)
     #expect(text.fixtureDiagnosticRepresentation == text.rawValue)
-    #expect(try JSONDecoder().decode(URIVariableTextValue.self, from: JSONEncoder().encode(text)) == text)
   }
 
   for list in lists {
     #expect(list.count == list.storage.count)
     #expect(list.isEmpty == list.storage.isEmpty)
     #expect(list.isValid == list.storage.allSatisfy(\.isValid))
-    #expect(try JSONDecoder().decode(URIVariableListValue.self, from: JSONEncoder().encode(list)) == list)
   }
 
   for pair in pairs {
@@ -180,48 +174,5 @@ private func propertyVariableValueModelCoverage() throws {
     #expect(publicValue.isListValue == data.isListValue)
     #expect(publicValue.isAssociationValue == data.isAssociationValue)
     #expect(publicValue.fixtureDiagnosticRepresentation == data.fixtureDiagnosticRepresentation)
-    #expect(try JSONDecoder().decode(URIVariableValueData.self, from: JSONEncoder().encode(data)) == data)
-    #expect(try JSONDecoder().decode(URIVariableValue.self, from: JSONEncoder().encode(publicValue)) == publicValue)
-  }
-}
-
-@Test(
-  "Manual value-model Codable validation errors coverage",
-  .tags(.doubleCoverageValueModel)
-)
-private func manualCodableValidationErrorCoverage() throws {
-  // Public value-model decoding still validates duplicate association keys.
-  try verifyDuplicateAssociationDecodeFailure()
-}
-
-private func verifyDuplicateAssociationDecodeFailure() throws {
-  let duplicateAssociationJSON = Data(
-    """
-    {
-      "type": 8,
-      "data": {
-        "storage": [
-          { "key": "private-key", "value": "private-first-value" },
-          { "key": "private-key", "value": "private-second-value" }
-        ]
-      }
-    }
-    """.utf8
-  )
-  do {
-    _ = try JSONDecoder().decode(
-      URIVariableValue.self,
-      from: duplicateAssociationJSON
-    )
-    Issue.record("Expected duplicate association storage to throw.")
-  } catch let error as URIVariableValue.AssociationError {
-    #expect(
-      error == .duplicateKey(
-        firstIndex: 0,
-        duplicateIndex: 1
-      )
-    )
-    #expect(!String(reflecting: error).contains("private"))
-    #expect(!(error as NSError).userInfo.description.contains("private"))
   }
 }

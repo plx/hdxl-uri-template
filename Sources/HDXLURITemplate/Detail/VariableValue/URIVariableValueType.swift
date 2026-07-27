@@ -7,32 +7,33 @@
 /// of key-value pairs).
 ///
 /// This is a native Swift value. The package does not expose an Objective-C
-/// facade.
-public enum URIVariableValueType : UInt8 {
-  
+/// facade. The raw values support source-level inspection; they are not
+/// persistence tags, and this type deliberately does not conform to `Codable`.
+public enum URIVariableValueType: UInt8 {
+
   case undefined = 1
   case text = 2
   case list = 4
   case association = 8
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType : Sendable { }
-extension URIVariableValueType : Equatable { }
-extension URIVariableValueType : Hashable { }
-extension URIVariableValueType : Codable { }
-extension URIVariableValueType : CaseIterable { }
+extension URIVariableValueType: Sendable {}
+extension URIVariableValueType: Equatable {}
+extension URIVariableValueType: Hashable {}
+extension URIVariableValueType: CaseIterable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType : CustomStringConvertible {
-  
+extension URIVariableValueType: CustomStringConvertible {
+
+  /// The stable textual name of this value flavor.
   @inlinable
   public var description: String {
     switch self {
@@ -46,15 +47,16 @@ extension URIVariableValueType : CustomStringConvertible {
       "association"
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueType : CustomDebugStringConvertible {
-  
+extension URIVariableValueType: CustomDebugStringConvertible {
+
+  /// A source-like representation of this value flavor for debugging.
   @inlinable
   public var debugDescription: String {
     switch self {
@@ -68,5 +70,5 @@ extension URIVariableValueType : CustomDebugStringConvertible {
       "URIVariableValueType.association"
     }
   }
-  
+
 }

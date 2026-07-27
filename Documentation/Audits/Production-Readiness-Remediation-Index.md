@@ -67,10 +67,11 @@ for individual implementation tickets to reopen:
   implementation tickets are closed. `AUDIT-01` must execute the committed
   audit playbook against the exact candidate commit.
 
-The `URIVariableValue` Codable schema, structured diagnostic contract, and
-Objective-C support policy remain explicit decision tickets. Their possible
-outcomes are bounded by the issue acceptance criteria rather than assumed in
-this index.
+The explicit decision tickets resolved the remaining bounded contracts:
+API-05 selected structured parse diagnostics, API-06 removed
+`URIVariableValue` and `URIVariableValueType` coding conformances, and API-08
+selected the Swift-only Objective-C removal path. Their decision records are
+the authority for implementation and audit work.
 
 ## Label taxonomy and application rules
 
@@ -301,7 +302,8 @@ entry and requires the complete pinned corpus to pass without exclusions.
   supported error categories and locations.
 - Resolve `API-06` after `HARD-02` and `API-05` establish the invariant and
   diagnostic boundaries that its decoding contract must use.
-- Implement `API-07` against the final association and value-Codable model.
+- Implement `API-07` against the final association and non-`Codable` value
+  model.
 - Run `API-03` only after semantic Codable and the corrected parser are stable.
 - Complete the approved Objective-C removal branch described below: implement
   `API-10`, disposition `API-09` as not planned, and keep `QA-04` focused on

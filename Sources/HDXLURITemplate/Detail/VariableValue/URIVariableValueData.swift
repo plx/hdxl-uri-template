@@ -1,4 +1,3 @@
-
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValueData - Definition
 // -------------------------------------------------------------------------- //
@@ -13,7 +12,7 @@
 /// from the public API--which *is* another goal, here, too!
 @usableFromInline
 internal enum URIVariableValueData {
-  
+
   case undefined
   case text(URIVariableTextValue)
   case list(URIVariableListValue)
@@ -21,28 +20,30 @@ internal enum URIVariableValueData {
 
   @usableFromInline
   internal static let emptyList: URIVariableValueData = .list(URIVariableListValue())
-  
+
   @usableFromInline
-  internal static let emptyAssociation: URIVariableValueData = .association(URIVariableAssociationValue())
+  internal static let emptyAssociation: URIVariableValueData = .association(
+    URIVariableAssociationValue()
+  )
 
   @inlinable
   internal init(from text: String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+    #if HEAVY_DEBUG
+      defer { pedanticAssert(isValid) }
+    #endif
     self = .text(
       URIVariableTextValue(rawValue: text)
     )
   }
 
   @inlinable
-  internal init<S:Sequence>(from texts: S) where S.Element == String {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+  internal init<S: Sequence>(from texts: S) where S.Element == String {
+    #if HEAVY_DEBUG
+      defer { pedanticAssert(isValid) }
+    #endif
     self = .list(
       URIVariableListValue(
-        values: texts.map() {
+        values: texts.map {
           URIVariableTextValue(rawValue: $0)
         }
       )
@@ -51,9 +52,9 @@ internal enum URIVariableValueData {
 
   @inlinable
   internal init(singleElementListFrom text: String) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+    #if HEAVY_DEBUG
+      defer { pedanticAssert(isValid) }
+    #endif
     self = .list(
       URIVariableListValue(
         value: URIVariableTextValue(rawValue: text)
@@ -62,10 +63,10 @@ internal enum URIVariableValueData {
   }
 
   @inlinable
-  internal init(from pair: (String,String)) {
-#if HEAVY_DEBUG
-    defer { pedanticAssert(isValid) }
-#endif
+  internal init(from pair: (String, String)) {
+    #if HEAVY_DEBUG
+      defer { pedanticAssert(isValid) }
+    #endif
     self = .association(
       URIVariableAssociationValue(
         value: URIVariablePairValue(
@@ -77,17 +78,17 @@ internal enum URIVariableValueData {
   }
 
   @inlinable
-  internal init<S:Sequence>(
+  internal init<S: Sequence>(
     validating pairs: S
-  ) throws where S.Element == (String,String) {
+  ) throws where S.Element == (String, String) {
     self = .association(
       try URIVariableAssociationValue(
         validatingStrings: pairs
       )
     )
-#if HEAVY_DEBUG
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(isValid)
+    #endif
   }
 
   @inlinable
@@ -101,27 +102,27 @@ internal enum URIVariableValueData {
         orderingKeysWith: areInIncreasingOrder
       )
     )
-#if HEAVY_DEBUG
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(isValid)
+    #endif
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueData : Sendable { }
-extension URIVariableValueData : Equatable { }
-extension URIVariableValueData : Hashable { }
+extension URIVariableValueData: Sendable {}
+extension URIVariableValueData: Equatable {}
+extension URIVariableValueData: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValueData - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueData : CustomStringConvertible {
-  
+extension URIVariableValueData: CustomStringConvertible {
+
   @usableFromInline
   internal var description: String {
     switch self {
@@ -135,15 +136,15 @@ extension URIVariableValueData : CustomStringConvertible {
       ".association(\(association.description))"
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValueData - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIVariableValueData : CustomDebugStringConvertible {
-  
+extension URIVariableValueData: CustomDebugStringConvertible {
+
   @usableFromInline
   internal var debugDescription: String {
     switch self {
@@ -157,84 +158,7 @@ extension URIVariableValueData : CustomDebugStringConvertible {
       "URIVariableValueData.association(\(association.debugDescription))"
     }
   }
-  
-}
 
-// -------------------------------------------------------------------------- //
-// MARK: - Codable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValueData : Codable {
-  
-  @usableFromInline
-  internal typealias CodingKeys = StandardEnumerationCodingKeys
-  
-  @usableFromInline
-  internal func encode(to encoder: Encoder) throws {
-    var container = encoder.container(
-      keyedBy: CodingKeys.self
-    )
-    try container.encode(
-      valueType,
-      forKey: .type
-    )
-    switch self {
-    case .undefined:
-      ()
-    case .text(let text):
-      try container.encode(
-        text,
-        forKey: .data
-      )
-    case .list(let list):
-      try container.encode(
-        list,
-        forKey: .data
-      )
-    case .association(let association):
-      try container.encode(
-        association,
-        forKey: .data
-      )
-    }
-  }
-  
-  @usableFromInline
-  internal init(from decoder: Decoder) throws {
-    let container = try decoder.container(
-      keyedBy: CodingKeys.self
-    )
-    let type = try container.decode(
-      URIVariableValueType.self,
-      forKey: .type
-    )
-    switch type {
-    case .undefined:
-      self = .undefined
-    case .text:
-      self = .text(
-        try container.decode(
-          URIVariableTextValue.self,
-          forKey: .data
-        )
-      )
-    case .list:
-      self = .list(
-        try container.decode(
-          URIVariableListValue.self,
-          forKey: .data
-        )
-      )
-    case .association:
-      self = .association(
-        try container.decode(
-          URIVariableAssociationValue.self,
-          forKey: .data
-        )
-      )
-    }
-  }
-  
 }
 
 // -------------------------------------------------------------------------- //
@@ -242,7 +166,7 @@ extension URIVariableValueData : Codable {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueData {
-  
+
   @inlinable
   internal var valueType: URIVariableValueType {
     switch self {
@@ -256,7 +180,7 @@ extension URIVariableValueData {
       .association
     }
   }
-  
+
   @inlinable
   internal var isEmpty: Bool {
     switch self {
@@ -270,7 +194,7 @@ extension URIVariableValueData {
       association.isEmpty
     }
   }
-  
+
   @inlinable
   internal var isDefined: Bool {
     switch self {
@@ -284,7 +208,7 @@ extension URIVariableValueData {
       true
     }
   }
-  
+
   @inlinable
   internal var isUndefined: Bool {
     switch self {
@@ -322,7 +246,7 @@ extension URIVariableValueData {
       false
     }
   }
-  
+
   @inlinable
   internal var isTextValue: Bool {
     switch self {
@@ -332,7 +256,7 @@ extension URIVariableValueData {
       false
     }
   }
-  
+
   @inlinable
   internal var isListValue: Bool {
     switch self {
@@ -342,7 +266,7 @@ extension URIVariableValueData {
       false
     }
   }
-  
+
   @inlinable
   internal var isAssociationValue: Bool {
     switch self {
@@ -352,7 +276,7 @@ extension URIVariableValueData {
       false
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -360,7 +284,7 @@ extension URIVariableValueData {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableValueData {
-  
+
   @inlinable
   internal var isValid: Bool {
     switch self {
@@ -374,5 +298,5 @@ extension URIVariableValueData {
       association.isValid
     }
   }
-    
+
 }
