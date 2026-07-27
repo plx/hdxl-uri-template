@@ -104,6 +104,10 @@ There are no published versions yet.
 - Stabilized the frozen percent-triplet scaling oracle by warming every input
   size and rotating measurement order across sample rounds, without changing
   its workloads, repetition counts, sample count, or rejection thresholds.
+- Stabilized the recurring-hardening scaling runner by rotating every
+  workload's warmed sizes across sample rounds and measuring process CPU time
+  instead of shared-runner scheduling delays, with unchanged frozen budgets
+  and rejection thresholds.
 - Corrected the deterministic-fuzz privacy oracle to use explicit,
   component-local template and value sentinels instead of treating incidental
   ordinary-language substring overlap as payload disclosure.

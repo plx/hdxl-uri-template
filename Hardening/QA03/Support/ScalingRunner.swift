@@ -23,9 +23,12 @@ package enum QA03ScalingRunner {
 
     let failed = reports.filter { !$0.analysis.passed }
     guard failed.isEmpty else {
-      let identifiers = failed.map(\.id).joined(separator: ", ")
+      let details = failed.map {
+        "\($0.id)(ratios=\($0.analysis.adjacentRatios), "
+          + "exponent=\($0.analysis.fittedExponent))"
+      }.joined(separator: ", ")
       throw QA03Error(
-        "Scaling gate rejected workload(s): \(identifiers)."
+        "Scaling gate rejected workload(s): \(details)."
       )
     }
 
@@ -61,29 +64,45 @@ package enum QA03ScalingRunner {
     maximumAdjacentRatio: Double,
     maximumFittedExponent: Double
   ) throws -> QA03ScalingReport.Workload {
-    let rawMeasurements = try zip(
+    let configurations = try zip(
       workload.sizes,
       workload.repetitions
     ).map { size, repetitions in
-      let operation = try operation(
-        identifier: workload.id,
-        size: size
+      (
+        repetitions: repetitions,
+        operation: try operation(
+          identifier: workload.id,
+          size: size
+        )
       )
-      try operation()
+    }
+    var rawMeasurements = Array(
+      repeating: [UInt64](),
+      count: configurations.count
+    )
+    for index in configurations.indices {
+      rawMeasurements[index].reserveCapacity(sampleCount)
+      try configurations[index].operation()
+    }
 
-      var samples: [UInt64] = []
-      samples.reserveCapacity(sampleCount)
-      for _ in 0..<sampleCount {
-        let elapsed = try ContinuousClock().measure {
-          for _ in 0..<repetitions {
-            try operation()
+    // Rotate warmed sizes across rounds, and count only process CPU consumed
+    // by each batch so shared-runner suspension cannot become workload time.
+    for sampleIndex in 0..<sampleCount {
+      for offset in configurations.indices {
+        let index = (sampleIndex + offset) % configurations.count
+        let configuration = configurations[index]
+        let elapsed = try qa03MeasureProcessCPUTime {
+          for _ in 0..<configuration.repetitions {
+            try configuration.operation()
           }
         }
-        samples.append(
-          max(1, elapsed.qa03Nanoseconds / UInt64(repetitions))
+        rawMeasurements[index].append(
+          max(
+            1,
+            elapsed / UInt64(configuration.repetitions)
+          )
         )
       }
-      return samples
     }
     let medians = rawMeasurements.map {
       $0.sorted()[$0.count / 2]
@@ -192,4 +211,29 @@ package enum QA03ScalingRunner {
       throw QA03Error("Unknown scaling workload \(identifier).")
     }
   }
+}
+
+package func qa03MeasureProcessCPUTime(
+  _ operation: () throws -> Void
+) throws -> UInt64 {
+  let start = try qa03ProcessCPUTime()
+  try operation()
+  let end = try qa03ProcessCPUTime()
+  guard end >= start else {
+    throw QA03Error("Process CPU clock moved backwards.")
+  }
+  return end - start
+}
+
+private func qa03ProcessCPUTime() throws -> UInt64 {
+  var time = timespec()
+  guard
+    clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &time) == 0,
+    time.tv_sec >= 0,
+    time.tv_nsec >= 0
+  else {
+    throw QA03Error("Process CPU clock was unavailable.")
+  }
+  return UInt64(time.tv_sec) * 1_000_000_000
+    + UInt64(time.tv_nsec)
 }

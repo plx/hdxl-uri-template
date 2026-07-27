@@ -108,7 +108,9 @@ increasing sizes and fixed repetitions:
 - large list expansion; and
 - large association expansion.
 
-After warm-up, the gate rejects any adjacent-size ratio above `3.0` or fitted
+After warming every size, the runner rotates size order across sample rounds
+and measures process CPU time so shared-runner descheduling does not become
+workload time. The gate rejects any adjacent-size ratio above `3.0` or fitted
 log-log exponent above `1.25`. These generous shape thresholds detect a return
 to quadratic behavior; they are not absolute latency promises.
 
@@ -121,6 +123,7 @@ QA03_COMMIT="$(git rev-parse HEAD)" \
 
 `verify-scaling-detector` feeds an isolated quadratic equivalent with `4.0`
 adjacent ratios and an exponent of `2.0`; the analyzer must reject it.
+Any live rejection reports each failed workload's ratios and fitted exponent.
 
 ## Detector controls
 
