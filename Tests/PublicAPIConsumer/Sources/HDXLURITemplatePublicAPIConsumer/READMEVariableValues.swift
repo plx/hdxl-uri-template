@@ -23,5 +23,15 @@ func readmeVariableValues() throws {
       + "?title=URI%20Templates&sort=updated&limit=20"
   )
   precondition(parameters["absent"]?.isUndefined == true)
-  precondition(orderedFilters.valueType == .association)
+  precondition(parameters["absent"]?.textValue == nil)
+  precondition(parameters["title"]?.textValue == "URI Templates")
+
+  var segments = parameters["segments"]?.listValue
+  precondition(segments == ["users", "42"])
+  segments?.append("local-only")
+  precondition(parameters["segments"]?.listValue == ["users", "42"])
+
+  let filters = orderedFilters.associationValue
+  precondition(filters?.map(\.key) == ["sort", "limit"])
+  precondition(filters?.map(\.value) == ["updated", "20"])
 }

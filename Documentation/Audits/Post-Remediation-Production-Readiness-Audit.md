@@ -724,6 +724,13 @@ Verify:
 - `URITemplate.Codable` remains present, while `Encodable` and `Decodable` are
   absent from `URIVariableValue` and `URIVariableValueType` as required by
   API-06.
+- `URIVariableValue.valueType` distinguishes all four runtime flavors, while
+  `textValue`, `listValue`, and `associationValue` recover only matching
+  payloads as ordinary Swift values.
+- Undefined and mismatched flavors return `nil`; empty text, list, and
+  association payloads remain distinguishable from mismatches.
+- Mutating a recovered list or ordered association cannot change the original
+  `URIVariableValue`, reorder its association, or invalidate key uniqueness.
 - Dead or test-only RFC character tables cannot silently diverge from
   production definitions.
 
@@ -832,7 +839,9 @@ Verify the API-06 removal contract separately: `URIVariableValue`,
 `URIVariableValueType`, and private value wrappers expose no coding
 conformance; the former numeric/private-wrapper payload remains unsupported;
 and migration guidance directs persistent clients to application-owned source
-DTOs. Do not treat that removal as permission to change `URITemplate.Codable`.
+DTOs. API-07 runtime payload accessors do not restore a persistence schema.
+Do not treat either API change as permission to change
+`URITemplate.Codable`.
 
 Benchmark reparsing strings against decoding each supported serialization. Any
 separately named compiled cache must be opaque, versioned, disposable, and

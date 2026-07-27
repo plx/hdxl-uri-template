@@ -19,6 +19,10 @@ There are no published versions yet.
 
 ### Added
 
+- Added read-only `textValue`, `listValue`, and ordered `associationValue`
+  accessors to `URIVariableValue`. Flavor mismatches return `nil`, empty
+  payloads remain distinguishable, and returned collections cannot mutate the
+  original value or its association invariants.
 - Added the complete byte-faithful `uri-templates/uritemplate-test` corpus,
   exact fixture integrity pins, and verified RFC 6570 errata coverage.
 - Added clean Swift 6.3 Debug, Release, `HEAVY_DEBUG`, and Apple 26 platform
