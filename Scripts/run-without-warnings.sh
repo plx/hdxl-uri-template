@@ -33,6 +33,8 @@ if [ "$qa05_command_status" -ne 0 ]; then
   exit "$qa05_command_status"
 fi
 
+# Deliberately fail closed on warning-shaped text from either output stream.
+# Test-authored output containing the same shape is therefore also rejected.
 qa05_warning_pattern='(^[[:space:]]*warning:|:[[:space:]]+warning:)'
 LC_ALL=C grep -Eq "$qa05_warning_pattern" "$qa05_log_file"
 qa05_grep_status=$?
