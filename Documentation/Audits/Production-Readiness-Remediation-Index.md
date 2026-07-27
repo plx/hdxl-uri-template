@@ -3,14 +3,15 @@
 This document is the durable navigation index for the production-readiness
 program created from the 2026-07-25 due-diligence audit of HDXLURITemplate.
 
-The current program comprises **seven epics and 43 leaf tickets**: the original
+The current program comprises **seven epics and 44 leaf tickets**: the original
 GitHub issues [#5](https://github.com/plx/hdxl-uri-template/issues/5) through
-[#53](https://github.com/plx/hdxl-uri-template/issues/53), plus later finding
-[#55](https://github.com/plx/hdxl-uri-template/issues/55). Each leaf has a
-stable backlog identifier, such as `CONF-05` or `API-02`, in addition to its
-GitHub issue number. The stable identifier should continue to be used in
-remediation notes, audit evidence, and release traceability even if an issue is
-transferred or superseded.
+[#53](https://github.com/plx/hdxl-uri-template/issues/53), plus later tickets
+[#55](https://github.com/plx/hdxl-uri-template/issues/55) and
+[#81](https://github.com/plx/hdxl-uri-template/issues/81). Each leaf has a stable
+backlog identifier, such as `CONF-05` or `API-02`, in addition to its GitHub
+issue number. The stable identifier should continue to be used in remediation
+notes, audit evidence, and release traceability even if an issue is transferred
+or superseded.
 
 The companion documents that define the program's evidence, execution, and
 final gate are:
@@ -154,7 +155,7 @@ feature implementation.
 | [#5](https://github.com/plx/hdxl-uri-template/issues/5) | Bring HDXLURITemplate to production readiness | Top-level program; owns the six topic epics and `AUDIT-01` |
 | [#6](https://github.com/plx/hdxl-uri-template/issues/6) | Complete RFC 6570 conformance and shared-suite coverage | `CONF-01` through `CONF-12` |
 | [#7](https://github.com/plx/hdxl-uri-template/issues/7) | Harden security, robustness, and adversarial performance | `HARD-01` through `HARD-03` |
-| [#8](https://github.com/plx/hdxl-uri-template/issues/8) | Stabilize the public API, serialization, and Objective-C contract | `API-01` through `API-09` |
+| [#8](https://github.com/plx/hdxl-uri-template/issues/8) | Stabilize the public API, serialization, and Objective-C contract | `API-01` through `API-10` |
 | [#9](https://github.com/plx/hdxl-uri-template/issues/9) | Simplify internal architecture and maintainability | `ARCH-01` through `ARCH-04` |
 | [#10](https://github.com/plx/hdxl-uri-template/issues/10) | Establish continuous verification and repository quality gates | `QA-01` through `QA-06` and `WORKFLOW-01` |
 | [#11](https://github.com/plx/hdxl-uri-template/issues/11) | Finish open-source packaging, documentation, and provenance | `PKG-01` and `DOC-01` through `DOC-06` |
@@ -199,6 +200,7 @@ feature implementation.
 | `API-07` | [#51 — Add read-only Swift payload inspection for variable values](https://github.com/plx/hdxl-uri-template/issues/51) | P2 task |
 | `API-08` | [#52 — Decide and document the Objective-C support policy](https://github.com/plx/hdxl-uri-template/issues/52) | P1 decision |
 | `API-09` | [#53 — Complete safe Objective-C parsing, evaluation, and error APIs if retained](https://github.com/plx/hdxl-uri-template/issues/53) | P1 task |
+| `API-10` | [#81 — Remove the unsupported Objective-C facade before the initial 0.x contract](https://github.com/plx/hdxl-uri-template/issues/81) | P1 task |
 
 ### Architecture and maintainability
 
@@ -365,8 +367,9 @@ If Objective-C support is retained:
 
 If Objective-C support is removed:
 
+- merge the nonclosing `API-08` decision record, then complete `API-10`;
 - close `API-09` using the native not-planned/superseded disposition and link
-  the removal decision;
+  the removal decision and implementation evidence;
 - remove the wrappers, misleading support claims, and Objective-C-specific
   archive surface before the public contract is declared;
 - keep `QA-04` as a public Swift consumer fixture and mark only the `.m`
