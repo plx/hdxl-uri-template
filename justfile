@@ -37,6 +37,12 @@ test-release:
 check-public-api:
     {{ swift }} Scripts/check-public-api.swift
 
+check-docc: check-public-api
+    {{ swift }} Scripts/check-docc.swift
+
+test-check-docc:
+    ./Scripts/test-check-docc.sh
+
 check-immutable-template-storage:
     {{ swift }} Scripts/check-immutable-template-storage.swift
 
@@ -63,7 +69,7 @@ qa-03-smoke:
 qa-03-detectors:
     ./Scripts/test-qa-03-detectors.sh
 
-test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-public-api check-immutable-template-storage check-cross-module-inlining test-check-cross-module-inlining test-debug test-heavy-debug test-release
+test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-docc test-check-docc check-immutable-template-storage check-cross-module-inlining test-check-cross-module-inlining test-debug test-heavy-debug test-release
 
 check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug build-release test-release
 

@@ -13,14 +13,15 @@
 ///
 /// The public API provides constructors for every flavor and read-only payload
 /// access through ``textValue``, ``listValue``, and ``associationValue``.
-/// These properties return ordinary Swift values while the package's
-/// newtype-style wrappers remain internal.
+/// These properties return ordinary Swift values and do not expose or promise
+/// a particular storage representation.
 ///
 /// - Important: This package's initial contract is Swift-only. Code that used
 ///   the removed `HDXLURIVariableValue` wrapper should migrate to
-///   ``undefined``, ``text(_:)``, ``list(_:)``, and the `association`
-///   factories, then inspect the native value through ``valueType``, the
-///   `is…Value` properties, and the flavor-specific payload properties.
+///   ``undefined``, ``text(_:)``, ``list(_:)-(String)``, and the
+///   `association` factories, then inspect the native value through
+///   ``valueType``, the `is…Value` properties, and the flavor-specific payload
+///   properties.
 ///   Archives of the removed wrapper are not supported.
 ///
 /// - Note: This runtime value deliberately does not conform to `Codable`.
@@ -68,7 +69,7 @@ public struct URIVariableValue {
   /// Convenience for the empty-list `URIVariableValue`.
   public static let emptyList: URIVariableValue = URIVariableValue(storage: .emptyList)
 
-  /// Convenience for the empty-assocication `URIVariableValue`.
+  /// Convenience for the empty-association `URIVariableValue`.
   public static let emptyAssociation: URIVariableValue = URIVariableValue(
     storage: .emptyAssociation
   )

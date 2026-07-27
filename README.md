@@ -359,20 +359,25 @@ The repository's `just` recipes use the same
 `DEVELOPER_DIR`/`xcrun` selection. `just test-all` also verifies fixture
 integrity, warning guards, and builds and runs a separate public consumer that
 cannot access `internal` or `package` declarations. The consumer executes the
-README examples from synchronized source files.
+README and DocC examples from synchronized source files. The DocC gate treats
+compiler warnings and unresolved links as errors and requires an abstract for
+every supported public symbol.
 
 Every pull request and `master` update runs the required
 `Required Swift 6.3 / Apple 26 gate` from a clean checkout. Its Xcode 26.6 /
 Swift 6.3.3 lanes run the complete suite in Debug, Release, and `HEAVY_DEBUG`;
-the Debug lane also runs the public consumer and API-boundary checks. A Release
-smoke job compiles for every declared Apple 26 platform.
+the Debug lane also runs the public-consumer, API-boundary, and DocC checks.
+A Release smoke job compiles for every declared Apple 26 platform.
 
 ## Project documentation
 
-- [Public API contract](Documentation/API/README.md) describes the checked
-  external-consumer and symbol-graph boundary. Full DocC publication remains
-  tracked in [#40](https://github.com/plx/hdxl-uri-template/issues/40); no DocC
-  catalog is published yet.
+- [DocC documentation](Sources/HDXLURITemplate/HDXLURITemplate.docc/HDXLURITemplate.md)
+  covers strict parsing, expansion choices, runtime values, operators and
+  modifiers, structured diagnostics, persistence, concurrency, performance,
+  input limits, and the Swift-only support boundary. The
+  [public API contract](Documentation/API/README.md) describes the checked
+  external-consumer, symbol-graph, documentation-coverage, and compiled-example
+  boundaries.
 - [CONTRIBUTING](CONTRIBUTING.md) defines the supported development workflow
   and pull-request requirements. [SECURITY](SECURITY.md) defines private
   reporting and response, and the [Code of Conduct](CODE_OF_CONDUCT.md)

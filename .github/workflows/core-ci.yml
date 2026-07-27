@@ -85,12 +85,14 @@ jobs:
           xcrun swift package resolve 2>&1 |
             tee "$CI_ARTIFACTS/package-resolve.log"
 
-      - name: Validate public consumer and API boundary
+      - name: Validate public API, consumer, and DocC
         if: matrix.lane == 'debug'
         run: |
           set -o pipefail
-          xcrun swift Scripts/check-public-api.swift 2>&1 |
-            tee "$CI_ARTIFACTS/public-api-consumer.log"
+          just check-docc 2>&1 |
+            tee "$CI_ARTIFACTS/public-api-consumer-docc.log"
+          just test-check-docc 2>&1 |
+            tee "$CI_ARTIFACTS/docc-detector-tests.log"
 
       - name: Build ${{ matrix.name }}
         env:

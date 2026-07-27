@@ -11,6 +11,10 @@ struct PublicAPIConsumer {
     try publicTemplateCodableExamples()
     try publicImmutableTemplateCopyExample()
     try await publicConcurrencyExample()
+    try doccOperatorsAndModifiers()
+    try doccErrorsAndDiagnostics()
+    try doccPersistence()
+    try await doccConcurrencyAndLimits()
 
     let template = try URITemplate(
       parsing: "https://example.com{/id}"
