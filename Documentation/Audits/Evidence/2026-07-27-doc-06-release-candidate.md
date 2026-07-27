@@ -74,6 +74,28 @@ and must contain the full candidate SHA plus:
 
 Any failure or subsequent change reopens DOC-06 and invalidates that record.
 
+## Invalidated candidate history
+
+Candidate preparation rejected two predecessor SHAs without reusing their
+evidence:
+
+- `0ab5bb81099db3aab648df2353715f21addd91a0` failed post-merge Release
+  because grouped-by-size timing allowed host-load drift to bias one frozen
+  percent-scaling sample group. The follow-up warms every size and rotates
+  measurement order without changing the workloads, sample budget, or
+  rejection thresholds.
+- `d1642fc302883c7fbf7ff3b3da84597bc5fabe6e` passed the corrected Release
+  gate but failed candidate fuzz at index `270217`, case seed
+  `0xC6A105F10B96A11F`. Exact replay showed generated source `"literal "`
+  coincidentally matched ordinary payload-free diagnostic prose. Dedicated
+  fuzz probes now place explicit template/value sentinels inside parse,
+  evaluation, and URL error-bearing components while retaining
+  bounded-diagnostic checks; the exact replay and complete one-million-case
+  seed pass locally.
+
+Both issues were reproduced, recorded on DOC-06/#43, and corrected through
+separately reviewed changes. Neither SHA is a candidate, tag, or release.
+
 ## Validation boundary
 
 The preparation pull request must pass Markdown lint, link validation,

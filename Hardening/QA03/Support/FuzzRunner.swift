@@ -105,6 +105,9 @@ package enum QA03FuzzRunner {
         if configuration.injectedFailureIndex == index {
           throw QA03Error("Injected deterministic fuzz failure.")
         }
+        if configuration.replayIndex != nil || index.isMultiple(of: 1_000) {
+          try qa03ExerciseDiagnosticPrivacyCanaries(index: index)
+        }
         var generator = QA03DeterministicGenerator(seed: caseSeed)
         let source = makeSource(
           index: index,
@@ -395,10 +398,7 @@ package enum QA03FuzzRunner {
         )
       }
     } catch let error as URITemplate.ParseError {
-      try validateDiagnostic(
-        String(describing: error),
-        source: source
-      )
+      try qa03ValidatePublicDiagnostic(String(describing: error))
       return CaseResult(
         accepted: false,
         expansionSucceeded: false,
@@ -467,10 +467,7 @@ package enum QA03FuzzRunner {
         try template.evaluateAsString(parameters: parameters)
       )
     } catch let error as URITemplate.EvaluationError {
-      try validateDiagnostic(
-        String(describing: error),
-        source: template.templateRepresentation
-      )
+      try qa03ValidatePublicDiagnostic(String(describing: error))
       return .failure(error.kind.description)
     } catch {
       throw QA03Error(
@@ -523,30 +520,12 @@ package enum QA03FuzzRunner {
         try template.evaluate(parameters: parameters).absoluteString
       )
     } catch let error as URITemplate.EvaluationError {
-      try validateDiagnostic(
-        String(describing: error),
-        source: template.templateRepresentation
-      )
+      try qa03ValidatePublicDiagnostic(String(describing: error))
       return .failure(error.kind.description)
     } catch {
       throw QA03Error(
         "URL conversion escaped its package error boundary: \(type(of: error))."
       )
-    }
-  }
-
-  private static func validateDiagnostic(
-    _ diagnostic: String,
-    source: String
-  ) throws {
-    guard diagnostic.utf8.count <= 512 else {
-      throw QA03Error("Public diagnostic exceeded 512 UTF-8 bytes.")
-    }
-    if source.utf8.count >= 8, diagnostic.contains(source) {
-      throw QA03Error("Public diagnostic exposed source payload.")
-    }
-    if diagnostic.contains("SENSITIVE_VALUE_") {
-      throw QA03Error("Public diagnostic exposed variable-value payload.")
     }
   }
 
@@ -605,6 +584,72 @@ package enum QA03FuzzRunner {
     "?", "@", "A", "F", "G", "[", "\\", "]", "^", "_", "`", "a", "f", "g",
     "{", "|", "}", "~", "é", "\u{0301}", "日", "😀",
   ]
+}
+
+package func qa03ValidatePublicDiagnostic(
+  _ diagnostic: String
+) throws {
+  guard diagnostic.utf8.count <= 512 else {
+    throw QA03Error("Public diagnostic exceeded 512 UTF-8 bytes.")
+  }
+  if diagnostic.contains("SENSITIVE_TEMPLATE_") {
+    throw QA03Error("Public diagnostic exposed template-source payload.")
+  }
+  if diagnostic.contains("SENSITIVE_VALUE_") {
+    throw QA03Error("Public diagnostic exposed variable-value payload.")
+  }
+}
+
+package func qa03ExerciseDiagnosticPrivacyCanaries(
+  index: Int
+) throws {
+  let templateSentinel = "SENSITIVE_TEMPLATE_\(index)_"
+  let valueSentinel = "SENSITIVE_VALUE_\(index)_"
+
+  do {
+    _ = try URITemplate(
+      parsing: "literal{\(templateSentinel)parse%G}"
+    )
+    throw QA03Error(
+      "Diagnostic privacy parse canary unexpectedly succeeded."
+    )
+  } catch let error as URITemplate.ParseError {
+    try qa03ValidatePublicDiagnostic(String(describing: error))
+  }
+
+  let evaluationVariable = "\(templateSentinel)evaluation"
+  let evaluationTemplate = try URITemplate(
+    parsing: "{\(evaluationVariable):1}"
+  )
+  do {
+    _ = try evaluationTemplate.evaluateAsString(
+      parameters: [
+        evaluationVariable: .list(["\(valueSentinel)evaluation"])
+      ]
+    )
+    throw QA03Error(
+      "Diagnostic privacy evaluation canary unexpectedly succeeded."
+    )
+  } catch let error as URITemplate.EvaluationError {
+    try qa03ValidatePublicDiagnostic(String(describing: error))
+  }
+
+  let urlVariable = "\(templateSentinel)url"
+  let urlTemplate = try URITemplate(
+    parsing: "https://[\(templateSentinel){\(urlVariable)}"
+  )
+  do {
+    _ = try urlTemplate.evaluate(
+      parameters: [
+        urlVariable: .text("\(valueSentinel)url")
+      ]
+    )
+    throw QA03Error(
+      "Diagnostic privacy URL canary unexpectedly succeeded."
+    )
+  } catch let error as URITemplate.EvaluationError {
+    try qa03ValidatePublicDiagnostic(String(describing: error))
+  }
 }
 
 private enum ExpansionOutcome: Equatable {

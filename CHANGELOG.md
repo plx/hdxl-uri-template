@@ -104,6 +104,9 @@ There are no published versions yet.
 - Stabilized the frozen percent-triplet scaling oracle by warming every input
   size and rotating measurement order across sample rounds, without changing
   its workloads, repetition counts, sample count, or rejection thresholds.
+- Corrected the deterministic-fuzz privacy oracle to use explicit,
+  component-local template and value sentinels instead of treating incidental
+  ordinary-language substring overlap as payload disclosure.
 
 ### Security
 
