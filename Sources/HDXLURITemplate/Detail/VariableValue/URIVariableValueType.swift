@@ -11,9 +11,16 @@
 /// persistence tags, and this type deliberately does not conform to `Codable`.
 public enum URIVariableValueType: UInt8 {
 
+  /// No value was supplied for the variable.
   case undefined = 1
+
+  /// The variable contains one string.
   case text = 2
+
+  /// The variable contains an ordered list of strings.
   case list = 4
+
+  /// The variable contains ordered, unique-key string pairs.
   case association = 8
 
 }

@@ -21,10 +21,17 @@ extension URITemplate {
       CustomStringConvertible,
       CustomDebugStringConvertible
     {
+      /// A prefix modifier was applied to a list or association.
       case prefixModifierNotApplicable
+
+      /// String expansion succeeded, but Foundation rejected the result as a
+      /// `URL`.
       case invalidURL
+
+      /// No more specific public failure category is available.
       case other
 
+      /// The stable textual name of this failure category.
       public var description: String {
         switch self {
         case .prefixModifierNotApplicable:
@@ -36,6 +43,7 @@ extension URITemplate {
         }
       }
 
+      /// A payload-free, fully-qualified representation of this category.
       public var debugDescription: String {
         "URITemplate.EvaluationError.Kind.\(description)"
       }
@@ -141,6 +149,7 @@ extension URITemplate {
       diagnosticContext.failingValueType
     }
 
+    /// A bounded summary that does not contain template or parameter data.
     public var errorDescription: String? {
       "The URI template could not be evaluated."
     }
@@ -168,6 +177,7 @@ extension URITemplate {
       }
     }
 
+    /// A bounded summary and failure reason that omit recovery-context data.
     public var description: String {
       let headline =
         errorDescription ?? "The URI template could not be evaluated."
@@ -177,6 +187,7 @@ extension URITemplate {
       return "\(headline) \(failureReason)"
     }
 
+    /// A bounded debug summary that omits recovery-context data.
     public var debugDescription: String {
       description
     }
@@ -215,6 +226,19 @@ extension URITemplate {
     }
   }
 
+  /// Expands this template to a string using the supplied variable values.
+  ///
+  /// Undefined and missing variables are omitted according to RFC 6570.
+  /// Text, list, and association values retain their distinct expansion
+  /// semantics, including ordering for lists and associations.
+  ///
+  /// - Parameter parameters: Values keyed by the variable names present in
+  ///   the template. Extra keys are ignored.
+  /// - Returns: The expanded string. The result is not guaranteed to be a
+  ///   Foundation-valid `URL`; use ``evaluate(parameters:)`` when that
+  ///   validation is required.
+  /// - Throws: ``EvaluationError`` when a prefix modifier is applied to a list
+  ///   or association.
   public func evaluateAsString(
     parameters: [String: URIVariableValue]
   ) throws -> String {
@@ -246,6 +270,18 @@ extension URITemplate {
     }
   }
 
+  /// Expands this template and constructs a Foundation `URL`.
+  ///
+  /// Foundation URL construction is a structural conversion, not an
+  /// application security policy. Validate schemes, hosts, paths, and
+  /// destinations before using a caller-influenced result for navigation or
+  /// network access.
+  ///
+  /// - Parameter parameters: Values keyed by the variable names present in
+  ///   the template. Extra keys are ignored.
+  /// - Returns: A Foundation URL constructed from the expanded string.
+  /// - Throws: ``EvaluationError`` for an expansion failure or when Foundation
+  ///   rejects the expanded string as a URL.
   public func evaluate(parameters: [String: URIVariableValue]) throws -> URL {
     let stringResult = try evaluateAsString(parameters: parameters)
     guard let url = URL(string: stringResult) else {

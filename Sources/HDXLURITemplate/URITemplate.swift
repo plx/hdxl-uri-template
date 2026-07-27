@@ -4,15 +4,12 @@ import Foundation
 // MARK: URITemplate - Definition
 // -------------------------------------------------------------------------- //
 
-/// Type representing an already-parsed, known-*valid* URI template.
+/// An immutable, parsed, and validated RFC 6570 URI template.
 ///
-/// The public API is minimal and immutable; it's immutable for two reasons:
-///
-/// 1. to make it trivial to preserve the internal state (e.g. maintain the invariants)
-/// 2. to keep the internal types internal (implementation uses `newtype`-like types--making them public would be "noisy")
-///
-/// Its parsed source, components, and derived variable metadata are all
-/// immutable and initialized together.
+/// A template preserves its exact accepted source and can be reused safely
+/// for metadata access and expansion. Its value semantics, equality, hashing,
+/// `Sendable` conformance, and semantic string-based `Codable` representation
+/// are public contracts; its parsed representation is not.
 ///
 /// - Important: This package's initial contract is Swift-only. Code that used
 ///   the removed `HDXLURITemplate` wrapper should migrate to
@@ -36,12 +33,12 @@ public struct URITemplate {
   // MARK: Initialization
   // ------------------------------------------------------------------------ //
 
-  /// Public initializer, constructs a template by parsing a template string.
+  /// Constructs a template by parsing and validating `template`.
   ///
   /// - parameter template: A string containing a URI template.
   ///
-  /// - returns: The corresponding `URITemplate`, ready for use.
-  /// - throws: `ParseError` If `template` is invalid, will throw an error.
+  /// - Returns: The corresponding `URITemplate`, ready for use.
+  /// - Throws: ``ParseError`` when `template` is invalid.
   ///
   public init(parsing template: String) throws {
     self.init(

@@ -31,6 +31,9 @@ There are no published versions yet.
 - Added a standalone public Swift consumer that compiles and runs documented
   examples, error bridging, template `Codable`, value-model, and concurrent-use
   contracts without `@testable`.
+- Added warning-free DocC API and conceptual documentation for the complete
+  supported public Swift surface, with synchronized compiled examples,
+  link validation, symbol coverage, and failure-oriented CI detectors.
 
 ### Changed
 

@@ -24,10 +24,12 @@ extension URIVariableValue {
 
 extension URIVariableValue.AssociationError: CustomNSError {
 
+  /// The stable Foundation error domain for association-construction errors.
   public static var errorDomain: String {
     "HDXLURITemplate.URIVariableValue.AssociationError"
   }
 
+  /// The stable Foundation error code for this failure category.
   public var errorCode: Int {
     switch self {
     case .duplicateKey:
@@ -37,6 +39,8 @@ extension URIVariableValue.AssociationError: CustomNSError {
     }
   }
 
+  /// A bounded Foundation user-info dictionary containing only counts or
+  /// positions, never caller-provided keys or values.
   public var errorUserInfo: [String: Any] {
     switch self {
     case .duplicateKey(let firstIndex, let duplicateIndex):
@@ -44,14 +48,14 @@ extension URIVariableValue.AssociationError: CustomNSError {
         NSLocalizedDescriptionKey:
           "Association keys must be unique.",
         "HDXLURITemplateFirstAssociationKeyIndex": firstIndex,
-        "HDXLURITemplateDuplicateAssociationKeyIndex": duplicateIndex
+        "HDXLURITemplateDuplicateAssociationKeyIndex": duplicateIndex,
       ]
     case .mismatchedKeyValueCounts(let keyCount, let valueCount):
       [
         NSLocalizedDescriptionKey:
           "Association key and value collections must have equal counts.",
         "HDXLURITemplateAssociationKeyCount": keyCount,
-        "HDXLURITemplateAssociationValueCount": valueCount
+        "HDXLURITemplateAssociationValueCount": valueCount,
       ]
     }
   }
