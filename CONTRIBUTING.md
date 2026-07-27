@@ -20,7 +20,7 @@ matrix, but it must not weaken or replace the supported checks.
 Select the intended Xcode before running commands:
 
 ```sh
-export DEVELOPER_DIR=/Applications/Xcode_26.6.app/Contents/Developer
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 xcodebuild -version
 xcrun swift --version
 ```
