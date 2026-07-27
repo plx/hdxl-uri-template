@@ -4,6 +4,7 @@ import Foundation
 private struct PublicAPIContract: Decodable {
   let module: String
   let forbiddenObjectiveCDeclarations: [String]
+  let forbiddenDeclarations: [[String]]
   let declarations: [Declaration]
 
   struct Declaration: Decodable {
@@ -331,6 +332,17 @@ private func validate(
     )
   }
 
+  for forbiddenPath in contract.forbiddenDeclarations {
+    let matches = graph.symbols.filter {
+      $0.pathComponents == forbiddenPath
+    }
+    if !matches.isEmpty {
+      violations.append(
+        "Public declaration \(forbiddenPath.joined(separator: ".")) must remain absent."
+      )
+    }
+  }
+
   for declaration in contract.declarations {
     let declarationName = declaration.path.joined(separator: ".")
     let matches = graph.symbols.filter {
@@ -501,6 +513,7 @@ private func main() throws {
   print(
     "Public API contract and external consumer passed for \(contract.module) "
       + "(\(contract.declarations.count) Swift declarations and "
+      + "\(contract.forbiddenDeclarations.count) Swift absences plus "
       + "\(contract.forbiddenObjectiveCDeclarations.count) "
       + "Objective-C absences checked across "
       + "\(objectiveCHeaderURLs.count) generated headers; "

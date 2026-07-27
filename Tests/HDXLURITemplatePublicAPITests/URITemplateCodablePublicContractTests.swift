@@ -63,7 +63,19 @@ private func legacyPrivateASTPayloadsAreRejected() {
 
 @Test("Invalid semantic strings preserve the public parser failure")
 private func invalidSemanticStringsPreserveParserFailure() throws {
-  for source in ["{}", "{", "{x:0}"] {
+  let failures:
+    [(
+      source: String,
+      kind: URITemplate.ParseError.Kind,
+      sourceRange: Range<Int>
+    )] = [
+      ("{}", .emptyExpression, 1..<1),
+      ("{", .unterminatedExpression, 1..<1),
+      ("{x:0}", .invalidModifier, 2..<4),
+    ]
+
+  for failure in failures {
+    let source = failure.source
     let payload = try JSONEncoder().encode(source)
 
     do {
@@ -86,6 +98,8 @@ private func invalidSemanticStringsPreserveParserFailure() throws {
       #expect(
         parseError.template.utf8.elementsEqual(source.utf8)
       )
+      #expect(parseError.kind == failure.kind)
+      #expect(parseError.sourceRange == failure.sourceRange)
     } catch {
       Issue.record(
         """

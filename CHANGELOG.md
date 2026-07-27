@@ -34,6 +34,11 @@ There are no published versions yet.
   Decoding reparses that source through the public grammar; historical
   private-AST payloads are intentionally unsupported and require migration
   from an authoritative template string.
+- Changed `URITemplate.ParseError` to expose a stable semantic `kind` and an
+  authoritative half-open `sourceRange` measured in UTF-8 bytes. Zero-length
+  ranges identify insertion points. Codable rejection of invalid template
+  strings retains the same parse error as the underlying
+  `DecodingError.dataCorrupted` cause.
 - Raised the supported environment floor to Swift tools 6.3 in Swift language
   mode 6 and Apple OS version 26 across iOS, macOS, tvOS, watchOS, visionOS,
   and Mac Catalyst. Older Swift toolchains, older Apple OS releases, and
@@ -53,6 +58,11 @@ There are no published versions yet.
   structural ordering was an implementation detail rather than a semantic
   contract. Their existing `Equatable`, `Hashable`, `Sendable`, and `Codable`
   behavior remains available.
+- Removed `URITemplate.ParseError.underlyingError` and the public generic
+  `DataValidationError<T>`. Inspect `ParseError.kind` and `sourceRange` instead
+  of private parser errors. Code decoding `URIVariableValue` should handle
+  standard `DecodingError` cases, plus
+  `URIVariableValue.AssociationError` for duplicate association keys.
 
 ### Fixed
 
@@ -65,9 +75,9 @@ There are no published versions yet.
 
 - Made default descriptions and bridged `NSError` diagnostics for
   `URITemplate.ParseError` and `URITemplate.EvaluationError` bounded and
-  privacy-safe. `EvaluationError` exposes payload-free failure metadata for
-  programmatic diagnosis; explicit recovery properties remain potentially
-  sensitive.
+  privacy-safe. Both errors expose payload-free failure metadata for
+  programmatic diagnosis; parse locations contain offsets only, while explicit
+  recovery properties remain potentially sensitive.
 - Hardened GitHub Actions with least-privilege permissions, immutable
   third-party action pins, clean checkouts, exact candidate SHAs, and
   fail-closed aggregate gates.
