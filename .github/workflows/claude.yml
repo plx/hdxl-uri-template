@@ -36,6 +36,7 @@ jobs:
     permissions:
       contents: read  # Required only for the trusted default-branch checkout.
       actions: read  # Required to inspect CI results.
+      pull-requests: read  # Required to reject fork PR invocations before credential use.
       id-token: write  # Required to mint a short-lived Claude App token.
     steps:
       - name: Authorize invocation
