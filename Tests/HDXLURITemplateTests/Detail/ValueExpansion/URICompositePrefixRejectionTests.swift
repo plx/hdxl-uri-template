@@ -177,7 +177,7 @@ private func verifyCompositePrefixFailure(
     case .prefixModifierNotApplicable(
       let variableName,
       let expansionType,
-      let expansionModifier,
+      let prefixModifierCodePointCount,
       let valueType
     ) = underlyingError
   else {
@@ -188,7 +188,7 @@ private func verifyCompositePrefixFailure(
   }
 
   #expect(variableName == "x")
-  #expect(expansionModifier == .prefix(1))
+  #expect(prefixModifierCodePointCount == 1)
   #expect(valueType == probe.valueType)
   #expect(error.kind == .prefixModifierNotApplicable)
   #expect(error.failingVariableName == "x")

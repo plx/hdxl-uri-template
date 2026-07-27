@@ -1,29 +1,20 @@
-import Foundation
-
 extension URIVariableTextValue {
-  
-  internal enum ExpansionError : Error, LocalizedError {
-    
-    case unableToEscapeVariableValue(String, String, URIValueExpansionType, URIValueExpansionModifier)
-    case unableToEscapeVariableName(String, URIValueExpansionType)
-    case unableToEscapeTextValue(String, URIValueExpansionType)
-  }
   
   internal func escapedContents(
     expansionType: URIValueExpansionType
-  ) throws -> String {
+  ) -> String {
     rawValue.escaped(forValueExpansionType: expansionType)
   }
   
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(templateVariable.isValid)
     pedanticAssert(isValid)
 #endif
-    return try expansion(
+    return expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -34,7 +25,7 @@ extension URIVariableTextValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(expansionModifier.isValid)

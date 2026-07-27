@@ -1,9 +1,17 @@
-
 extension URITemplateExpressionComponent {
 
-  internal func evaluate(parameters: [String: URIVariableValue]) throws -> String {
-    let expansions = try variables
-      .compactMap { try $0.evaluateIfDefined(parameters: parameters, expansionType: expansionType) }
+  internal func evaluate(
+    parameters: [String: URIVariableValue]
+  ) throws(URIVariableValue.ExpansionError) -> String {
+    var expansions: [String] = []
+    for variable in variables {
+      if let expansion = try variable.evaluateIfDefined(
+        parameters: parameters,
+        expansionType: expansionType
+      ) {
+        expansions.append(expansion)
+      }
+    }
     guard !expansions.isEmpty else {
       return ""
     }

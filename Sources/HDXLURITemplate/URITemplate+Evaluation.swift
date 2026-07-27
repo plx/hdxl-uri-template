@@ -182,48 +182,47 @@ extension URITemplate {
     }
 
     internal static func makeExpansionDiagnosticContext(
-      for underlyingError: Error?
+      for expansionError: URIVariableValue.ExpansionError
     ) -> DiagnosticContext {
-      if let expansionError =
-        underlyingError as? URIVariableValue.ExpansionError,
+      let (
+        variableName,
+        expansionType,
+        prefixModifierCodePointCount,
+        valueType
+      ) =
+        switch expansionError {
         case .prefixModifierNotApplicable(
           let variableName,
           let expansionType,
-          let expansionModifier,
+          let prefixModifierCodePointCount,
           let valueType
-        ) = expansionError
-      {
-        let prefixModifierCodePointCount: Int? =
-          switch expansionModifier {
-          case .prefix(let prefixLength):
-            prefixLength
-          case .unmodified, .explode:
-            nil
-          }
-        return DiagnosticContext(
-          kind: .prefixModifierNotApplicable,
-          failingVariableName: variableName,
-          expressionOperatorToken: expansionType.formatString,
-          expressionTypeName: expansionType.description,
-          prefixModifierCodePointCount: prefixModifierCodePointCount,
-          failingValueType: valueType
-        )
-      }
-      return .other
+        ):
+          (
+            variableName,
+            expansionType,
+            prefixModifierCodePointCount,
+            valueType
+          )
+        }
+      return DiagnosticContext(
+        kind: .prefixModifierNotApplicable,
+        failingVariableName: variableName,
+        expressionOperatorToken: expansionType.formatString,
+        expressionTypeName: expansionType.description,
+        prefixModifierCodePointCount: prefixModifierCodePointCount,
+        failingValueType: valueType
+      )
     }
   }
 
   public func evaluateAsString(
     parameters: [String: URIVariableValue]
   ) throws -> String {
-    // This `do`/`catch` is the public failure boundary for evaluation: any
-    // error surfaced while expanding a component is re-thrown as an
-    // `EvaluationError` carrying the template and parameters, so callers get
-    // a uniform error type with diagnostic context (see `SpecificationTests`'
-    // `.evaluationFailure` expectation). Composite values with prefix
-    // modifiers are one controlled downstream failure surfaced here.
-    // That failure is rejected after both the modifier and runtime value
-    // flavor are known.
+    // This `do`/`catch` is the public boundary for the one supported expansion
+    // failure: applying a prefix modifier to a list or association. The typed
+    // internal error is re-thrown as an `EvaluationError` carrying the
+    // template, parameters, and safe structural context. Rejection occurs
+    // after both the modifier and runtime value flavor are known.
     do {
       var result: String = ""
       for component in storage.components {

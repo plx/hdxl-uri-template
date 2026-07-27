@@ -34,7 +34,7 @@ private func directlyHandCheckCountListExpansionNoTemplate() throws {
   let name = URITemplateVariableName(rawValue: "count")
   let value = URIVariableListValue(strings: ["one", "two", "three"])
   for ((expansionType, expansionModifier), expected) in zip(styles, expectations) {
-    let observed = try value.expansion(
+    let observed = value.expansion(
       expansionType: expansionType,
       variableName: name,
       expansionModifier: expansionModifier

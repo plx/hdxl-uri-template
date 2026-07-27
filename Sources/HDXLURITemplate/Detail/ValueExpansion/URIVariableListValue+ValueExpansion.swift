@@ -1,21 +1,14 @@
-import Foundation
-
 extension URIVariableListValue {
-  
-  internal enum ExpansionError : Error, LocalizedError {
-    case internalValueFailedToEscape([String], String, String, URIValueExpansionType)
-    case unableToEscapeVariableName(String, URIValueExpansionType)
-  }
   
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(templateVariable.isValid)
     pedanticAssert(isValid)
 #endif
-    return try expansion(
+    return expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
@@ -26,7 +19,7 @@ extension URIVariableListValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(expansionModifier.isValid)
@@ -37,17 +30,17 @@ extension URIVariableListValue {
     }
     return switch expansionModifier {
     case .unmodified:
-      try unexplodedExpansion(
+      unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .explode:
-      try explodedExpansion(
+      explodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
     case .prefix(_):
-      try unexplodedExpansion(
+      unexplodedExpansion(
         expansionType: expansionType,
         variableName: variableName
       )
@@ -58,8 +51,8 @@ extension URIVariableListValue {
     of text: URIVariableTextValue,
     expansionType: URIValueExpansionType,
     escapedVariableName: String
-  ) throws -> String {
-    let escapedText = try text.escapedContents(expansionType: expansionType)
+  ) -> String {
+    let escapedText = text.escapedContents(expansionType: expansionType)
     
     return switch expansionType {
     case .simple:
@@ -84,16 +77,16 @@ extension URIVariableListValue {
   internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)
 #endif
     let escapedName = variableName.escapedAsLiteral
-    return try storage
+    return storage
       .lazy
       .map { text in
-        try explodedRepresentation(
+        explodedRepresentation(
           of: text,
           expansionType: expansionType,
           escapedVariableName: escapedName
@@ -106,7 +99,7 @@ extension URIVariableListValue {
   internal func unexplodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
-  ) throws -> String {
+  ) -> String {
 #if HEAVY_DEBUG
     pedanticAssert(variableName.isValid)
     pedanticAssert(isValid)

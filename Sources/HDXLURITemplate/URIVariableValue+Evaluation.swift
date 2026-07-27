@@ -11,27 +11,31 @@ extension URIVariableValue {
     case prefixModifierNotApplicable(
       variableName: String,
       expansionType: URIValueExpansionType,
-      expansionModifier: URIValueExpansionModifier,
+      prefixModifierCodePointCount: Int,
       valueType: URIVariableValueType
     )
 
-    internal var errorDescription: String? {
+    private var diagnosticDescription: String {
       switch self {
       case .prefixModifierNotApplicable(
         variableName: _,
         let expansionType,
-        let expansionModifier,
+        let prefixModifierCodePointCount,
         let valueType
       ):
         """
-        Prefix modifier `\(expansionModifier.templateRepresentation)` is not \
+        Prefix modifier `:\(prefixModifierCodePointCount)` is not \
         applicable to a \(valueType) value for \(expansionType) expansion.
         """
       }
     }
 
+    internal var errorDescription: String? {
+      diagnosticDescription
+    }
+
     internal var description: String {
-      errorDescription ?? "URI template value expansion failed."
+      diagnosticDescription
     }
 
     internal var debugDescription: String {
@@ -42,14 +46,15 @@ extension URIVariableValue {
   internal func evaluate(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
-  ) throws -> String {
-    if templateVariable.expansionModifier.isPrefixType,
+  ) throws(ExpansionError) -> String {
+    if case .prefix(let prefixModifierCodePointCount) =
+      templateVariable.expansionModifier,
       storage.isListValue || storage.isAssociationValue
     {
       throw ExpansionError.prefixModifierNotApplicable(
         variableName: templateVariable.variableName.rawValue,
         expansionType: expansionType,
-        expansionModifier: templateVariable.expansionModifier,
+        prefixModifierCodePointCount: prefixModifierCodePointCount,
         valueType: storage.valueType
       )
     }
@@ -58,17 +63,17 @@ extension URIVariableValue {
     case .undefined:
       ""
     case .text(let textValue):
-      try textValue.expansion(
+      textValue.expansion(
         expansionType: expansionType,
         templateVariable: templateVariable
       )
     case .list(let listValue):
-      try listValue.expansion(
+      listValue.expansion(
         expansionType: expansionType,
         templateVariable: templateVariable
       )
     case .association(let association):
-      try association.expansion(
+      association.expansion(
         expansionType: expansionType,
         templateVariable: templateVariable
       )

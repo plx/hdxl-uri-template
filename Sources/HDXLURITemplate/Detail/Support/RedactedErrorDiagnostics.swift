@@ -77,30 +77,3 @@ extension URITemplateVariable.ParseError: RedactedDiagnosticError {
     "The URI template variable specification is empty."
   }
 }
-
-extension URIVariableTextValue.ExpansionError: RedactedDiagnosticError {
-  internal var redactedDiagnosticDescription: String {
-    switch self {
-    case .unableToEscapeVariableValue:
-      "Unable to escape a variable value during URI template expansion."
-    case .unableToEscapeVariableName:
-      "Unable to escape variable-name during URI template expansion."
-    case .unableToEscapeTextValue:
-      "Unable to escape text during URI template expansion."
-    }
-  }
-}
-
-extension URIVariableListValue.ExpansionError: RedactedDiagnosticError {
-  internal var redactedDiagnosticDescription: String {
-    "Unable to expand a list value safely."
-  }
-}
-
-extension URIVariableAssociationValue.ExpansionError:
-  RedactedDiagnosticError
-{
-  internal var redactedDiagnosticDescription: String {
-    "Unable to expand an association value safely."
-  }
-}
