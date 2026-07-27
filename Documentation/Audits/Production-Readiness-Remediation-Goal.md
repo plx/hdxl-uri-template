@@ -248,9 +248,10 @@ unrelated ticket:
   material end-to-end benefit under its predeclared decision rule.
 - The first candidate is a `0.x` version. A stable `1.0` waits for the public
   contracts and final gates to settle.
-- Objective-C support, `URIVariableValue.Codable`, and structured public
-  diagnostics remain bounded decision tickets; do not infer their outcomes
-  before those decisions merge.
+- The approved bounded decisions select Swift-only Objective-C removal,
+  removal of `URIVariableValue` and `URIVariableValueType` coding conformances,
+  and structured public parse diagnostics. Their decision records govern
+  subsequent work.
 
 ## Live work-selection protocol
 

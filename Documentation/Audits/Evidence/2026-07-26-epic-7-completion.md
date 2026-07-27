@@ -1,5 +1,11 @@
 # Epic #7 Security, Robustness, and Adversarial-Performance Completion Evidence
 
+Current-status note: this immutable-SHA evidence accurately describes its
+audited revision. The later
+[API-06 decision](../../Decisions/API-06-URIVariableValue-Codable.md) removed
+value coding and changed current hardening from value round trips to equivalent
+runtime semantic validation. `URITemplate.Codable` remains covered.
+
 ## Conclusion
 
 **PASS.** At audited `master` commit

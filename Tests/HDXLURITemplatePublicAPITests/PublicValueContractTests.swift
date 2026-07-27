@@ -37,12 +37,6 @@ private func publicValueContracts() throws {
   #expect([value: "text", distinctValue: "list"][value] == "text")
   requireSendable(value)
 
-  let decodedValue = try JSONDecoder().decode(
-    URIVariableValue.self,
-    from: JSONEncoder().encode(value)
-  )
-  #expect(decodedValue == value)
-
   let valueTypes = Set(URIVariableValueType.allCases)
   #expect(
     valueTypes == [.undefined, .text, .list, .association]

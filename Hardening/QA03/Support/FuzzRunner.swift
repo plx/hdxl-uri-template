@@ -37,7 +37,7 @@ package struct QA03FuzzReport: Codable, Sendable {
   package let rejectedTemplateCount: Int
   package let successfulExpansionCount: Int
   package let controlledExpansionFailureCount: Int
-  package let variableValueCodableRoundTripCount: Int
+  package let variableValueValidationCount: Int
   package let elapsedNanoseconds: UInt64
   package let resultDigest: String
 }
@@ -128,7 +128,7 @@ package enum QA03FuzzRunner {
     }
 
     return QA03FuzzReport(
-      schemaVersion: 1,
+      schemaVersion: 2,
       command: "fuzz",
       commit: commit,
       seed: qa03Hex(configuration.seed),
@@ -141,7 +141,7 @@ package enum QA03FuzzRunner {
       rejectedTemplateCount: counters.rejectedTemplates,
       successfulExpansionCount: counters.successfulExpansions,
       controlledExpansionFailureCount: counters.controlledExpansionFailures,
-      variableValueCodableRoundTripCount: counters.variableValueCodableRoundTrips,
+      variableValueValidationCount: counters.variableValueValidations,
       elapsedNanoseconds: start.duration(to: clock.now).qa03Nanoseconds,
       resultDigest: qa03Hex(counters.digest)
     )
@@ -347,7 +347,7 @@ package enum QA03FuzzRunner {
         names: template.variableNames.sorted(),
         generator: &generator
       )
-      try validateValueCodable(parameters.values)
+      try validateValueSemantics(parameters.values)
       let first = try expansionOutcome(
         template: template,
         parameters: parameters
@@ -383,14 +383,14 @@ package enum QA03FuzzRunner {
         return CaseResult(
           accepted: true,
           expansionSucceeded: true,
-          variableValueCodableRoundTripCount: parameters.count,
+          variableValueValidationCount: parameters.count,
           digest: qa03StableDigest(source) &+ qa03StableDigest(output)
         )
       case .failure(let kind):
         return CaseResult(
           accepted: true,
           expansionSucceeded: false,
-          variableValueCodableRoundTripCount: parameters.count,
+          variableValueValidationCount: parameters.count,
           digest: qa03StableDigest(source) &+ qa03StableDigest(kind)
         )
       }
@@ -402,7 +402,7 @@ package enum QA03FuzzRunner {
       return CaseResult(
         accepted: false,
         expansionSucceeded: false,
-        variableValueCodableRoundTripCount: 0,
+        variableValueValidationCount: 0,
         digest: qa03StableDigest(source)
       )
     }
@@ -479,22 +479,26 @@ package enum QA03FuzzRunner {
     }
   }
 
-  private static func validateValueCodable<S: Sequence>(
+  private static func validateValueSemantics<S: Sequence>(
     _ values: S
   ) throws where S.Element == URIVariableValue {
     for value in values {
-      let json = try JSONEncoder().encode(value)
-      let jsonValue = try JSONDecoder().decode(
-        URIVariableValue.self,
-        from: json
-      )
-      let propertyList = try PropertyListEncoder().encode(value)
-      let propertyListValue = try PropertyListDecoder().decode(
-        URIVariableValue.self,
-        from: propertyList
-      )
-      guard jsonValue == value, propertyListValue == value else {
-        throw QA03Error("Variable-value Codable round trip drifted.")
+      let copiedValue = value
+      let characterizationCount = [
+        value.isUndefinedValue,
+        value.isTextValue,
+        value.isListValue,
+        value.isAssociationValue,
+      ].count(where: { $0 })
+      guard
+        copiedValue == value,
+        copiedValue.hashValue == value.hashValue,
+        copiedValue.valueType == value.valueType,
+        copiedValue.count == value.count,
+        copiedValue.isEmpty == value.isEmpty,
+        characterizationCount == 1
+      else {
+        throw QA03Error("Variable-value semantic validation drifted.")
       }
     }
   }
@@ -552,9 +556,7 @@ package enum QA03FuzzRunner {
     let count = generator.next(upperBound: 129)
     let data = Data((0..<count).map { _ in UInt8(truncatingIfNeeded: generator.next()) })
     _ = try? JSONDecoder().decode(URITemplate.self, from: data)
-    _ = try? JSONDecoder().decode(URIVariableValue.self, from: data)
     _ = try? PropertyListDecoder().decode(URITemplate.self, from: data)
-    _ = try? PropertyListDecoder().decode(URIVariableValue.self, from: data)
   }
 
   private static func exerciseDuplicateAssociationBoundary() throws {
@@ -613,7 +615,7 @@ private enum ExpansionOutcome: Equatable {
 private struct CaseResult {
   let accepted: Bool
   let expansionSucceeded: Bool
-  let variableValueCodableRoundTripCount: Int
+  let variableValueValidationCount: Int
   let digest: UInt64
 }
 
@@ -622,7 +624,7 @@ private struct Counters {
   var rejectedTemplates = 0
   var successfulExpansions = 0
   var controlledExpansionFailures = 0
-  var variableValueCodableRoundTrips = 0
+  var variableValueValidations = 0
   var digest: UInt64 = 0
 
   mutating func record(
@@ -640,8 +642,8 @@ private struct Counters {
     } else {
       rejectedTemplates += 1
     }
-    variableValueCodableRoundTrips +=
-      result.variableValueCodableRoundTripCount
+    variableValueValidations +=
+      result.variableValueValidationCount
     digest &+=
       result.digest
       &+ qa03StableDigest(source)

@@ -1,5 +1,3 @@
-import Foundation
-
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValue - Definition
 // -------------------------------------------------------------------------- //
@@ -19,14 +17,16 @@ import Foundation
 /// In other words, the public API is write-mostly, and that's by design: the internals make *heavy* use of `newtype`-like wrapper structs, and I'd like to *keep* those `internal`.
 /// Sure, the write-mostly API also limits the potential for misuse, but that's a fringe benefit--it's really about keeping the `newtype`s out of the public-facing API.
 ///
-/// - note: Deserialization throws `AssociationError` for duplicate association
-///   keys and standard `DecodingError` cases for other malformed data.
-///
 /// - Important: This package's initial contract is Swift-only. Code that used
 ///   the removed `HDXLURIVariableValue` wrapper should migrate to
 ///   ``undefined``, ``text(_:)``, ``list(_:)``, and the `association`
 ///   factories, then inspect the native value through ``valueType`` and the
 ///   `is…Value` properties. Archives of the removed wrapper are not supported.
+///
+/// - Note: This runtime value deliberately does not conform to `Codable`.
+///   Applications that persist parameters should own and version their source
+///   model, retain it alongside this write-mostly value, and construct values
+///   through the public factories.
 ///
 public struct URIVariableValue {
 
@@ -196,38 +196,6 @@ extension URIVariableValue: CustomDebugStringConvertible {
   @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"
-  }
-
-}
-
-// -------------------------------------------------------------------------- //
-// MARK: URIVariableValue - Codable
-// -------------------------------------------------------------------------- //
-
-extension URIVariableValue: Codable {
-
-  /// Encodes this value using its established semantic wire representation.
-  @inlinable
-  public func encode(to encoder: Encoder) throws {
-    var container = encoder.singleValueContainer()
-    try container.encode(storage)
-  }
-
-  /// Decodes and validates one semantic URI-template variable value.
-  ///
-  /// - Throws: ``AssociationError`` for duplicate association keys and a
-  ///   standard `DecodingError` case for other malformed input.
-  @inlinable
-  public init(from decoder: Decoder) throws {
-    let container = try decoder.singleValueContainer()
-    let storage = try container.decode(Storage.self)
-    guard storage.isValid else {
-      throw DecodingError.dataCorruptedError(
-        in: container,
-        debugDescription: "Invalid URI variable value."
-      )
-    }
-    self.init(storage: storage)
   }
 
 }

@@ -697,7 +697,7 @@ Test errors:
 - As their concrete Swift type.
 - Caught as `any Error`.
 - Bridged to `NSError`.
-- Through Codable.
+- Through `URITemplate` decoding where the coding path can surface them.
 
 Default error descriptions must not contain full variable values, parameter
 dictionaries, credentials, authorization headers, API tokens, query secrets,
@@ -714,7 +714,10 @@ Verify:
   `URIVariableValue`, and `URIVariableValueType` are absent from the public
   symbol graph.
 - Removing `Comparable` did not remove intended `Equatable`, `Hashable`,
-  `Sendable`, or Codable behavior.
+  or `Sendable` behavior.
+- `URITemplate.Codable` remains present, while `Encodable` and `Decodable` are
+  absent from `URIVariableValue` and `URIVariableValueType` as required by
+  API-06.
 - Dead or test-only RFC character tables cannot silently diverge from
   production definitions.
 
@@ -819,10 +822,11 @@ For `URITemplate`, verify and document:
 - That decoding invokes the public parser and cannot construct an otherwise
   unreachable template.
 
-Review `URIVariableValue.Codable` separately according to its explicit
-retain/remove decision and, if retained, its documented semantic tagged-union
-schema. Do not treat that separate decision as permission to change
-`URITemplate.Codable`.
+Verify the API-06 removal contract separately: `URIVariableValue`,
+`URIVariableValueType`, and private value wrappers expose no coding
+conformance; the former numeric/private-wrapper payload remains unsupported;
+and migration guidance directs persistent clients to application-owned source
+DTOs. Do not treat that removal as permission to change `URITemplate.Codable`.
 
 Benchmark reparsing strings against decoding each supported serialization. Any
 separately named compiled cache must be opaque, versioned, disposable, and
@@ -1392,8 +1396,8 @@ Examples:
 - Invalid state can be publicly constructed or decoded.
 - Adversarial input has demonstrated superlinear resource growth.
 - Error paths disclose plausible secrets by default.
-- Public Codable behavior or the documented Objective-C absence contradicts
-  the built interface.
+- Public Codable behavior, the deliberate absence of variable-value coding,
+  or the documented Objective-C absence contradicts the built interface.
 - A required platform fails to compile.
 
 Decision: **No-go.** Fix and rerun the affected phase plus all downstream

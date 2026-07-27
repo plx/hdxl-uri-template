@@ -178,7 +178,6 @@ private func manualExpansionSupportCoverage() throws {
   #if !HEAVY_DEBUG
     #expect("abc".constrained(toCodePointCount: -1) == "")
   #endif
-  #expect(StandardEnumerationCodingKeys(intValue: 2) == nil)
 }
 
 @Test(

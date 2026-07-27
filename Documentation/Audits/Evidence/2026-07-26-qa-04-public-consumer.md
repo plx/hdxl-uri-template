@@ -1,5 +1,11 @@
 # QA-04 public-consumer evidence
 
+Current-status note: this evidence records the boundary at its audited SHA.
+The later
+[API-06 decision](../../Decisions/API-06-URIVariableValue-Codable.md) replaced
+the value/type coding probes with non-coding value-model coverage while
+retaining `URITemplate.Codable`.
+
 ## Scope
 
 This record closes QA-04 against the Swift-only support contract selected by

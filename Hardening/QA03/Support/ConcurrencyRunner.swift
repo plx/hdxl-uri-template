@@ -336,16 +336,16 @@ private struct Context: Sendable {
 
     case 8:
       let copiedValue = value
-      let data = try JSONEncoder().encode(copiedValue)
-      let decoded = try JSONDecoder().decode(
-        URIVariableValue.self,
-        from: data
-      )
-      guard decoded == copiedValue, decoded.hashValue == copiedValue.hashValue
+      guard
+        copiedValue == value,
+        copiedValue.hashValue == value.hashValue,
+        copiedValue.valueType == .association,
+        copiedValue.isAssociationValue,
+        copiedValue.count == 2
       else {
-        throw QA03Error("Concurrent variable-value copy/Codable mismatch.")
+        throw QA03Error("Concurrent variable-value semantic mismatch.")
       }
-      return UInt64(data.count)
+      return UInt64(copiedValue.count)
 
     default:
       let url = try template.evaluate(parameters: parameters)

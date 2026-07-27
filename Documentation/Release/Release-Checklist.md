@@ -70,8 +70,9 @@ another commit's run is not reusable.
 - [ ] Run `just check-public-api`.
 - [ ] Build and run a fresh remote consumer pinned by full revision SHA.
 - [ ] Review the public symbol graph and documentation.
-- [ ] Review the `URITemplate` persistence format and the current
-      `URIVariableValue` `Codable` decision.
+- [ ] Review the `URITemplate` persistence format and confirm
+      `URIVariableValue` and `URIVariableValueType` remain non-`Codable` under
+      API-06.
 - [ ] Confirm default error diagnostics remain bounded and privacy-safe.
 - [ ] Confirm the generated Objective-C header contains none of the removed
       wrapper classes, enum, or selectors.

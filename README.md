@@ -297,10 +297,14 @@ found no performance case for a cache, and no compiled cache ships in the
 public product. Any future cache would require a separately reviewed,
 versioned, disposable sidecar that retains the authoritative source.
 
-`URIVariableValue` also conforms to `Codable` today, but its durable
-serialization contract is not yet settled; that work remains tracked in
-[#50](https://github.com/plx/hdxl-uri-template/issues/50). Do not use its
-current encoding as a long-term persistence or interchange format.
+`URIVariableValue` and `URIVariableValueType` deliberately do not conform to
+`Codable`, `Encodable`, or `Decodable`. Their pre-release numeric-tagged
+encoding exposed private storage and is unsupported. Applications that persist
+parameters should own and version a source DTO, then construct runtime values
+with `undefined`, `text(_:)`, `list(_:)`, and `association(_:)`. Because the
+runtime value is intentionally write-mostly, retain that source DTO rather
+than relying on extracting private payloads later. See the
+[API-06 decision](Documentation/Decisions/API-06-URIVariableValue-Codable.md).
 
 JSON permits a template string as a top-level value. Foundation property lists
 do not permit a top-level string fragment, so encode a template inside an

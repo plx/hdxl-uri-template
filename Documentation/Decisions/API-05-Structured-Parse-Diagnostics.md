@@ -55,9 +55,10 @@ path.
 
 The generic public `DataValidationError<T>` is removed. It had no supported
 public construction path, exposed implementation terminology, and could carry
-value-derived diagnostic text. `URIVariableValue` decoding now uses standard
-`DecodingError` cases for malformed data and retains
-`URIVariableValue.AssociationError` for duplicate association keys.
+value-derived diagnostic text. At the API-05 revision, `URIVariableValue`
+decoding used standard `DecodingError` cases for malformed data and retained
+`URIVariableValue.AssociationError` for duplicate association keys. API-06
+subsequently removed value decoding.
 
 `URITemplate` decoding continues to reject invalid semantic strings with
 `DecodingError.dataCorrupted`. Its underlying error is the same structured
@@ -114,16 +115,17 @@ This is an intentional pre-1.0 source break. Code that inspected
 `ParseError.underlyingError` should switch on `ParseError.kind` and use
 `sourceRange` when a location is needed. Treat `template` as sensitive.
 
-Code that named or caught `DataValidationError` while decoding
-`URIVariableValue` should catch the relevant standard `DecodingError` case.
-Duplicate ordered-association keys continue to use
-`URIVariableValue.AssociationError`.
+Code that named or caught `DataValidationError` should remove that dependency.
+The later [API-06 decision](./API-06-URIVariableValue-Codable.md) removed
+`URIVariableValue` decoding entirely. Duplicate ordered-association keys
+continue to use `URIVariableValue.AssociationError` at the throwing public
+construction boundary.
 
 The enum case names, their raw string values, and UTF-8 range semantics are the
 stable API-05 contract. Adding a future semantic category is an API evolution
 event and must update the contract, public tests, changelog, and this record.
-API-06 may decide whether to retain the surrounding `URIVariableValue.Codable`
-surface, but it must not silently reintroduce this removed generic error.
+API-06 removed the surrounding `URIVariableValue.Codable` surface and did not
+reintroduce this generic error.
 
 ## Validation contract
 

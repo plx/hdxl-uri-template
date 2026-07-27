@@ -39,18 +39,19 @@ The workflow also runs:
 
 The concurrency phases cover one-worker Swift tasks, core-count Swift tasks,
 and native dispatch threads. They compare successful and failing evaluation,
-metadata reads, equality, hashing, Codable, independent parsing, and value
-operations against the same deterministic digest.
+metadata reads, equality, hashing, template Codable, independent parsing, and
+value operations against the same deterministic digest.
 
 ## Deterministic fuzz and replay
 
 The checked runner mixes all four pinned conformance suites with structured
 generation, string mutation, malformed near-misses, Unicode, percent
-triplets, every operator, modifiers, value shapes, and JSON/property-list
-decode probes. Every generated variable value round-trips through both
-serializations. The report records that round-trip count alongside the root
-seed, corpus digest, requested and completed iterations, outcome counters,
-duration, and result digest.
+triplets, every operator, modifiers, value shapes, and template
+JSON/property-list decode probes. Every generated variable value is checked
+for copy, equality, hashing, characterization, count, and emptiness
+consistency. The report records that validation count alongside the root seed,
+corpus digest, requested and completed iterations, outcome counters, duration,
+and result digest.
 
 Run the scheduled budget locally:
 

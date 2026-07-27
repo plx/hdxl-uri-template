@@ -8,7 +8,7 @@ struct PublicAPIConsumer {
     try readmeVariableValues()
     try publicPrefixExample()
     try publicErrorExamples()
-    try publicCodableExamples()
+    try publicTemplateCodableExamples()
     try await publicConcurrencyExample()
 
     let template = try URITemplate(

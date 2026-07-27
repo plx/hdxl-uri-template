@@ -34,14 +34,14 @@
         "URIVariableValue"
       ],
       "requiredConformances": [
-        "Swift.Decodable",
-        "Swift.Encodable",
         "Swift.Equatable",
         "Swift.Hashable",
         "Swift.Sendable"
       ],
       "forbiddenConformances": [
-        "Swift.Comparable"
+        "Swift.Comparable",
+        "Swift.Decodable",
+        "Swift.Encodable"
       ],
       "forbiddenMembers": [
         "<(_:_:)"
@@ -53,15 +53,15 @@
       ],
       "requiredConformances": [
         "Swift.CaseIterable",
-        "Swift.Decodable",
-        "Swift.Encodable",
         "Swift.Equatable",
         "Swift.Hashable",
         "Swift.RawRepresentable",
         "Swift.Sendable"
       ],
       "forbiddenConformances": [
-        "Swift.Comparable"
+        "Swift.Comparable",
+        "Swift.Decodable",
+        "Swift.Encodable"
       ],
       "forbiddenMembers": [
         "<(_:_:)"

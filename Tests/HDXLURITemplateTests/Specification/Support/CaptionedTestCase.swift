@@ -11,10 +11,9 @@ struct CaptionedTestCase {
 
 }
 
-extension CaptionedTestCase: Sendable { }
-extension CaptionedTestCase: Equatable { }
-extension CaptionedTestCase: Hashable { }
-extension CaptionedTestCase: Codable { }
+extension CaptionedTestCase: Sendable {}
+extension CaptionedTestCase: Equatable {}
+extension CaptionedTestCase: Hashable {}
 
 extension CaptionedTestCase: CustomTestStringConvertible {
 
@@ -27,10 +26,10 @@ extension CaptionedTestCase: CustomTestStringConvertible {
     .joined(separator: ", ")
 
     return """
-    `\(source)` / \(caption) / template `\(testCase.template)` / \
-    expectation \(testCase.expectation.diagnosticDescription) / \
-    variables [ \(renderedParameters) ]
-    """
+      `\(source)` / \(caption) / template `\(testCase.template)` / \
+      expectation \(testCase.expectation.diagnosticDescription) / \
+      variables [ \(renderedParameters) ]
+      """
   }
 
 }
