@@ -11,22 +11,22 @@
 /// - `list`: a list of strings
 /// - `association`: an *ordered* list of unique-key pairs of strings
 ///
-/// ...and the public API has (a) constructors for each of those types as well
-/// as (b) some very-limited inspection (you can verify the value's flavor).
-///
-/// In other words, the public API is write-mostly, and that's by design: the internals make *heavy* use of `newtype`-like wrapper structs, and I'd like to *keep* those `internal`.
-/// Sure, the write-mostly API also limits the potential for misuse, but that's a fringe benefit--it's really about keeping the `newtype`s out of the public-facing API.
+/// The public API provides constructors for every flavor and read-only payload
+/// access through ``textValue``, ``listValue``, and ``associationValue``.
+/// These properties return ordinary Swift values while the package's
+/// newtype-style wrappers remain internal.
 ///
 /// - Important: This package's initial contract is Swift-only. Code that used
 ///   the removed `HDXLURIVariableValue` wrapper should migrate to
 ///   ``undefined``, ``text(_:)``, ``list(_:)``, and the `association`
-///   factories, then inspect the native value through ``valueType`` and the
-///   `is…Value` properties. Archives of the removed wrapper are not supported.
+///   factories, then inspect the native value through ``valueType``, the
+///   `is…Value` properties, and the flavor-specific payload properties.
+///   Archives of the removed wrapper are not supported.
 ///
 /// - Note: This runtime value deliberately does not conform to `Codable`.
 ///   Applications that persist parameters should own and version their source
-///   model, retain it alongside this write-mostly value, and construct values
-///   through the public factories.
+///   model and construct runtime values through the public factories. The
+///   payload accessors are runtime inspection APIs, not a persistence schema.
 ///
 public struct URIVariableValue {
 
@@ -221,6 +221,56 @@ extension URIVariableValue {
   /// The flavor of the value: `.undefined`, `.text`, and so on.
   public var valueType: URIVariableValueType {
     storage.valueType
+  }
+
+  /// The wrapped string when this value has the `.text` flavor.
+  ///
+  /// This is `nil` for undefined, list, and association values. An empty text
+  /// value returns `""`, so flavor mismatch remains distinct from an empty
+  /// payload.
+  public var textValue: String? {
+    switch storage {
+    case .text(let text):
+      text.rawValue
+    case .undefined, .list(_), .association(_):
+      nil
+    }
+  }
+
+  /// The ordered strings when this value has the `.list` flavor.
+  ///
+  /// This is `nil` for undefined, text, and association values. An empty list
+  /// returns `[]`. The returned array is an independent Swift value; mutating
+  /// it does not change this `URIVariableValue`.
+  public var listValue: [String]? {
+    switch storage {
+    case .list(let list):
+      list.storage.map(\.rawValue)
+    case .undefined, .text(_), .association(_):
+      nil
+    }
+  }
+
+  /// The ordered unique-key pairs when this value has the `.association`
+  /// flavor.
+  ///
+  /// This is `nil` for undefined, text, and list values. An empty association
+  /// returns `[]`. Pair order matches the order established by the association
+  /// factory. The returned array is an independent Swift value; mutating it
+  /// cannot change this `URIVariableValue` or invalidate its unique-key
+  /// invariant.
+  public var associationValue: [(key: String, value: String)]? {
+    switch storage {
+    case .association(let association):
+      association.storage.map {
+        (
+          key: $0.key.rawValue,
+          value: $0.value.rawValue
+        )
+      }
+    case .undefined, .text(_), .list(_):
+      nil
+    }
   }
 
   /// `true` if this has one of the *defined* flavors (e.g. anything other than `.undefined`).

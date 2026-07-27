@@ -84,15 +84,19 @@ construct runtime values with:
 - `URIVariableValue.list(_:)`; and
 - `URIVariableValue.association(_:)`.
 
-The throwing association factory preserves the unique-key invariant. Because
-the public runtime value is deliberately write-mostly, applications needing
-later persistence should retain their source DTO alongside the constructed
-`URIVariableValue`; they should not rely on extracting private payloads from
-the runtime value.
+The throwing association factory preserves the unique-key invariant.
+Applications needing later persistence should retain their source DTO
+alongside the constructed `URIVariableValue`; read-only runtime inspection is
+not a persistence contract.
 
 Consumers that only parse templates, construct parameters, expand templates,
-or use value equality, hashing, `Sendable`, `valueType`, and the `is…Value`
-properties require no migration.
+or use value equality, hashing, `Sendable`, `valueType`, the `is…Value`
+properties, and the API-07 read-only payload accessors require no migration.
+
+API-07 subsequently added `textValue`, `listValue`, and `associationValue` for
+runtime inspection. Those accessors do not restore `Codable` or define a
+persistence format. Applications needing durable storage still own and
+version their source DTO.
 
 ## Rejected alternative
 

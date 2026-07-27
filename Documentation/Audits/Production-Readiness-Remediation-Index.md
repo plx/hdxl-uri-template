@@ -73,6 +73,11 @@ API-05 selected structured parse diagnostics, API-06 removed
 selected the Swift-only Objective-C removal path. Their decision records are
 the authority for implementation and audit work.
 
+API-07 adds read-only text, list, and ordered-association payload projection
+without reopening either settled decision. The
+[implementation and validation evidence](Evidence/2026-07-27-api-07-value-payload-inspection.md)
+records the exact runtime inspection and persistence boundaries.
+
 ## Label taxonomy and application rules
 
 The prefixed labels below are the program taxonomy installed in GitHub. The

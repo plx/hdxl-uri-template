@@ -179,13 +179,26 @@ func readmeVariableValues() throws {
       + "?title=URI%20Templates&sort=updated&limit=20"
   )
   precondition(parameters["absent"]?.isUndefined == true)
-  precondition(orderedFilters.valueType == .association)
+  precondition(parameters["absent"]?.textValue == nil)
+  precondition(parameters["title"]?.textValue == "URI Templates")
+
+  var segments = parameters["segments"]?.listValue
+  precondition(segments == ["users", "42"])
+  segments?.append("local-only")
+  precondition(parameters["segments"]?.listValue == ["users", "42"])
+
+  let filters = orderedFilters.associationValue
+  precondition(filters?.map(\.key) == ["sort", "limit"])
+  precondition(filters?.map(\.value) == ["updated", "20"])
 }
 ```
 
-Value inspection is intentionally limited to properties such as `valueType`,
-`isUndefined`, `isTextValue`, `isListValue`, `isAssociationValue`, `count`,
-and `isEmpty`.
+Use `valueType` to distinguish all four flavors exhaustively. `textValue`,
+`listValue`, and `associationValue` recover the matching payload as ordinary
+Swift values and return `nil` for every mismatch. Empty payloads return
+non-`nil` empty values. Returned arrays are independent values, so mutating
+them cannot change the original `URIVariableValue` or its association
+invariants.
 
 ## Operators and modifiers
 
@@ -301,9 +314,9 @@ versioned, disposable sidecar that retains the authoritative source.
 `Codable`, `Encodable`, or `Decodable`. Their pre-release numeric-tagged
 encoding exposed private storage and is unsupported. Applications that persist
 parameters should own and version a source DTO, then construct runtime values
-with `undefined`, `text(_:)`, `list(_:)`, and `association(_:)`. Because the
-runtime value is intentionally write-mostly, retain that source DTO rather
-than relying on extracting private payloads later. See the
+with `undefined`, `text(_:)`, `list(_:)`, and `association(_:)`. The read-only
+payload accessors are runtime inspection APIs, not a persistence format or
+compatibility promise. See the
 [API-06 decision](Documentation/Decisions/API-06-URIVariableValue-Codable.md).
 
 JSON permits a template string as a top-level value. Foundation property lists

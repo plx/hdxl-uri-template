@@ -320,8 +320,8 @@ private extension PercentEscapeScannerStressTests {
 func densePercentTripletExpansionHasLinearGeometricScaling() throws {
   let template = try URITemplate(parsing: "{+x}")
   let tripletCounts = [10_000, 20_000, 40_000, 80_000]
-  let repetitions = [8, 4, 2, 1]
-  let sampleCount = 3
+  let repetitions = [64, 32, 16, 8]
+  let sampleCount = 5
 
   _ = try template.evaluateAsString(
     parameters: ["x": .text(String(repeating: "%20", count: tripletCounts[0]))]
