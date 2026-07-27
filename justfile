@@ -63,3 +63,12 @@ check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug bu
 
 arch-01-benchmark label commit:
     {{ swift }} run -c release HDXLURITemplateARCH01Benchmark --label {{ label }} --commit {{ commit }}
+
+arch-02-benchmark label commit:
+    ARCH02_SWIFT_VERSION="$({{ swift }} --version | head -n 1)" {{ swift }} run -c release HDXLURITemplateARCH02Benchmark --label {{ label }} --commit {{ commit }}
+
+arch-02-inventory label commit:
+    {{ swift }} Scripts/inventory-cross-module-inlining.swift --label {{ label }} --commit {{ commit }}
+
+arch-02-measure label commit:
+    DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer {{ swift }} Scripts/measure-arch-02.swift --label {{ label }} --commit {{ commit }}
