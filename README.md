@@ -48,6 +48,22 @@ xcrun swift test -c release
 
 The repository's `just` recipes use the same `DEVELOPER_DIR`/`xcrun` selection.
 
+## Continuous integration
+
+Every pull request and every `master` update runs the required
+`Required Swift 6.3 / Apple 26 gate` check from a clean checkout without build
+caches. Its primary macOS 26 lanes resolve, build, and run the complete test
+suite in Debug, Release, and `HEAVY_DEBUG` with Xcode 26.6 and Swift 6.3.
+
+One consolidated Release smoke job also compiles the package for macOS, iOS,
+Mac Catalyst, tvOS, watchOS, and visionOS using their Apple 26 SDKs. The same
+workflow runs on a weekly schedule and can be dispatched manually; this is a
+compile contract for the six declared Apple platforms, not a broader
+toolchain, operating-system, or Linux support matrix.
+
+Failed jobs retain their command logs, xUnit test results, and available Xcode
+result bundles as workflow artifacts for 14 days.
+
 ## Codable representation
 
 `URITemplate` encodes as one string containing its exact, validated
