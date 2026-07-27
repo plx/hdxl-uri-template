@@ -35,10 +35,25 @@ let package = Package(
       path: "Tests/HDXLURITemplateObjCInterop",
       publicHeadersPath: "include"
     ),
+    .target(
+      name: "HDXLURITemplateAPI03BenchmarkSupport",
+      dependencies: [
+        "HDXLURITemplate"
+      ],
+      path: "Benchmarks/API03/Support"
+    ),
+    .executableTarget(
+      name: "HDXLURITemplateAPI03Benchmark",
+      dependencies: [
+        "HDXLURITemplateAPI03BenchmarkSupport"
+      ],
+      path: "Benchmarks/API03/Runner"
+    ),
     .testTarget(
       name: "HDXLURITemplateTests",
       dependencies: [
         "HDXLURITemplate",
+        "HDXLURITemplateAPI03BenchmarkSupport",
         "HDXLURITemplateObjCInterop"
       ],
       exclude: [

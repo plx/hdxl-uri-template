@@ -110,6 +110,7 @@ The material categories and repository locations are:
   [erratum 6937](https://www.rfc-editor.org/errata/eid6937), supply the
   expression, literal, and variable-name ABNF, scalar boundaries, regex
   inputs, and direct literal-expansion oracles in:
+  - `Benchmarks/API03/Support/CompiledCachePrototype.swift`
   - `Sources/HDXLURITemplate/Detail/TemplateComponent/URITemplateLiteralComponent.swift`
   - `Sources/HDXLURITemplate/Detail/Variable/URITemplateVariableName.swift`
   - `Tests/HDXLURITemplateTests/Detail/Parsing/URITemplateExpressionGrammarTests.swift`
@@ -121,6 +122,7 @@ The material categories and repository locations are:
   3.1, and 3.2.1-3.2.9 supply the formal operator and modifier rules,
   operator characters, prefixes, separators, allowed-character rules,
   literal ASCII set, and `1...9999` prefix range in:
+  - `Benchmarks/API03/Support/CompiledCachePrototype.swift`
   - `Sources/HDXLURITemplate/Detail/Parsing/URIValueExpansionModifier+Parsing.swift`
   - `Sources/HDXLURITemplate/Detail/ValueExpansion/CharacterSet+URIValueExpansion.swift`
   - `Sources/HDXLURITemplate/Detail/ValueExpansion/String+RFCConstants.swift`
@@ -139,6 +141,7 @@ The material categories and repository locations are:
   RFC 5234 `ALPHA`, `DIGIT`, and `HEXDIG` rules and the RFC 3986 hexadecimal,
   percent-encoded, general-delimiter, sub-delimiter, reserved, and unreserved
   definitions in:
+  - `Benchmarks/API03/Support/CompiledCachePrototype.swift`
   - `Sources/HDXLURITemplate/Detail/ValueExpansion/CharacterSet+URIValueExpansion.swift`
   - `Sources/HDXLURITemplate/Detail/ValueExpansion/String+URIValueExpansion.swift`
   - `Tests/HDXLURITemplateTests/Detail/ValueExpansion/PercentEscapeScannerTests.swift`
@@ -146,6 +149,7 @@ The material categories and repository locations are:
   - `Tests/HDXLURITemplateTests/Detail/ValueExpansion/URIPercentEncodedPrefixTests.swift`
 - **IRI scalar-range tables.** RFC 6570 section 1.5 reproduces the RFC 3987
   section 2.2 `ucschar` and `iprivate` ranges adapted in:
+  - `Benchmarks/API03/Support/CompiledCachePrototype.swift`
   - `Sources/HDXLURITemplate/Detail/ValueExpansion/CharacterSet+URIValueExpansion.swift`
   - `Tests/HDXLURITemplateTests/Detail/Support/InfalliblyUnwrapAssumptionTests.swift`
   - `Tests/HDXLURITemplateTests/Detail/TemplateComponent/URITemplateLiteralGrammarTests.swift`
