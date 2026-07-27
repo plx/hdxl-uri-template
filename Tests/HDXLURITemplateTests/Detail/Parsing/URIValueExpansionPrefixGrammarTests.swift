@@ -62,8 +62,7 @@ private func publicParsingRejectsNoncanonicalPrefixSpellings(
 
 @Test("Every canonical ASCII prefix length parses without normalization")
 private func everyCanonicalPrefixLengthParsesExactly() throws {
-  for prefixLength in
-    URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts {
+  for prefixLength in URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts {
     var variableSpecification = "x:\(prefixLength)"
     let modifier = try URIValueExpansionModifier(
       parsing: &variableSpecification
@@ -108,7 +107,8 @@ private func resolvedPinnedPrefixCaseIsAnOrdinaryPass() throws {
 
 private struct PrefixGrammarProbe:
   CustomTestStringConvertible,
-  Sendable {
+  Sendable
+{
 
   let label: String
   let template: String
@@ -123,7 +123,7 @@ private let canonicalPrefixBoundaryProbes = [
   PrefixGrammarProbe(label: "single-digit maximum", template: "{x:9}"),
   PrefixGrammarProbe(label: "two-digit minimum", template: "{x:10}"),
   PrefixGrammarProbe(label: "three digits", template: "{x:999}"),
-  PrefixGrammarProbe(label: "maximum", template: "{x:9999}")
+  PrefixGrammarProbe(label: "maximum", template: "{x:9999}"),
 ]
 
 private let rejectedPrefixGrammarProbes = [
@@ -150,5 +150,5 @@ private let rejectedPrefixGrammarProbes = [
     template: "{x:1\u{0301}}"
   ),
   PrefixGrammarProbe(label: "Arabic-Indic digit", template: "{x:\u{0661}}"),
-  PrefixGrammarProbe(label: "fullwidth digit", template: "{x:\u{FF11}}")
+  PrefixGrammarProbe(label: "fullwidth digit", template: "{x:\u{FF11}}"),
 ]

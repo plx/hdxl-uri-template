@@ -1,36 +1,36 @@
 extension URIVariableTextValue {
-  
+
   internal func escapedContents(
     expansionType: URIValueExpansionType
   ) -> String {
     rawValue.escaped(forValueExpansionType: expansionType)
   }
-  
+
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(templateVariable.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(templateVariable.isValid)
+      pedanticAssert(isValid)
+    #endif
     return expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
       expansionModifier: templateVariable.expansionModifier
     )
   }
-  
+
   func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(expansionModifier.isValid)
+      pedanticAssert(isValid)
+    #endif
     let escapedVariableValue = escapedVariableValue(
       expansionType: expansionType,
       expansionModifier: expansionModifier
@@ -47,15 +47,15 @@ extension URIVariableTextValue {
       }
     }
   }
-  
+
   func escapedVariableValue(
     expansionType: URIValueExpansionType,
     expansionModifier: URIValueExpansionModifier
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(expansionModifier.isValid)
+      pedanticAssert(isValid)
+    #endif
     return switch expansionModifier {
     case .unmodified, .explode:
       rawValue.escaped(
@@ -68,14 +68,14 @@ extension URIVariableTextValue {
       )
     }
   }
-  
+
   func effectiveVariableValue(
     forExpansionModifier expansionModifier: URIValueExpansionModifier
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(expansionModifier.isValid)
+      pedanticAssert(isValid)
+    #endif
     return switch expansionModifier {
     case .unmodified:
       rawValue
@@ -87,6 +87,5 @@ extension URIVariableTextValue {
       )
     }
   }
-  
-  
+
 }

@@ -2,7 +2,7 @@ import Foundation
 @testable import HDXLURITemplate
 
 extension ReferenceExampleGroup {
-  
+
   var variableValues: [String: URIVariableValue] {
     get throws {
       try variables.mapValues { referenceValue in
@@ -10,11 +10,11 @@ extension ReferenceExampleGroup {
       }
     }
   }
-    
+
 }
 
 extension ReferenceExampleGroup {
-  
+
   func captionedTestCases(
     source: String,
     caption: String
@@ -29,5 +29,5 @@ extension ReferenceExampleGroup {
       )
     }
   }
-  
+
 }

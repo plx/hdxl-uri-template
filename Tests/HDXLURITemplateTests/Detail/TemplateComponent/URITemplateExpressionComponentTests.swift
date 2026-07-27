@@ -22,7 +22,8 @@ private func textFixtureIsOk() {
 
   verifyAllSatisfy(
     probes,
-    explanation: "`URITemplateExpressionComponent.isValid` should be true for all test-fixture probes!",
+    explanation:
+      "`URITemplateExpressionComponent.isValid` should be true for all test-fixture probes!",
     predicate: \.isValid
   )
   verifyPairwiseDistinct(probes)
@@ -55,10 +56,11 @@ private func uniqueDebugDescriptions() {
 private let probeStrings: [String] = [
   "a",
   "ab",
-  "abc"
+  "abc",
 ]
 
-private let variableNames: [URITemplateVariableName] = probeStrings
+private let variableNames: [URITemplateVariableName] =
+  probeStrings
   .map {
     URITemplateVariableName(rawValue: $0)
   }
@@ -81,7 +83,7 @@ private let variableNameSubsets: [[URITemplateVariableName]] = {
     subset.sort()
     result.append(subset)
   }
-  
+
   return result.sorted { $0.lexicographicallyPrecedes($1) }
 }()
 
@@ -99,7 +101,7 @@ private let variableSubsets: [[URITemplateVariable]] = {
       )
     }
   }
-  
+
   return result.sorted { $0.lexicographicallyPrecedes($1) }
 }()
 
@@ -115,6 +117,6 @@ private let probes: [URITemplateExpressionComponent] = {
       )
     }
   }
-  
+
   return result.sorted()
 }()

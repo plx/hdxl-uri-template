@@ -7,7 +7,7 @@ import Foundation
 // MARK: URIValueExpansionType - Definition
 // -------------------------------------------------------------------------- //
 
-internal enum URIValueExpansionType : UInt8 {
+internal enum URIValueExpansionType: UInt8 {
 
   case simple = 1
   case reserved = 2
@@ -24,18 +24,18 @@ internal enum URIValueExpansionType : UInt8 {
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionType : Sendable { }
-extension URIValueExpansionType : Equatable { }
-extension URIValueExpansionType : Hashable { }
-extension URIValueExpansionType : CaseIterable { }
+extension URIValueExpansionType: Sendable {}
+extension URIValueExpansionType: Equatable {}
+extension URIValueExpansionType: Hashable {}
+extension URIValueExpansionType: CaseIterable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionType : Comparable {
+extension URIValueExpansionType: Comparable {
 
-  internal static func <(
+  internal static func < (
     lhs: Self,
     rhs: Self
   ) -> Bool {
@@ -48,7 +48,7 @@ extension URIValueExpansionType : Comparable {
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionType : CustomStringConvertible {
+extension URIValueExpansionType: CustomStringConvertible {
 
   internal var description: String {
     switch self {
@@ -76,7 +76,7 @@ extension URIValueExpansionType : CustomStringConvertible {
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionType : CustomDebugStringConvertible {
+extension URIValueExpansionType: CustomDebugStringConvertible {
 
   internal var debugDescription: String {
     switch self {
@@ -196,7 +196,6 @@ extension URIValueExpansionType {
       .queryContinuationSeparatorForExpandedVariableList
     }
   }
-
 
   internal init?(formatString: String) {
     switch formatString {

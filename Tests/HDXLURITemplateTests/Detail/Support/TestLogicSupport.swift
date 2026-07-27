@@ -13,7 +13,7 @@ func verifyOrderedAscending<Element>(
       sourceLocation: sourceLocation
     )
   }
-  
+
   for (lowerOffset, lowerIndex) in collection.indices.dropLast().enumerated() {
     let upperIndex = collection.index(after: lowerIndex)
     let lowerElement = collection[lowerIndex]
@@ -39,7 +39,7 @@ func verifyUniqueStringification<Element>(
       sourceLocation: sourceLocation
     )
   }
-  
+
   var elementStringifications: [String: Int] = [:]
   for element in elements {
     let stringRepresentation = stringify(element)
@@ -48,16 +48,17 @@ func verifyUniqueStringification<Element>(
       default: 0
     ] += 1
   }
-  
+
   let duplicateMappings = elementStringifications.filter { $1 > 1 }
   guard !duplicateMappings.isEmpty else {
     return
   }
-  
-  let summaryLines = elementStringifications
+
+  let summaryLines =
+    elementStringifications
     .map { "- `\($0.key)`: mapped-to \($0.value) times" }
     .joined(separator: "\n")
-  
+
   #expect(
     duplicateMappings.isEmpty,
     Comment(rawValue: "Found \(duplicateMappings.count) duplications:" + summaryLines),

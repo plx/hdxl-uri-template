@@ -4,10 +4,10 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(templateVariable.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(templateVariable.isValid)
+      pedanticAssert(isValid)
+    #endif
     return expansion(
       expansionType: expansionType,
       variableName: templateVariable.variableName,
@@ -20,11 +20,11 @@ extension URIVariableAssociationValue {
     variableName: URITemplateVariableName,
     expansionModifier: URIValueExpansionModifier
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(expansionModifier.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(expansionModifier.isValid)
+      pedanticAssert(isValid)
+    #endif
     guard !isEmpty else {
       return ""
     }
@@ -51,10 +51,10 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(isValid)
+    #endif
     return storage
       .lazy
       .map {
@@ -77,10 +77,10 @@ extension URIVariableAssociationValue {
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
   ) -> String {
-#if HEAVY_DEBUG
-    pedanticAssert(variableName.isValid)
-    pedanticAssert(isValid)
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(variableName.isValid)
+      pedanticAssert(isValid)
+    #endif
     let joinedPairs = storage
       .lazy
       .map {

@@ -23,7 +23,7 @@ private func literalExpansionPercentEncodesUnicodeAndPreservesURIText() throws {
       "preé-mid日-post😀/{var}",
       "pre%C3%A9-mid%E6%97%A5-post%F0%9F%98%80/value"
     ),
-    ("\u{00A0}/{var}", "%C2%A0/value")
+    ("\u{00A0}/{var}", "%C2%A0/value"),
   ]
 
   for testCase in cases {

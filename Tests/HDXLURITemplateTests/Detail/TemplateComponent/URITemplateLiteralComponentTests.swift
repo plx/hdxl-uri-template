@@ -13,15 +13,15 @@ extension Tag {
 private func textFixtureIsOk() {
   verifyOrderedAscending(probeStrings)
   verifyOrderedAscending(probes)
-  
+
   verifyAllSatisfy(
     probes,
-    explanation: "`URITemplateLiteralComponent.isValid` should be true for all test-fixture probes!",
+    explanation:
+      "`URITemplateLiteralComponent.isValid` should be true for all test-fixture probes!",
     predicate: \.isValid
   )
   verifyPairwiseDistinct(probes)
 }
-
 
 @Test(
   "`URITemplateLiteralComponent` has unique descriptions",
@@ -51,11 +51,9 @@ private let probeStrings: [String] = [
   "a",
   "ab",
   "abc",
-  "abcde"
+  "abcde",
 ]
 
 private let probes: [URITemplateLiteralComponent] = probeStrings.map {
   URITemplateLiteralComponent(rawValue: $0)
 }
-
-

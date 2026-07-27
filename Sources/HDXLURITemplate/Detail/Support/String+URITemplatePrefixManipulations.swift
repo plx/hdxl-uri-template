@@ -1,7 +1,7 @@
 import Foundation
 
 extension String {
-  
+
   /// Finds the range of `prefix` *iff* it actually is a prefix.
   ///
   /// - note: For `""` prefixes this returns `nil` (rather than, say, a `0..<0`-equivalent).

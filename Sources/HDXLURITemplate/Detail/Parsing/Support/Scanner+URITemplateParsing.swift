@@ -4,14 +4,14 @@
 
 import Foundation
 //internal extension Scanner {
-//  
+//
 //  enum CharacterScanOutcomeInterpretation {
 //    case .alreadyAtEnd
 //    case .exhaustedBeforeSeparator(String)
 //    case .terminatesWithSeparator(String)
 //    case .reachedSeparatorMoreToCome(String)
 //  }
-//  
+//
 //  func interpretedScanUpToSeparator(separator character: String) -> CharacterScanOutcomeInterpretation {
 //    precondition(character.count == 1)
 //    guard !self.isAtEnd else {
@@ -40,5 +40,5 @@ import Foundation
 //    }
 //    guard let result =  else
 //  }
-//  
+//
 //}

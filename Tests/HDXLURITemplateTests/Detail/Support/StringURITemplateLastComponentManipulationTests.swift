@@ -22,7 +22,7 @@ private func checkDegenerateLastComponentManipulationScenarios() {
     forSeparator: "",
     yields: ""
   )
-  
+
   // empty-target
   verifyLastComponent(
     of: "",
@@ -34,7 +34,7 @@ private func checkDegenerateLastComponentManipulationScenarios() {
     forSeparator: ",",
     yields: ""
   )
-  
+
   // empty-separator
   verifyLastComponent(
     of: "abc",
@@ -46,7 +46,7 @@ private func checkDegenerateLastComponentManipulationScenarios() {
     forSeparator: "",
     yields: "abc"
   )
-  
+
 }
 
 // MARK: Verifications
@@ -82,4 +82,3 @@ private func verifyRemovingLastComponent(
     sourceLocation: sourceLocation
   )
 }
-

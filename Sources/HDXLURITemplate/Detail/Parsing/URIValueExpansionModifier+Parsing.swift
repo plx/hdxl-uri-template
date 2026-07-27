@@ -4,20 +4,18 @@ import Foundation
 // THIRD_PARTY_NOTICES.md.
 
 extension URIValueExpansionModifier {
-  
-  internal enum ParseError : Error {
+
+  internal enum ParseError: Error {
     case invalidPrefixSpecification(String)
   }
-  
+
   internal init(parsing string: inout String) throws {
     if string.hasSuffix("*") {
       self = .explode
       string.conditionallyRemove(suffix: "*")
     } else if let colonIndex = string.lastIndex(of: ":") {
       let prefixSpecification = string[
-        string.index(after: colonIndex)
-          ..<
-        string.endIndex
+        string.index(after: colonIndex)..<string.endIndex
       ]
       let prefixBytes = prefixSpecification.utf8
       guard
@@ -28,27 +26,24 @@ extension URIValueExpansionModifier {
           (0x30...0x39).contains($0)
         }),
         let prefixLength = Int(prefixSpecification),
-        Self.rangeOfValidPrefixCodePointCounts.contains(prefixLength) else {
+        Self.rangeOfValidPrefixCodePointCounts.contains(prefixLength)
+      else {
         throw ParseError.invalidPrefixSpecification(
           String(
             string[
-              colonIndex
-                ..<
-                string.endIndex
+              colonIndex..<string.endIndex
             ]
           )
         )
       }
       self = .prefix(prefixLength)
       string.removeSubrange(
-        colonIndex
-          ..<
-        string.endIndex
+        colonIndex..<string.endIndex
       )
     } else {
       self = .unmodified
       // no need to update the string
     }
   }
-  
+
 }

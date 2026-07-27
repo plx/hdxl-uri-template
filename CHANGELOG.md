@@ -34,6 +34,9 @@ There are no published versions yet.
 - Added warning-free DocC API and conceptual documentation for the complete
   supported public Swift surface, with synchronized compiled examples,
   link validation, symbol coverage, and failure-oriented CI detectors.
+- Added a checked Swift 6.3 formatting policy, isolated mechanical baseline,
+  nonmutating CI lint gate, idempotence detector, and explicit exclusions for
+  generated output and vendored JSON fixtures.
 
 ### Changed
 

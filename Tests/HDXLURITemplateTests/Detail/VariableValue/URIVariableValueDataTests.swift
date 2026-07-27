@@ -15,13 +15,13 @@ private func validateFixtures() {
   verifyOrderedAscending(values)
   verifyOrderedAscending(pairs)
   #expect(associations.count == associationPairSubsets.count)
-  
+
   verifyAllSatisfy(
     probes,
     explanation: "Expect all probes to be valid.",
     predicate: \.isValid
   )
-  
+
   verifyPairwiseDistinct(probes)
 }
 
@@ -57,12 +57,15 @@ private func characterizationLogic(probe: URIVariableValueData) {
   #expect(probe.isTextValue == texts.contains(probe))
   #expect(probe.isListValue == lists.contains(probe))
   #expect(probe.isAssociationValue == associations.contains(probe))
-  #expect(1 == countOfTrue(
-    probe.isUndefined,
-    probe.isTextValue,
-    probe.isListValue,
-    probe.isAssociationValue
-  ))
+  #expect(
+    1
+      == countOfTrue(
+        probe.isUndefined,
+        probe.isTextValue,
+        probe.isListValue,
+        probe.isAssociationValue
+      )
+  )
 }
 
 // MARK: Fixtures
@@ -72,7 +75,7 @@ private let texts: [URIVariableValueData] = [
   "ab",
   "abc",
   "abcde",
-  "abcdef"
+  "abcdef",
 ].map { .text(URIVariableTextValue(rawValue: $0)) }
 
 private let lists: [URIVariableValueData] = [
@@ -80,7 +83,7 @@ private let lists: [URIVariableValueData] = [
   "ab",
   "abc",
   "abcde",
-  "abcdef"
+  "abcdef",
 ].map { URIVariableTextValue(rawValue: $0) }
   .smallPowerSet
   .map { .list(URIVariableListValue(values: $0)) }
@@ -88,16 +91,16 @@ private let lists: [URIVariableValueData] = [
 private let keys: [URIVariableTextValue] = [
   "a",
   "ab",
-  "abc"
+  "abc",
 ].map { URIVariableTextValue(rawValue: $0) }
 
 private let values: [URIVariableTextValue] = [
   "m",
   "mn",
-  "mno"
+  "mno",
 ].map { URIVariableTextValue(rawValue: $0) }
 
-private let pairs: [URIVariablePairValue] = cartesianProduct(keys,values)
+private let pairs: [URIVariablePairValue] = cartesianProduct(keys, values)
   .map {
     URIVariablePairValue(
       key: $0,
@@ -113,7 +116,8 @@ private let associationPairSubsets = pairs
     Set(subset.lazy.map(\.key)).count == subset.count
   }
 
-private let associations: [URIVariableValueData] = associationPairSubsets
+private let associations: [URIVariableValueData] =
+  associationPairSubsets
   .compactMap {
     try? URIVariableAssociationValue(validating: $0)
   }
@@ -124,6 +128,6 @@ private let probes: [URIVariableValueData] = {
   result.append(contentsOf: texts)
   result.append(contentsOf: lists)
   result.append(contentsOf: associations)
-  
+
   return result
 }()

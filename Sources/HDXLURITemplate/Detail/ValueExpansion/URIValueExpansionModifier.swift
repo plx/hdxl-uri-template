@@ -8,35 +8,35 @@ import Foundation
 // -------------------------------------------------------------------------- //
 
 internal enum URIValueExpansionModifier {
-  
+
   case unmodified
   case explode
   case prefix(Int)
-  
+
   /// RFC 6570 `max-length` values are the integers `1...9999`.
   internal static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - Synthesized Conformances
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifier : Sendable { }
-extension URIValueExpansionModifier : Equatable { }
-extension URIValueExpansionModifier : Hashable { }
+extension URIValueExpansionModifier: Sendable {}
+extension URIValueExpansionModifier: Equatable {}
+extension URIValueExpansionModifier: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: - Comparable
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifier : Comparable {
-  
-  internal static func <(
+extension URIValueExpansionModifier: Comparable {
+
+  internal static func < (
     lhs: URIValueExpansionModifier,
     rhs: URIValueExpansionModifier
   ) -> Bool {
-    switch (lhs,rhs) {
+    switch (lhs, rhs) {
     case (.unmodified, .unmodified):
       false
     case (.unmodified, .explode):
@@ -57,14 +57,14 @@ extension URIValueExpansionModifier : Comparable {
       l < r
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifier : CustomStringConvertible {
+extension URIValueExpansionModifier: CustomStringConvertible {
 
   internal var description: String {
     switch self {
@@ -82,7 +82,7 @@ extension URIValueExpansionModifier : CustomStringConvertible {
 // MARK: URIValueExpansionModifier - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifier : CustomDebugStringConvertible {
+extension URIValueExpansionModifier: CustomDebugStringConvertible {
 
   internal var debugDescription: String {
     switch self {
@@ -100,20 +100,22 @@ extension URIValueExpansionModifier : CustomDebugStringConvertible {
 // MARK: URIValueExpansionModifier - CaseIterable
 // -------------------------------------------------------------------------- //
 
-extension URIValueExpansionModifier : CaseIterable {
-  
+extension URIValueExpansionModifier: CaseIterable {
+
   internal typealias AllCases = [URIValueExpansionModifier]
-  
-  internal static let allCases: AllCases = [
-    .unmodified,
-    .explode
-  ] + URIValueExpansionModifier
+
+  internal static let allCases: AllCases =
+    [
+      .unmodified,
+      .explode,
+    ]
+    + URIValueExpansionModifier
     .rangeOfValidPrefixCodePointCounts
     .lazy
     .map {
       .prefix($0)
     }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -121,7 +123,7 @@ extension URIValueExpansionModifier : CaseIterable {
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier {
-  
+
   internal var isValid: Bool {
     switch self {
     case .unmodified:
@@ -132,7 +134,7 @@ extension URIValueExpansionModifier {
       URIValueExpansionModifier.rangeOfValidPrefixCodePointCounts.contains(codePointCount)
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -140,7 +142,7 @@ extension URIValueExpansionModifier {
 // -------------------------------------------------------------------------- //
 
 extension URIValueExpansionModifier {
-  
+
   internal var requiresAction: Bool {
     switch self {
     case .unmodified:
@@ -149,7 +151,7 @@ extension URIValueExpansionModifier {
       true
     }
   }
-  
+
   internal var isUnmodifiedType: Bool {
     switch self {
     case .unmodified:
@@ -158,7 +160,7 @@ extension URIValueExpansionModifier {
       false
     }
   }
-  
+
   internal var isExplodeType: Bool {
     switch self {
     case .explode:
@@ -167,7 +169,7 @@ extension URIValueExpansionModifier {
       false
     }
   }
-  
+
   internal var isPrefixType: Bool {
     switch self {
     case .prefix(_):
@@ -176,18 +178,18 @@ extension URIValueExpansionModifier {
       false
     }
   }
-  
+
   internal var modifierType: URIValueExpansionModifierType {
     switch self {
     case .unmodified:
-        .unmodified
+      .unmodified
     case .explode:
-        .explode
+      .explode
     case .prefix(_):
-        .prefix
+      .prefix
     }
   }
-  
+
   internal var templateRepresentation: String {
     switch self {
     case .unmodified:
@@ -198,5 +200,5 @@ extension URIValueExpansionModifier {
       ":\(codePointCount)"
     }
   }
-  
+
 }

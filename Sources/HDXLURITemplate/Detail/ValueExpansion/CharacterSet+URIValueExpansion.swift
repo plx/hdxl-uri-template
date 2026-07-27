@@ -4,8 +4,10 @@ import Foundation
 // THIRD_PARTY_NOTICES.md.
 
 extension CharacterSet {
-  
-  internal static func allowedCharacters(forValueExpansionType valueExpansionType: URIValueExpansionType) -> Self {
+
+  internal static func allowedCharacters(
+    forValueExpansionType valueExpansionType: URIValueExpansionType
+  ) -> Self {
     switch valueExpansionType {
     case .simple:
       simpleExpansionAllowedCharacterSet
@@ -25,9 +27,8 @@ extension CharacterSet {
       queryContinuationAllowedCharacterSet
     }
   }
-  
-}
 
+}
 
 // -------------------------------------------------------------------------- //
 // MARK: Character Sets - Allowed By Expansion Type
@@ -43,7 +44,7 @@ internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
   unionOf: [
     rfc_unreserved,
     rfc_reserved,
-    rfc_pct_encode
+    rfc_pct_encode,
     // ^ technically a misnomer b/c the RFC uses "pct-encode" to refer to a
     // BNF-grammar-spec like % DIGIT DIGIT, but what I did here works for our purposes
   ]
@@ -69,57 +70,56 @@ internal let queryAllowedCharacterSet: CharacterSet = rfc_unreserved
 // RFC 6570 section 3.2.9 applies the same rule to query continuations.
 internal let queryContinuationAllowedCharacterSet: CharacterSet = rfc_unreserved
 
-
 // -------------------------------------------------------------------------- //
 // MARK: Character Sets - From RFC
 // -------------------------------------------------------------------------- //
 
-internal let rfcALPHA:CharacterSet = CharacterSet(
+internal let rfcALPHA: CharacterSet = CharacterSet(
   charactersIn: [
     "abcdefghijklmnopqrstuvwxyz",
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
   ].joined(separator: "")
 )
 
-internal let rfcDIGIT:CharacterSet = CharacterSet(
+internal let rfcDIGIT: CharacterSet = CharacterSet(
   charactersIn: "0123456789"
 )
 
-internal let rfcHEXDIG:CharacterSet = CharacterSet(
+internal let rfcHEXDIG: CharacterSet = CharacterSet(
   charactersIn: [
     "0123456789",
     "abcdef",
-    "ABCDEF"
+    "ABCDEF",
   ].joined(separator: "")
 )
 
-internal let rfc_pct_encode:CharacterSet = CharacterSet(
+internal let rfc_pct_encode: CharacterSet = CharacterSet(
   charactersIn: "%"
 )
 
-internal let rfc_gen_delims:CharacterSet = CharacterSet(
+internal let rfc_gen_delims: CharacterSet = CharacterSet(
   charactersIn: ":/?#[]@"
 )
 
-internal let rfc_sub_delims:CharacterSet = CharacterSet(
+internal let rfc_sub_delims: CharacterSet = CharacterSet(
   charactersIn: [
     "!$&'()",
-    "*+,;="
+    "*+,;=",
   ].joined(separator: "")
 )
 
-internal let rfc_unreserved:CharacterSet = CharacterSet(
+internal let rfc_unreserved: CharacterSet = CharacterSet(
   unionOf: [
     rfcALPHA,
     rfcDIGIT,
-    CharacterSet(charactersIn: "-._~")
+    CharacterSet(charactersIn: "-._~"),
   ]
 )
 
-internal let rfc_reserved:CharacterSet = CharacterSet(
+internal let rfc_reserved: CharacterSet = CharacterSet(
   unionOf: [
     rfc_gen_delims,
-    rfc_sub_delims
+    rfc_sub_delims,
   ]
 )
 
@@ -129,7 +129,7 @@ internal let rfc_iprivate_uint32_ranges: [ClosedRange<UInt32>] = [
   // %xF0000-FFFFD
   0xF0000...0xFFFFD,
   // %x100000-10FFFD
-  0x100000...0x10FFFD
+  0x100000...0x10FFFD,
 ]
 
 internal let rfc_iprivate_ranges: [ClosedRange<UnicodeScalar>] = rfc_iprivate_uint32_ranges.map() {

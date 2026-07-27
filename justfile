@@ -61,6 +61,15 @@ test-check-pinned-fixtures:
 test-warning-guard:
     ./Scripts/test-run-without-warnings.sh
 
+format-swift:
+    ./Scripts/swift-format.sh format
+
+check-swift-format:
+    ./Scripts/swift-format.sh lint
+
+test-swift-format:
+    ./Scripts/test-swift-format.sh
+
 qa-03-smoke:
     QA03_COMMIT="$(git rev-parse HEAD)" {{ swift }} run -c release HDXLURITemplateQA03 fuzz --seed 0x4844584C51413033 --iterations 200000 --fixtures Tests/HDXLURITemplateTests/Resources
     QA03_COMMIT="$(git rev-parse HEAD)" {{ swift }} run -c release HDXLURITemplateQA03 concurrency --operations 100000
@@ -69,7 +78,7 @@ qa-03-smoke:
 qa-03-detectors:
     ./Scripts/test-qa-03-detectors.sh
 
-test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-docc test-check-docc check-immutable-template-storage check-cross-module-inlining test-check-cross-module-inlining test-debug test-heavy-debug test-release
+test-all: check-swift-format test-swift-format check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-docc test-check-docc check-immutable-template-storage check-cross-module-inlining test-check-cross-module-inlining test-debug test-heavy-debug test-release
 
 check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug build-release test-release
 
