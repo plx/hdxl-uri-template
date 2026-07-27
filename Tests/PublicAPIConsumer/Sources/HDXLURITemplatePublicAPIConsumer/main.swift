@@ -4,6 +4,9 @@ import HDXLURITemplate
 @main
 struct PublicAPIConsumer {
   static func main() throws {
+    try readmeQuickStart()
+    try readmeVariableValues()
+
     let template = try URITemplate(
       parsing: "https://example.com{/id}"
     )
