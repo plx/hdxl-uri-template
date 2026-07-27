@@ -10,7 +10,7 @@ let package = Package(
     .tvOS(.v26),
     .watchOS(.v26),
     .visionOS(.v26),
-    .macCatalyst(.v26)
+    .macCatalyst(.v26),
   ],
   products: [
     // Products define the executables and libraries produced by a package, and make them visible to other packages.
@@ -19,7 +19,7 @@ let package = Package(
       targets: ["HDXLURITemplate"]
     )
   ],
-  dependencies: [ ],
+  dependencies: [],
   targets: [
     // Targets are the basic building blocks of a package. A target can define a module or a test suite.
     // Targets can depend on other targets in this package, and on products in packages which this package depends on.
@@ -41,6 +41,13 @@ let package = Package(
       ],
       path: "Benchmarks/API03/Runner"
     ),
+    .executableTarget(
+      name: "HDXLURITemplateARCH01Benchmark",
+      dependencies: [
+        "HDXLURITemplate"
+      ],
+      path: "Benchmarks/ARCH01"
+    ),
     .target(
       name: "HDXLURITemplateQA03Support",
       dependencies: [
@@ -60,7 +67,7 @@ let package = Package(
       dependencies: [
         "HDXLURITemplate",
         "HDXLURITemplateAPI03BenchmarkSupport",
-        "HDXLURITemplateQA03Support"
+        "HDXLURITemplateQA03Support",
       ],
       exclude: [
         "Resources/README.md"
@@ -77,7 +84,7 @@ let package = Package(
         ),
         Resource.copy(
           "Resources/spec-examples-by-section.json"
-        )
+        ),
       ]
     ),
     .testTarget(
@@ -85,7 +92,7 @@ let package = Package(
       dependencies: [
         "HDXLURITemplate"
       ]
-    )
+    ),
   ],
   swiftLanguageModes: [
     .v6

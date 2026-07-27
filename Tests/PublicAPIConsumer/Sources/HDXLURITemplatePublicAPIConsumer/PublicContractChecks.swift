@@ -101,10 +101,37 @@ func publicTemplateCodableExamples() throws {
   try requireJSONAndPropertyListRoundTrip(templates)
 }
 
-func publicConcurrencyExample() async throws {
-  let template = try URITemplate(
-    parsing: "https://example.com{/resource}{?query}"
+func publicImmutableTemplateCopyExample() throws {
+  var source = "https://example.com{/resource}{?query}"
+  let original = try URITemplate(parsing: source)
+  let copy = original
+  source.append("-changed")
+
+  precondition(
+    original.templateRepresentation
+      == "https://example.com{/resource}{?query}"
   )
+  precondition(copy.templateRepresentation == original.templateRepresentation)
+  precondition(copy.variableNames == ["resource", "query"])
+  precondition(copy == original)
+  precondition(copy.hashValue == original.hashValue)
+  let copiedExpansion = try copy.evaluateAsString(
+    parameters: [
+      "resource": .text("users"),
+      "query": .text("swift concurrency"),
+    ]
+  )
+  precondition(
+    copiedExpansion
+      == "https://example.com/users?query=swift%20concurrency"
+  )
+}
+
+func publicConcurrencyExample() async throws {
+  let source = "https://example.com{/resource}{?query}"
+  let template = try URITemplate(parsing: source)
+  let equivalentTemplate = try URITemplate(parsing: source)
+  let expectedNames: Set<String> = ["resource", "query"]
   let operationCount = 64
 
   let completedOperations = try await withThrowingTaskGroup(
@@ -113,6 +140,10 @@ func publicConcurrencyExample() async throws {
   ) { group in
     for index in 0..<operationCount {
       group.addTask {
+        precondition(template.templateRepresentation == source)
+        precondition(template.variableNames == expectedNames)
+        precondition(template == equivalentTemplate)
+        precondition(template.hashValue == equivalentTemplate.hashValue)
         let rendered = try template.evaluateAsString(
           parameters: [
             "resource": .text(String(index)),
