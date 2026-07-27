@@ -30,6 +30,10 @@ There are no published versions yet.
 
 ### Changed
 
+- Removed seven unreachable historical expansion-error cases and made twelve
+  total text, list, and association formatting functions nonthrowing. One
+  typed internal error now carries composite-prefix rejection to the public
+  evaluation boundary; invalid URL construction remains distinct.
 - Removed pervasive cross-module and forced-inlining annotations that exposed
   internal parser, expansion, value-model, and storage declarations to client
   optimization. Measured public-client parse, expansion, hashing, and semantic
