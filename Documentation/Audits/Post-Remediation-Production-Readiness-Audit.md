@@ -1048,6 +1048,13 @@ Benchmark:
 - Codable encode/decode.
 - Direct reparsing of the authoritative string.
 
+Use the permanent
+[ARCH-01 storage benchmark](../Benchmarks/ARCH-01-Immutable-Template-Storage.md)
+to reproduce parse, copy, warm-metadata scaling, expansion, retained-memory,
+and product-size comparisons. Audit runs must still collect fresh results on
+the candidate machine rather than treating its recorded absolute timings as
+portable thresholds.
+
 If a compiled-cache representation exists, compare all of:
 
 - Parsing the source string.
