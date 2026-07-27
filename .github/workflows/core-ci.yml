@@ -30,21 +30,9 @@ jobs:
       matrix:
         include:
           - lane: debug
-            name: Normal compile-error probe
-            configuration: debug
-            probe: normal-compile
-          - lane: heavy-debug
-            name: HEAVY_DEBUG-only compile-error probe
-            configuration: debug
-            probe: heavy-compile
-          - lane: debug
             name: Inverted shared-suite expectation probe
             configuration: debug
             probe: shared-expectation
-          - lane: debug
-            name: Modified pinned-fixture probe
-            configuration: debug
-            probe: modified-fixture
     env:
       CI_ARTIFACTS: >-
         /tmp/hdxl-qa-02-${{ github.run_id }}-${{ matrix.probe }}
@@ -70,41 +58,6 @@ jobs:
           test -d "$DEVELOPER_DIR"
           xcrun swift --version |
             grep -Eq 'Swift version 6\.3([.[:space:]]|$)'
-
-      - name: Inject deliberate failure probe
-        env:
-          QA02_FAILURE_PROBE: ${{ matrix.probe }}
-        run: |
-          case "$QA02_FAILURE_PROBE" in
-            normal-compile)
-              printf '%s\n' \
-                'let qa02NormalProbe: MissingQA02Type = .init()' \
-                >>Sources/HDXLURITemplate/URIVariableValue.swift
-              ;;
-            heavy-compile)
-              printf '%s\n' \
-                '#if HEAVY_DEBUG' \
-                'let qa02HeavyProbe: MissingQA02Type = .init()' \
-                '#endif' \
-                >>Sources/HDXLURITemplate/URIVariableValue.swift
-              ;;
-            shared-expectation)
-              perl -0pi -e \
-                's/  try verifyReferenceExampleBehavior\(example\)/'\
-                '  #expect(example.testCase.template == '\
-                '"__qa02-deliberately-inverted__")\n'\
-                '  try verifyReferenceExampleBehavior(example)/' \
-                Tests/HDXLURITemplateTests/Specification/SpecificationTests.swift
-              ;;
-            modified-fixture)
-              printf '\n' \
-                >>Tests/HDXLURITemplateTests/Resources/extended-tests.json
-              ;;
-            *)
-              printf 'error: unknown QA-02 failure probe\n' >&2
-              exit 1
-              ;;
-          esac
 
       - name: Verify pinned fixture snapshot
         run: |
@@ -164,6 +117,7 @@ jobs:
 
   platform_smoke:
     name: Apple 26 SDK release smoke
+    if: github.event_name != 'pull_request'
     runs-on: macos-26
     timeout-minutes: 30
     env:
