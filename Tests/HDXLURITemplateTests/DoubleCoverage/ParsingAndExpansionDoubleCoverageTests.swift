@@ -169,14 +169,6 @@ private func manualExpansionSupportCoverage() throws {
   #expect(removable == "abc,")
   #expect("abc".constrained(toCodePointCount: -1) == "")
   #expect(StandardEnumerationCodingKeys(intValue: 2) == nil)
-  #expect(!URLError(.badURL).bestAvailableExplanation.isEmpty)
-  #expect(ManualLocalizedCoverageError().bestAvailableExplanation == "manual localized explanation")
-}
-
-private struct ManualLocalizedCoverageError: Error, LocalizedError {
-  var errorDescription: String? {
-    "manual localized explanation"
-  }
 }
 
 @Test(

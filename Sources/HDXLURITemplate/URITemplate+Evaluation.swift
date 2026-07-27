@@ -19,22 +19,8 @@ extension URITemplate {
       self.underlyingError = underlyingError
     }
     
-    public var localizedDescription: String {
-      let baseMessage =
-      """
-      Error evaluating template `\(template.templateRepresentation)` on parameters: \(parameters.errorMessageRepresentation).
-      """
-      
-      guard let underlyingError else {
-        return baseMessage
-      }
-      
-      return
-        """
-        \(baseMessage)
-        
-        Underlying error: \(String(reflecting: underlyingError))
-        """
+    public var errorDescription: String? {
+      "The URI template could not be evaluated."
     }
   }
   
@@ -95,16 +81,4 @@ extension URITemplate {
     return url
   }
 
-}
-
-extension Dictionary where Key == String, Value == URIVariableValue {
-  
-  @usableFromInline
-  internal var errorMessageRepresentation: String {
-    let memberRepresentation = lazy.map { key, value in
-      "\(key): \(value.errorMessageRepresentation)"
-    }.joined(separator: ", ")
-    return "[ \(memberRepresentation) ]"
-  }
-  
 }
