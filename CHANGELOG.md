@@ -20,3 +20,7 @@ All notable changes to this package are documented in this file.
   privacy-safe. `EvaluationError` now exposes payload-free failure metadata
   for programmatic diagnosis; its explicit template, parameter, variable-name,
   and underlying-error recovery properties remain potentially sensitive.
+- Raised the supported environment floor to Swift tools 6.3 in Swift language
+  mode 6 and Apple OS version 26 across iOS, macOS, tvOS, watchOS, visionOS,
+  and Mac Catalyst. Older Swift toolchains, older Apple OS releases, and
+  non-Apple platforms are unsupported.
