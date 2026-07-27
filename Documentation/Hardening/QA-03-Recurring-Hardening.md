@@ -75,6 +75,13 @@ QA03_COMMIT="$(git rev-parse HEAD)" \
   --replay-index FAILURE_INDEX
 ```
 
+Dedicated parse, evaluation, and URL diagnostic probes place explicit
+`SENSITIVE_TEMPLATE_` and `SENSITIVE_VALUE_` sentinels inside error-bearing
+template and value components at every 1,000th fuzz index and on every exact
+replay. The general corpus and generated inputs remain unchanged. Ordinary
+diagnostic prose is not compared to an arbitrary source by substring, avoiding
+false disclosure findings when a generated source is itself a common phrase.
+
 This is deterministic bounded fuzzing, not coverage-guided fuzzing. It does not
 satisfy the independent audit's coverage-guided duration by itself.
 

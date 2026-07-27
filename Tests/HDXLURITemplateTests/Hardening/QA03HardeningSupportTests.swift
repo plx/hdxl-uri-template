@@ -42,6 +42,34 @@ func qa03ScalingDetectorRejectsQuadraticGrowth() throws {
   #expect(abs(analysis.fittedExponent - 2.0) < 0.000_001)
 }
 
+@Test("QA-03 diagnostic oracle distinguishes sentinels from ordinary prose")
+func qa03DiagnosticOracleDistinguishesSentinelsFromProse() throws {
+  try qa03ExerciseDiagnosticPrivacyCanaries(index: 270_217)
+
+  try qa03ValidatePublicDiagnostic(
+    """
+    The URI template could not be parsed. A literal contains a character that \
+    URI-template syntax forbids.
+    """
+  )
+
+  #expect(throws: QA03Error.self) {
+    try qa03ValidatePublicDiagnostic(
+      "Invalid source SENSITIVE_TEMPLATE_270217_"
+    )
+  }
+  #expect(throws: QA03Error.self) {
+    try qa03ValidatePublicDiagnostic(
+      "Invalid value SENSITIVE_VALUE_0_payload"
+    )
+  }
+  #expect(throws: QA03Error.self) {
+    try qa03ValidatePublicDiagnostic(
+      String(repeating: "x", count: 513)
+    )
+  }
+}
+
 @Test("QA-03 fuzz failure retains and replays its exact seed and index")
 func qa03FuzzFailureReplaysExactSeedAndIndex() throws {
   let seed: UInt64 = 0x4844_584C_5141_3033
