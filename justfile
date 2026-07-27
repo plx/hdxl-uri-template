@@ -46,6 +46,14 @@ test-check-pinned-fixtures:
 test-warning-guard:
     ./Scripts/test-run-without-warnings.sh
 
+qa-03-smoke:
+    QA03_COMMIT="$(git rev-parse HEAD)" {{ swift }} run -c release HDXLURITemplateQA03 fuzz --seed 0x4844584C51413033 --iterations 200000 --fixtures Tests/HDXLURITemplateTests/Resources
+    QA03_COMMIT="$(git rev-parse HEAD)" {{ swift }} run -c release HDXLURITemplateQA03 concurrency --operations 100000
+    QA03_COMMIT="$(git rev-parse HEAD)" {{ swift }} run -c release HDXLURITemplateQA03 scaling --baseline Hardening/QA03/baselines.json --samples 5
+
+qa-03-detectors:
+    ./Scripts/test-qa-03-detectors.sh
+
 test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-public-api test-debug test-heavy-debug test-release
 
 check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug build-release test-release

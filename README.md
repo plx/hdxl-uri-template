@@ -8,8 +8,8 @@ undefined, text, list, and ordered-association variables.
 ## Status
 
 This package is pre-release. The complete pinned RFC 6570 corpus passes, but
-the production-readiness program, recurring hardening, candidate preparation,
-and independent final audit are still in progress. The repository has no
+the production-readiness program, candidate preparation, and independent
+final audit are still in progress. The repository has no
 published release tag, so it does not yet make a production-suitability or
 source-stability promise.
 
@@ -260,10 +260,11 @@ changes.
 `Sendable`. The public template API is immutable and supports concurrent
 reads. The initial audit passed the complete suite under Thread Sanitizer and a
 targeted 100,000-operation shared-template stress probe without a detected race
-or result mismatch. That is measured evidence, not a universal proof;
-scheduled sanitizer, fuzz, long concurrency, and performance-regression
-automation remains tracked in
-[#21](https://github.com/plx/hdxl-uri-template/issues/21).
+or result mismatch. That is measured evidence, not a universal proof. The
+[recurring hardening gate](Documentation/Hardening/QA-03-Recurring-Hardening.md)
+runs separate sanitizers, deterministic fuzz, shared-template concurrency, and
+Release scaling weekly and for exact candidate SHAs; the independent final
+audit remains a separate release gate.
 
 The accepted Xcode 26.6 / Swift 6.3.3 benchmark on an Apple M4 Max measured
 direct parsing of a balanced 1,000-template corpus at a median 4.907 ms in a
