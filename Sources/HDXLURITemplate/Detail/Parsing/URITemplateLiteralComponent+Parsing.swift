@@ -2,13 +2,11 @@ import Foundation
 
 extension URITemplateLiteralComponent {
   
-  @usableFromInline
   internal enum ParseError : Error {
     case unexpectedlyEmpty
     case invalidContent(String)
   }
   
-  @inlinable
   internal init(parsing string: String) throws {
     guard !string.isEmpty else {
       throw ParseError.unexpectedlyEmpty

@@ -1,14 +1,10 @@
 import Foundation
 
-@usableFromInline
 internal struct URITemplateSourceDiagnostic: Error, Sendable {
-  @usableFromInline
   internal let kind: URITemplate.ParseError.Kind
 
-  @usableFromInline
   internal let sourceRange: Range<String.Index>
 
-  @usableFromInline
   internal init(
     kind: URITemplate.ParseError.Kind,
     sourceRange: Range<String.Index>
@@ -19,7 +15,6 @@ internal struct URITemplateSourceDiagnostic: Error, Sendable {
 }
 
 extension String {
-  @usableFromInline
   internal func utf8OffsetRange(
     for sourceRange: Range<Index>
   ) -> Range<Int> {

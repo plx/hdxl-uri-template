@@ -7,7 +7,6 @@ import Foundation
 // MARK: URIValueExpansionType - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal enum URIValueExpansionType : UInt8 {
 
   case simple = 1
@@ -36,7 +35,6 @@ extension URIValueExpansionType : CaseIterable { }
 
 extension URIValueExpansionType : Comparable {
 
-  @inlinable
   internal static func <(
     lhs: Self,
     rhs: Self
@@ -52,7 +50,6 @@ extension URIValueExpansionType : Comparable {
 
 extension URIValueExpansionType : CustomStringConvertible {
 
-  @inlinable
   internal var description: String {
     switch self {
     case .simple:
@@ -81,7 +78,6 @@ extension URIValueExpansionType : CustomStringConvertible {
 
 extension URIValueExpansionType : CustomDebugStringConvertible {
 
-  @inlinable
   internal var debugDescription: String {
     switch self {
     case .simple:
@@ -111,7 +107,6 @@ extension URIValueExpansionType : CustomDebugStringConvertible {
 
 extension URIValueExpansionType {
 
-  @inlinable
   internal var isQueryExpansionType: Bool {
     switch self {
     case .query, .queryContinuation:
@@ -121,7 +116,6 @@ extension URIValueExpansionType {
     }
   }
 
-  @inlinable
   internal var allowsPercentEncodedTriplets: Bool {
     switch self {
     case .reserved, .fragment:
@@ -131,7 +125,6 @@ extension URIValueExpansionType {
     }
   }
 
-  @inlinable
   internal var emptyValueSuffix: String {
     switch self {
     case .query, .queryContinuation:
@@ -141,7 +134,6 @@ extension URIValueExpansionType {
     }
   }
 
-  @inlinable
   internal var formatString: String {
     switch self {
     case .simple:
@@ -163,7 +155,6 @@ extension URIValueExpansionType {
     }
   }
 
-  @inlinable
   internal var prefixForExpandedVariableList: String {
     switch self {
     case .simple:
@@ -185,7 +176,6 @@ extension URIValueExpansionType {
     }
   }
 
-  @inlinable
   internal var separatorForExpandedVariableList: String {
     switch self {
     case .simple:
@@ -208,7 +198,6 @@ extension URIValueExpansionType {
   }
 
 
-  @inlinable
   internal init?(formatString: String) {
     switch formatString {
     case .simpleFormatString:

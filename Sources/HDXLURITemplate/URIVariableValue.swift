@@ -35,11 +35,9 @@ public struct URIVariableValue {
   // ------------------------------------------------------------------------ //
 
   /// Shorthand for the wrapped data-storage type.
-  @usableFromInline
   internal typealias Storage = URIVariableValueData
 
   /// Holds the actual variable value.
-  @usableFromInline
   internal var storage: URIVariableValueData
 
   // ------------------------------------------------------------------------ //
@@ -47,7 +45,6 @@ public struct URIVariableValue {
   // ------------------------------------------------------------------------ //
 
   /// Designated internal-use-only initializer.
-  @inlinable
   internal init(storage: URIVariableValueData) {
     #if HEAVY_DEBUG
       pedanticAssert(storage.isValid)
@@ -89,7 +86,6 @@ public struct URIVariableValue {
   /// opaque prefix-counting unit; this is the library's deterministic fallback
   /// for malformed encoded input. A percent sign outside `%HH` is ordinary text
   /// and is escaped as `%25`.
-  @inlinable
   public static func text(_ text: String) -> Self {
     Self(
       storage: Storage(from: text)
@@ -97,7 +93,6 @@ public struct URIVariableValue {
   }
 
   /// Constructs a `.list`-flavored `URIVariableValue` wrapping `texts`.
-  @inlinable
   public static func list(_ texts: some Sequence<String>) -> Self {
     Self(
       storage: Storage(from: texts)
@@ -105,7 +100,6 @@ public struct URIVariableValue {
   }
 
   /// Constructs a single-element `.list`-flavored `URIVariableValue` wrapping `text`.
-  @inlinable
   public static func list(_ text: String) -> Self {
     Self(
       storage: Storage(singleElementListFrom: text)
@@ -116,7 +110,6 @@ public struct URIVariableValue {
   ///
   /// - Throws: `AssociationError.duplicateKey(firstIndex:duplicateIndex:)`
   ///   when a key repeats.
-  @inlinable
   public static func association(
     _ pairs: some Sequence<(String, String)>
   ) throws -> Self {
@@ -126,7 +119,6 @@ public struct URIVariableValue {
   }
 
   /// Constructs an association from `dictionary` in ascending key order.
-  @inlinable
   public static func association(
     _ dictionary: [String: String]
   ) -> Self {
@@ -141,7 +133,6 @@ public struct URIVariableValue {
   /// The predicate should define a stable strict ordering. Distinct keys for
   /// which it returns the same result in both directions use ascending lexical
   /// order as a deterministic tie-breaker.
-  @inlinable
   public static func association(
     _ dictionary: [String: String],
     orderingKeysWith areInIncreasingOrder: (String, String) -> Bool
@@ -155,7 +146,6 @@ public struct URIVariableValue {
   }
 
   /// Constructs a single-element `.association`-flavored `URIVariableValue` wrapping `pair`.
-  @inlinable
   public static func association(key: String, value: String) -> Self {
     Self(
       storage: Storage(from: (key, value))
@@ -179,7 +169,6 @@ extension URIVariableValue: Hashable {}
 extension URIVariableValue: CustomStringConvertible {
 
   /// A representation of this value suitable for diagnostic display.
-  @inlinable
   public var description: String {
     storage.description
   }
@@ -193,7 +182,6 @@ extension URIVariableValue: CustomStringConvertible {
 extension URIVariableValue: CustomDebugStringConvertible {
 
   /// A detailed representation of this value suitable for debugging.
-  @inlinable
   public var debugDescription: String {
     "URIVariableValue(storage: \(storage.debugDescription))"
   }
@@ -215,7 +203,6 @@ extension URIVariableValue {
   ///
   /// This is a superficial emptiness, and e.g. `[""]` and `[("","")]` (etc.) aren't empty.
   ///
-  @inlinable
   public var isEmpty: Bool {
     storage.isEmpty
   }
@@ -227,49 +214,41 @@ extension URIVariableValue {
   /// - `.list`: count of the underlying list
   /// - `.association`: count of the underlying association
   ///
-  @inlinable
   public var count: Int {
     storage.count
   }
 
   /// The flavor of the value: `.undefined`, `.text`, and so on.
-  @inlinable
   public var valueType: URIVariableValueType {
     storage.valueType
   }
 
   /// `true` if this has one of the *defined* flavors (e.g. anything other than `.undefined`).
-  @inlinable
   public var isDefined: Bool {
     storage.isDefined
   }
 
   /// `true` if this is of the `.undefined ` flavor.
-  @inlinable
   public var isUndefined: Bool {
     storage.isUndefined
   }
 
   /// Synonym for `isUndefined`--exists for analogy with other `is$Value` properties.
-  @inlinable
   public var isUndefinedValue: Bool {
     storage.isUndefined
   }
 
   /// `true` iff this has the `.text` flavor.
-  @inlinable
   public var isTextValue: Bool {
     storage.isTextValue
   }
 
   /// `true` iff this has the `.list` flavor.
-  @inlinable
   public var isListValue: Bool {
     storage.isListValue
   }
 
   /// `true` iff this has the `.association` flavor.
-  @inlinable
   public var isAssociationValue: Bool {
     storage.isAssociationValue
   }
@@ -282,7 +261,6 @@ extension URIVariableValue {
 
 extension URIVariableValue {
 
-  @inlinable
   internal var isValid: Bool {
     storage.isValid
   }

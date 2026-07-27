@@ -3,16 +3,12 @@
 // MARK: URITemplateExpressionComponent - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal struct URITemplateExpressionComponent {
   
-  @usableFromInline
   internal var expansionType: URIValueExpansionType
   
-  @usableFromInline
   internal var variables: [URITemplateVariable]
   
-  @inlinable
   internal init(
     expansionType: URIValueExpansionType,
     variable: URITemplateVariable
@@ -26,7 +22,6 @@ internal struct URITemplateExpressionComponent {
     )
   }
 
-  @inlinable
   internal init(
     expansionType: URIValueExpansionType,
     variables: [URITemplateVariable]
@@ -56,7 +51,6 @@ extension URITemplateExpressionComponent: Hashable { }
 
 extension URITemplateExpressionComponent : Comparable {
 
-  @inlinable
   internal static func <(
     lhs: URITemplateExpressionComponent,
     rhs: URITemplateExpressionComponent
@@ -79,7 +73,6 @@ extension URITemplateExpressionComponent : Comparable {
 
 extension URITemplateExpressionComponent : CustomStringConvertible {
   
-  @inlinable
   internal var description: String {
     let variables = variables
       .lazy
@@ -96,7 +89,6 @@ extension URITemplateExpressionComponent : CustomStringConvertible {
 
 extension URITemplateExpressionComponent : CustomDebugStringConvertible {
   
-  @inlinable
   internal var debugDescription: String {
     let variables = variables
       .lazy
@@ -114,17 +106,14 @@ extension URITemplateExpressionComponent : CustomDebugStringConvertible {
 
 extension URITemplateExpressionComponent {
   
-  @inlinable
   internal var isEmpty: Bool {
     variables.isEmpty
   }
   
-  @inlinable
   internal var count: Int {
     variables.count
   }
   
-  @inlinable
   internal var templateRepresentation: String {
     let variables = variables
       .lazy
@@ -133,7 +122,6 @@ extension URITemplateExpressionComponent {
     return "\(expansionType.formatString)\(variables)"
   }
   
-  @inlinable
   internal func injectTemplateVariables(into receiver: inout Set<URITemplateVariable>) {
     receiver.formUnion(variables)
   }
@@ -146,7 +134,6 @@ extension URITemplateExpressionComponent {
 
 extension URITemplateExpressionComponent {
   
-  @inlinable
   internal var isValid: Bool {
     !variables.isEmpty
       && variables.allSatisfy(\.isValid)

@@ -71,7 +71,6 @@ extension URITemplate {
         "URITemplate.ParseError.Kind.\(rawValue)"
       }
 
-      @usableFromInline
       internal var failureReason: String {
         switch self {
         case .unexpectedOpeningBrace:
@@ -117,7 +116,6 @@ extension URITemplate {
     /// application-specific policy.
     public let template: String
 
-    @inlinable
     internal init(
       template: String,
       kind: Kind,

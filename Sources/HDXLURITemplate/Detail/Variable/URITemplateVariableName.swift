@@ -7,19 +7,14 @@ import Foundation
 // MARK: URITemplateVariableName - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal struct URITemplateVariableName: RawRepresentable {
   
-  @usableFromInline
   internal typealias RawValue = String
   
-  @usableFromInline
   internal var rawValue: RawValue
   
-  @usableFromInline
   internal static let validationRegularExpression: NSRegularExpression = try! URITemplateVariableName.prepareValidationRegularExpression()
   
-  @inlinable
   internal init(rawValue: RawValue) {
 #if HEAVY_DEBUG
     pedanticAssert(!rawValue.isEmpty)
@@ -45,7 +40,6 @@ extension URITemplateVariableName : Hashable { }
 
 extension URITemplateVariableName : Comparable {
   
-  @inlinable
   internal static func <(
     lhs: URITemplateVariableName,
     rhs: URITemplateVariableName
@@ -66,7 +60,6 @@ extension URITemplateVariableName : Comparable {
 
 extension URITemplateVariableName : CustomStringConvertible {
   
-  @inlinable
   internal var description: String {
     rawValue
   }
@@ -79,7 +72,6 @@ extension URITemplateVariableName : CustomStringConvertible {
 
 extension URITemplateVariableName : CustomDebugStringConvertible {
   
-  @inlinable
   internal var debugDescription: String {
     "URITemplateVariableName(rawValue: \"\(rawValue)\")"
   }
@@ -92,7 +84,6 @@ extension URITemplateVariableName : CustomDebugStringConvertible {
 
 extension URITemplateVariableName {
     
-  @inlinable
   static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     // RFC 6570 section 2.3 defines a nonempty `varchar` sequence followed by
     // zero or more dot-separated `varchar` sequences. Percent-encoded
@@ -160,7 +151,6 @@ extension URITemplateVariableName {
 
 extension URITemplateVariableName {
   
-  @inlinable
   internal var isValid: Bool {
     guard
       !rawValue.isEmpty,

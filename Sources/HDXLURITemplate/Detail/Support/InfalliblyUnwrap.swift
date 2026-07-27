@@ -11,8 +11,6 @@
 ///   - value: An `Optional<T>` that cannot, by construction, be `nil`.
 ///   - explanation: A `StaticString` describing why `value` cannot be `nil`.
 /// - Returns: The wrapped value.
-@inlinable
-@inline(__always)
 internal func infalliblyUnwrap<T>(
   _ value: T?,
   explanation: StaticString

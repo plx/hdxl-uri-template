@@ -2,7 +2,6 @@ import Foundation
 
 extension URIVariableValue {
 
-  @usableFromInline
   internal enum ExpansionError:
     Error,
     LocalizedError,
@@ -16,7 +15,6 @@ extension URIVariableValue {
       valueType: URIVariableValueType
     )
 
-    @usableFromInline
     internal var errorDescription: String? {
       switch self {
       case .prefixModifierNotApplicable(
@@ -32,18 +30,15 @@ extension URIVariableValue {
       }
     }
 
-    @usableFromInline
     internal var description: String {
       errorDescription ?? "URI template value expansion failed."
     }
 
-    @usableFromInline
     internal var debugDescription: String {
       description
     }
   }
 
-  @inlinable
   internal func evaluate(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable

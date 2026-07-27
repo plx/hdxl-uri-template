@@ -41,33 +41,23 @@ extension URITemplate {
       }
     }
 
-    @usableFromInline
     internal struct DiagnosticContext: Sendable {
-      @usableFromInline
       internal let kind: Kind
 
-      @usableFromInline
       internal let failingVariableName: String?
 
-      @usableFromInline
       internal let expressionOperatorToken: String?
 
-      @usableFromInline
       internal let expressionTypeName: String?
 
-      @usableFromInline
       internal let prefixModifierCodePointCount: Int?
 
-      @usableFromInline
       internal let failingValueType: URIVariableValueType?
 
-      @usableFromInline
       internal static let other = DiagnosticContext(kind: .other)
 
-      @usableFromInline
       internal static let invalidURL = DiagnosticContext(kind: .invalidURL)
 
-      @usableFromInline
       internal init(
         kind: Kind,
         failingVariableName: String? = nil,
@@ -105,10 +95,8 @@ extension URITemplate {
     /// to log.
     public let underlyingError: Error?
 
-    @usableFromInline
     internal let diagnosticContext: DiagnosticContext
 
-    @usableFromInline
     internal init(
       template: URITemplate,
       parameters: [String: URIVariableValue],
@@ -193,7 +181,6 @@ extension URITemplate {
       description
     }
 
-    @usableFromInline
     internal static func makeExpansionDiagnosticContext(
       for underlyingError: Error?
     ) -> DiagnosticContext {
@@ -226,7 +213,6 @@ extension URITemplate {
     }
   }
 
-  @inlinable
   public func evaluateAsString(
     parameters: [String: URIVariableValue]
   ) throws -> String {
@@ -261,7 +247,6 @@ extension URITemplate {
     }
   }
 
-  @inlinable
   public func evaluate(parameters: [String: URIVariableValue]) throws -> URL {
     let stringResult = try evaluateAsString(parameters: parameters)
     guard let url = URL(string: stringResult) else {

@@ -2,7 +2,6 @@ import Foundation
 
 extension CharacterSet {
   
-  @inlinable
   init(unionOf characterSets: [CharacterSet]) {
     self.init()
     for characterSet in characterSets {
@@ -10,7 +9,6 @@ extension CharacterSet {
     }
   }
   
-  @inlinable
   internal init(unionOf ranges: [Range<UnicodeScalar>]) {
     self.init()
     for range in ranges {
@@ -18,7 +16,6 @@ extension CharacterSet {
     }
   }
   
-  @inlinable
   internal init(unionOf ranges: [ClosedRange<UnicodeScalar>]) {
     self.init()
     for range in ranges {

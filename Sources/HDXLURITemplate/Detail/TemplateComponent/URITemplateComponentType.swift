@@ -2,7 +2,6 @@
 // MARK: URITemplateComponentType - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal enum URITemplateComponentType : UInt8 {
   
   case literal = 1
@@ -22,7 +21,6 @@ extension URITemplateComponentType : CaseIterable { }
 
 extension URITemplateComponentType : Comparable {
 
-  @inlinable
   internal static func <(
     lhs: URITemplateComponentType,
     rhs: URITemplateComponentType
@@ -38,7 +36,6 @@ extension URITemplateComponentType : Comparable {
 
 extension URITemplateComponentType : CustomStringConvertible {
 
-  @usableFromInline
   internal var description: String {
     switch self {
     case .literal:
@@ -56,7 +53,6 @@ extension URITemplateComponentType : CustomStringConvertible {
 
 extension URITemplateComponentType : CustomDebugStringConvertible {
   
-  @usableFromInline
   internal var debugDescription: String {
     switch self {
     case .literal:

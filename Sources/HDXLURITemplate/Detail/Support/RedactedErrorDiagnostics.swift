@@ -2,7 +2,6 @@ import Foundation
 
 /// Supplies bounded, payload-free default text for internal errors that retain
 /// source fragments as structured recovery context.
-@usableFromInline
 internal protocol RedactedDiagnosticError:
   Error,
   LocalizedError,
@@ -13,17 +12,14 @@ internal protocol RedactedDiagnosticError:
 }
 
 extension RedactedDiagnosticError {
-  @usableFromInline
   internal var errorDescription: String? {
     redactedDiagnosticDescription
   }
 
-  @usableFromInline
   internal var description: String {
     redactedDiagnosticDescription
   }
 
-  @usableFromInline
   internal var debugDescription: String {
     redactedDiagnosticDescription
   }
@@ -32,7 +28,6 @@ extension RedactedDiagnosticError {
 extension URITemplateExpressionComponent.ParseError:
   RedactedDiagnosticError
 {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     switch self {
     case .invalidEmptyString:
@@ -44,7 +39,6 @@ extension URITemplateExpressionComponent.ParseError:
 }
 
 extension URITemplateLiteralComponent.ParseError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     switch self {
     case .unexpectedlyEmpty:
@@ -56,7 +50,6 @@ extension URITemplateLiteralComponent.ParseError: RedactedDiagnosticError {
 }
 
 extension URITemplateVariableName.ParseError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     switch self {
     case .invalidEmptyName:
@@ -68,28 +61,24 @@ extension URITemplateVariableName.ParseError: RedactedDiagnosticError {
 }
 
 extension URIValueExpansionModifier.ParseError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     "The URI template prefix modifier is invalid."
   }
 }
 
 extension URIValueExpansionType.ParseError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     "The URI template expansion is empty."
   }
 }
 
 extension URITemplateVariable.ParseError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     "The URI template variable specification is empty."
   }
 }
 
 extension URIVariableTextValue.ExpansionError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     switch self {
     case .unableToEscapeVariableValue:
@@ -103,7 +92,6 @@ extension URIVariableTextValue.ExpansionError: RedactedDiagnosticError {
 }
 
 extension URIVariableListValue.ExpansionError: RedactedDiagnosticError {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     "Unable to expand a list value safely."
   }
@@ -112,7 +100,6 @@ extension URIVariableListValue.ExpansionError: RedactedDiagnosticError {
 extension URIVariableAssociationValue.ExpansionError:
   RedactedDiagnosticError
 {
-  @usableFromInline
   internal var redactedDiagnosticDescription: String {
     "Unable to expand an association value safely."
   }

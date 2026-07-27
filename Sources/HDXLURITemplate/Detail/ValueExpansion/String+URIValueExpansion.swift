@@ -5,7 +5,6 @@ import Foundation
 
 extension UInt8 {
 
-  @inlinable
   internal var asciiHexadecimalDigitValue: UInt8? {
     switch self {
     case 0x30...0x39:
@@ -19,17 +18,14 @@ extension UInt8 {
     }
   }
 
-  @inlinable
   internal var isASCIIHexadecimalDigit: Bool {
     asciiHexadecimalDigitValue != nil
   }
 
-  @inlinable
   internal var isUTF8ContinuationByte: Bool {
     (0x80...0xBF).contains(self)
   }
 
-  @inlinable
   internal func isValidUTF8SecondByte(
     after leadingByte: UInt8
   ) -> Bool {
@@ -51,7 +47,6 @@ extension UInt8 {
 
 extension String.UTF8View {
 
-  @inlinable
   internal func percentEncodedByte(
     startingAt position: Index
   ) -> (value: UInt8, endIndex: Index)? {
@@ -75,7 +70,6 @@ extension String.UTF8View {
     )
   }
 
-  @inlinable
   internal func indexAfterPercentEncodedTriplet(
     startingAt position: Index
   ) -> Index? {
@@ -89,7 +83,6 @@ extension String.UTF8View {
   /// A triplet that cannot begin such a scalar is an opaque one-unit fallback;
   /// this preserves the established reserved-expansion behavior for arbitrary
   /// `%HH` input without joining it to unrelated following triplets.
-  @inlinable
   internal func indexAfterPercentEncodedURIValueCodePoint(
     startingAt position: Index
   ) -> Index? {
@@ -129,7 +122,6 @@ extension String.UTF8View {
     }
   }
 
-  @inlinable
   internal func indexAfterThreeBytePercentEncodedScalar(
     startingWith firstByte: (value: UInt8, endIndex: Index)
   ) -> Index {
@@ -148,7 +140,6 @@ extension String.UTF8View {
     return thirdByte.endIndex
   }
 
-  @inlinable
   internal func indexAfterFourBytePercentEncodedScalar(
     startingWith firstByte: (value: UInt8, endIndex: Index)
   ) -> Index {
@@ -172,7 +163,6 @@ extension String.UTF8View {
   }
 
   /// Returns the boundary after one literal scalar in a valid Swift string.
-  @inlinable
   internal func indexAfterLiteralUnicodeScalar(
     startingAt position: Index
   ) -> Index {
@@ -195,7 +185,6 @@ extension String.UTF8View {
   }
 
   /// Returns the source boundary and representation of one URI-value unit.
-  @inlinable
   internal func uriValueCodePoint(
     startingAt position: Index
   ) -> (endIndex: Index, isPercentEncoded: Bool) {
@@ -214,7 +203,6 @@ extension String.UTF8View {
 
 extension String {
 
-  @inlinable
   internal func escaped(
     forValueExpansionType valueExpansionType: URIValueExpansionType
   ) -> String {
@@ -249,7 +237,6 @@ extension String {
     )
   }
 
-  @inlinable
   internal func escaped(
     forValueExpansionType valueExpansionType: URIValueExpansionType,
     maximumDecodedCodePointCount: Int
@@ -266,7 +253,6 @@ extension String {
     )
   }
 
-  @inlinable
   internal func escapedPreservingPercentEncodedTriplets(
     allowedCharacters: CharacterSet
   ) -> String {
@@ -277,7 +263,6 @@ extension String {
     )
   }
 
-  @inlinable
   internal func escapedScanningURIValueCodePoints(
     allowedCharacters: CharacterSet,
     preservesPercentEncodedTriplets: Bool,
@@ -326,7 +311,6 @@ extension String {
     return String(decoding: result, as: UTF8.self)
   }
 
-  @inlinable
   internal func constrained(
     toDecodedURIValueCodePointCount maximumCodePointCount: Int
   ) -> String {
@@ -348,7 +332,6 @@ extension String {
 
 }
 
-@inlinable
 internal func appendEscapedURIValueBytes(
   _ bytes: some Sequence<UInt8>,
   allowedCharacters: CharacterSet,

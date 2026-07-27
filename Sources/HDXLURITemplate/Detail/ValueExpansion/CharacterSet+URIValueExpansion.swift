@@ -5,7 +5,6 @@ import Foundation
 
 extension CharacterSet {
   
-  @inlinable
   internal static func allowedCharacters(forValueExpansionType valueExpansionType: URIValueExpansionType) -> Self {
     switch valueExpansionType {
     case .simple:
@@ -36,12 +35,10 @@ extension CharacterSet {
 
 // RFC 6570 section 3.2.2 permits only unreserved characters in simple
 // expansion values.
-@usableFromInline
 internal let simpleExpansionAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 // RFC 6570 section 3.2.3 additionally preserves reserved characters and
 // valid percent-encoded triplets.
-@usableFromInline
 internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
   unionOf: [
     rfc_unreserved,
@@ -54,28 +51,22 @@ internal let reservedExpansionAllowedCharacterSet: CharacterSet = CharacterSet(
 
 // RFC 6570 section 3.2.4 gives fragment values the reserved-expansion
 // character set; prefix insertion is handled separately.
-@usableFromInline
 internal let fragmentAllowedCharacterSet: CharacterSet = reservedExpansionAllowedCharacterSet
 
 // RFC 6570 section 3.2.5 permits only unreserved characters in label values.
-@usableFromInline
 internal let labelAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 // RFC 6570 section 3.2.6 uses the label value character set for path
 // segments; the slash separator is inserted outside the value.
-@usableFromInline
 internal let pathSegmentAllowedCharacterSet: CharacterSet = labelAllowedCharacterSet
 
 // RFC 6570 section 3.2.7 permits only unreserved path-parameter values.
-@usableFromInline
 internal let pathParameterAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 // RFC 6570 section 3.2.8 permits only unreserved query values.
-@usableFromInline
 internal let queryAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 // RFC 6570 section 3.2.9 applies the same rule to query continuations.
-@usableFromInline
 internal let queryContinuationAllowedCharacterSet: CharacterSet = rfc_unreserved
 
 
@@ -83,7 +74,6 @@ internal let queryContinuationAllowedCharacterSet: CharacterSet = rfc_unreserved
 // MARK: Character Sets - From RFC
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal let rfcALPHA:CharacterSet = CharacterSet(
   charactersIn: [
     "abcdefghijklmnopqrstuvwxyz",
@@ -91,12 +81,10 @@ internal let rfcALPHA:CharacterSet = CharacterSet(
   ].joined(separator: "")
 )
 
-@usableFromInline
 internal let rfcDIGIT:CharacterSet = CharacterSet(
   charactersIn: "0123456789"
 )
 
-@usableFromInline
 internal let rfcHEXDIG:CharacterSet = CharacterSet(
   charactersIn: [
     "0123456789",
@@ -105,17 +93,14 @@ internal let rfcHEXDIG:CharacterSet = CharacterSet(
   ].joined(separator: "")
 )
 
-@usableFromInline
 internal let rfc_pct_encode:CharacterSet = CharacterSet(
   charactersIn: "%"
 )
 
-@usableFromInline
 internal let rfc_gen_delims:CharacterSet = CharacterSet(
   charactersIn: ":/?#[]@"
 )
 
-@usableFromInline
 internal let rfc_sub_delims:CharacterSet = CharacterSet(
   charactersIn: [
     "!$&'()",
@@ -123,7 +108,6 @@ internal let rfc_sub_delims:CharacterSet = CharacterSet(
   ].joined(separator: "")
 )
 
-@usableFromInline
 internal let rfc_unreserved:CharacterSet = CharacterSet(
   unionOf: [
     rfcALPHA,
@@ -132,7 +116,6 @@ internal let rfc_unreserved:CharacterSet = CharacterSet(
   ]
 )
 
-@usableFromInline
 internal let rfc_reserved:CharacterSet = CharacterSet(
   unionOf: [
     rfc_gen_delims,
@@ -140,7 +123,6 @@ internal let rfc_reserved:CharacterSet = CharacterSet(
   ]
 )
 
-@usableFromInline
 internal let rfc_iprivate_uint32_ranges: [ClosedRange<UInt32>] = [
   //  %xE000-F8FF
   0xE000...0xF8FF,
@@ -150,7 +132,6 @@ internal let rfc_iprivate_uint32_ranges: [ClosedRange<UInt32>] = [
   0x100000...0x10FFFD
 ]
 
-@usableFromInline
 internal let rfc_iprivate_ranges: [ClosedRange<UnicodeScalar>] = rfc_iprivate_uint32_ranges.map() {
   let lowerBound = infalliblyUnwrap(
     UnicodeScalar($0.lowerBound),
@@ -176,7 +157,6 @@ internal let rfc_iprivate_ranges: [ClosedRange<UnicodeScalar>] = rfc_iprivate_ui
   return lowerBound...upperBound
 }
 
-@usableFromInline
 internal let rfc_iprivate = CharacterSet(
   unionOf: rfc_iprivate_ranges
 )

@@ -2,13 +2,11 @@ import Foundation
 
 extension URIVariableAssociationValue {
 
-  @usableFromInline
   internal enum ExpansionError : Error, LocalizedError {
     case internalAssociationKeyFailedToEscape([(String,String)], String, String, URIValueExpansionType)
     case internalAssociationValueFailedToEscape([(String,String)], String, String, URIValueExpansionType)
   }
 
-  @inlinable
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
@@ -24,7 +22,6 @@ extension URIVariableAssociationValue {
     )
   }
 
-  @inlinable
   internal func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
@@ -57,7 +54,6 @@ extension URIVariableAssociationValue {
     }
   }
 
-  @inlinable
   internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
@@ -84,7 +80,6 @@ extension URIVariableAssociationValue {
       .joined(separator: expansionType.separatorForExpandedVariableList)
   }
 
-  @inlinable
   internal func unexplodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName

@@ -1,6 +1,5 @@
 
 extension Optional {
-  @inlinable
   mutating func obtainAssuredValue(
     guaranteedBy fallback: @autoclosure () -> Wrapped
   ) -> Wrapped {

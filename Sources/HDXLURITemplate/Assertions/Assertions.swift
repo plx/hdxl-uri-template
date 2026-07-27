@@ -1,8 +1,6 @@
 import Foundation
 
 #if HEAVY_DEBUG
-@inline(__always)
-@usableFromInline
 internal func pedanticAssert(
   _ condition: @autoclosure () -> Bool,
   _ message: @autoclosure () -> String = "",
@@ -11,8 +9,6 @@ internal func pedanticAssert(
   assert(condition(), message(), file: file, line: line)
 }
 
-@inline(__always)
-@usableFromInline
 internal func pedanticAssertionFailure(
   _ message: @autoclosure () -> String = "",
   file: StaticString = #file,
@@ -21,8 +17,6 @@ internal func pedanticAssertionFailure(
 }
 
 
-@inline(__always)
-@usableFromInline
 internal func pedanticPrecondition(
   _ condition: @autoclosure () -> Bool,
   _ message: @autoclosure () -> String = "",
@@ -31,8 +25,6 @@ internal func pedanticPrecondition(
   precondition(condition(), message(), file: file, line: line)
 }
 
-@inline(__always)
-@usableFromInline
 internal func pedanticPreconditionFailure(
   _ message: @autoclosure () -> String = "",
   file: StaticString = #file,

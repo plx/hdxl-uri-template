@@ -2,12 +2,10 @@ import Foundation
 
 extension URIValueExpansionType {
   
-  @usableFromInline
   internal enum ParseError : Error {
     case invalidEmptyString
   }
   
-  @inlinable
   internal init(parsing string: inout String) throws {
     guard !string.isEmpty else {
       throw ParseError.invalidEmptyString

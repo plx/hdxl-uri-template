@@ -5,12 +5,10 @@ import Foundation
 
 extension URIValueExpansionModifier {
   
-  @usableFromInline
   internal enum ParseError : Error {
     case invalidPrefixSpecification(String)
   }
   
-  @inlinable
   internal init(parsing string: inout String) throws {
     if string.hasSuffix("*") {
       self = .explode

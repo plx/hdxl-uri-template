@@ -3,7 +3,6 @@ import Foundation
 extension String {
   
   /// Convenience to get at the code-point count.
-  @inlinable
   internal var codePointCount: Int {
     unicodeScalars.count
   }
@@ -12,7 +11,6 @@ extension String {
   ///
   /// This truncation isn't useful for arbitrary strings, but it's fine for what
   /// we use it for within the URI template implementation.
-  @inlinable
   internal func constrained(toCodePointCount codePointCount: Int) -> String {
     #if HEAVY_DEBUG
     pedanticAssert(codePointCount >= 0)
@@ -41,7 +39,6 @@ extension String {
   ///
   /// This truncation isn't useful for arbitrary strings, but it's fine for what
   /// we use it for within the URI template implementation.
-  @inlinable
   internal mutating func constrain(toCodePointCount codePointCount: Int) {
 #if HEAVY_DEBUG
     pedanticAssert(codePointCount >= 0)

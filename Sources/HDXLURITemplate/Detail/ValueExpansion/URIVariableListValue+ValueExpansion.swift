@@ -2,13 +2,11 @@ import Foundation
 
 extension URIVariableListValue {
   
-  @usableFromInline
   internal enum ExpansionError : Error, LocalizedError {
     case internalValueFailedToEscape([String], String, String, URIValueExpansionType)
     case unableToEscapeVariableName(String, URIValueExpansionType)
   }
   
-  @inlinable
   internal func expansion(
     expansionType: URIValueExpansionType,
     templateVariable: URITemplateVariable
@@ -24,7 +22,6 @@ extension URIVariableListValue {
     )
   }
   
-  @inlinable
   internal func expansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName,
@@ -57,7 +54,6 @@ extension URIVariableListValue {
     }
   }
   
-  @inlinable
   internal func explodedRepresentation(
     of text: URIVariableTextValue,
     expansionType: URIValueExpansionType,
@@ -85,7 +81,6 @@ extension URIVariableListValue {
     }
   }
   
-  @inlinable
   internal func explodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName
@@ -108,7 +103,6 @@ extension URIVariableListValue {
     )
   }
 
-  @inlinable
   internal func unexplodedExpansion(
     expansionType: URIValueExpansionType,
     variableName: URITemplateVariableName

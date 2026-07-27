@@ -11,13 +11,10 @@
 /// For this specific type at this time that check is trivially `true` for any
 /// string, but I'll need to re-read the spec to verify that there are, in fact,
 /// no actual invariants/constraints/etc. that we need to satisfy here.
-@usableFromInline
 internal struct URIVariableTextValue: RawRepresentable {
 
-  @usableFromInline
   internal var rawValue: String
 
-  @inlinable
   internal init(rawValue: String) {
     #if HEAVY_DEBUG
       defer { pedanticAssert(isValid) }
@@ -41,7 +38,6 @@ extension URIVariableTextValue: Hashable {}
 
 extension URIVariableTextValue: Comparable {
 
-  @inlinable
   internal static func < (
     lhs: URIVariableTextValue,
     rhs: URIVariableTextValue
@@ -61,7 +57,6 @@ extension URIVariableTextValue: Comparable {
 
 extension URIVariableTextValue: CustomStringConvertible {
 
-  @usableFromInline
   internal var description: String { rawValue }
 
 }
@@ -72,7 +67,6 @@ extension URIVariableTextValue: CustomStringConvertible {
 
 extension URIVariableTextValue: CustomDebugStringConvertible {
 
-  @usableFromInline
   internal var debugDescription: String {
     "URIVariableTextValue(rawValue: '\(rawValue)')"
   }
@@ -84,25 +78,20 @@ extension URIVariableTextValue: CustomDebugStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URIVariableTextValue: ExpressibleByStringLiteral {
-  @usableFromInline
   typealias ExtendedGraphemeClusterLiteralType = String.ExtendedGraphemeClusterLiteralType
 
-  @usableFromInline
   typealias StringLiteralType = String.StringLiteralType
 
-  @inlinable
   internal init(unicodeScalarLiteral value: ExtendedGraphemeClusterLiteralType) {
     self.init(rawValue: String(value))
     precondition(isValid)
   }
 
-  @inlinable
   internal init(extendedGraphemeClusterLiteral value: ExtendedGraphemeClusterLiteralType) {
     self.init(rawValue: String(value))
     precondition(isValid)
   }
 
-  @inlinable
   internal init(stringLiteral value: StringLiteralType) {
     self.init(rawValue: String(value))
     precondition(isValid)
@@ -115,7 +104,6 @@ extension URIVariableTextValue: ExpressibleByStringLiteral {
 
 extension URIVariableTextValue {
 
-  @inlinable
   internal var isValid: Bool { true }
 
 }
@@ -127,7 +115,6 @@ extension URIVariableTextValue {
 extension URIVariableTextValue {
 
   /// `true` iff we're wrapping an empty string.
-  @inlinable
   internal var isEmpty: Bool { rawValue.isEmpty }
 
 }

@@ -16,7 +16,6 @@ extension String {
   /// Note that (1) and (2) are intuitive, but (3) is a design decision to simplify
   /// some of the downstream code.
   ///
-  @inlinable
   func rangeOfLastComponent(forSeparator separator: String) -> Range<String.Index>? {
     guard
       !isEmpty,
@@ -29,7 +28,6 @@ extension String {
     return rangeOfLastSeparator.upperBound..<endIndex
   }
   
-  @inlinable
   func lastComponent(forSeparator separator: String) -> String? {
     guard let range = rangeOfLastComponent(forSeparator: separator) else {
       return nil
@@ -37,14 +35,12 @@ extension String {
     return String(self[range])
   }
   
-  @inlinable
   func removingLastComponent(forSeparator separator: String) -> String {
     mutated {
       $0.removeLastComponent(forSeparator: separator)
     }
   }
   
-  @inlinable
   mutating func removeLastComponent(forSeparator separator: String) {
     if let rangeToRemove = rangeOfLastComponent(forSeparator: separator) {
       removeSubrange(rangeToRemove)

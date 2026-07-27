@@ -7,19 +7,14 @@ import Foundation
 // MARK: URITemplateLiteralComponent - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal struct URITemplateLiteralComponent: RawRepresentable {
   
-  @usableFromInline
   internal typealias Storage = String
   
-  @usableFromInline
   internal var rawValue: Storage
   
-  @usableFromInline
   internal static let validationRegularExpression: NSRegularExpression = try! URITemplateLiteralComponent.prepareValidationRegularExpression()
   
-  @inlinable
   internal init(rawValue: Storage) {
 #if HEAVY_DEBUG
     pedanticAssert(!rawValue.isEmpty)
@@ -45,7 +40,6 @@ extension URITemplateLiteralComponent : Hashable { }
 
 extension URITemplateLiteralComponent : Comparable {
   
-  @inlinable
   internal static func <(
     lhs: URITemplateLiteralComponent,
     rhs: URITemplateLiteralComponent
@@ -65,7 +59,6 @@ extension URITemplateLiteralComponent : Comparable {
 
 extension URITemplateLiteralComponent : CustomStringConvertible {
   
-  @usableFromInline
   internal var description: String { rawValue }
   
 }
@@ -76,7 +69,6 @@ extension URITemplateLiteralComponent : CustomStringConvertible {
 
 extension URITemplateLiteralComponent : CustomDebugStringConvertible {
   
-  @usableFromInline
   internal var debugDescription: String {
     "URITemplateLiteralComponent(storage: \"\(rawValue)\")"
   }
@@ -89,7 +81,6 @@ extension URITemplateLiteralComponent : CustomDebugStringConvertible {
 
 extension URITemplateLiteralComponent {
   
-  @inlinable
   internal static func prepareValidationRegularExpression() throws -> NSRegularExpression {
     /*
      This regex implements the RFC 6570 section 2.1 `literals` production,
@@ -159,7 +150,6 @@ extension URITemplateLiteralComponent {
 
 extension URITemplateLiteralComponent {
   
-  @inlinable
   internal var isValid: Bool {
     !rawValue.isEmpty
     &&

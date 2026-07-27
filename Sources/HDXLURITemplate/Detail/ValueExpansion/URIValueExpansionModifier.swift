@@ -7,7 +7,6 @@ import Foundation
 // MARK: URIValueExpansionModifier - Definition
 // -------------------------------------------------------------------------- //
 
-@usableFromInline
 internal enum URIValueExpansionModifier {
   
   case unmodified
@@ -15,7 +14,6 @@ internal enum URIValueExpansionModifier {
   case prefix(Int)
   
   /// RFC 6570 `max-length` values are the integers `1...9999`.
-  @usableFromInline
   internal static let rangeOfValidPrefixCodePointCounts: ClosedRange<Int> = 1...9999
   
 }
@@ -34,7 +32,6 @@ extension URIValueExpansionModifier : Hashable { }
 
 extension URIValueExpansionModifier : Comparable {
   
-  @inlinable
   internal static func <(
     lhs: URIValueExpansionModifier,
     rhs: URIValueExpansionModifier
@@ -69,7 +66,6 @@ extension URIValueExpansionModifier : Comparable {
 
 extension URIValueExpansionModifier : CustomStringConvertible {
 
-  @inlinable
   internal var description: String {
     switch self {
     case .unmodified:
@@ -88,7 +84,6 @@ extension URIValueExpansionModifier : CustomStringConvertible {
 
 extension URIValueExpansionModifier : CustomDebugStringConvertible {
 
-  @inlinable
   internal var debugDescription: String {
     switch self {
     case .unmodified:
@@ -107,10 +102,8 @@ extension URIValueExpansionModifier : CustomDebugStringConvertible {
 
 extension URIValueExpansionModifier : CaseIterable {
   
-  @usableFromInline
   internal typealias AllCases = [URIValueExpansionModifier]
   
-  @usableFromInline
   internal static let allCases: AllCases = [
     .unmodified,
     .explode
@@ -129,7 +122,6 @@ extension URIValueExpansionModifier : CaseIterable {
 
 extension URIValueExpansionModifier {
   
-  @inlinable
   internal var isValid: Bool {
     switch self {
     case .unmodified:
@@ -149,7 +141,6 @@ extension URIValueExpansionModifier {
 
 extension URIValueExpansionModifier {
   
-  @inlinable
   internal var requiresAction: Bool {
     switch self {
     case .unmodified:
@@ -159,7 +150,6 @@ extension URIValueExpansionModifier {
     }
   }
   
-  @inlinable
   internal var isUnmodifiedType: Bool {
     switch self {
     case .unmodified:
@@ -169,7 +159,6 @@ extension URIValueExpansionModifier {
     }
   }
   
-  @inlinable
   internal var isExplodeType: Bool {
     switch self {
     case .explode:
@@ -179,7 +168,6 @@ extension URIValueExpansionModifier {
     }
   }
   
-  @inlinable
   internal var isPrefixType: Bool {
     switch self {
     case .prefix(_):
@@ -189,7 +177,6 @@ extension URIValueExpansionModifier {
     }
   }
   
-  @inlinable
   internal var modifierType: URIValueExpansionModifierType {
     switch self {
     case .unmodified:
@@ -201,7 +188,6 @@ extension URIValueExpansionModifier {
     }
   }
   
-  @inlinable
   internal var templateRepresentation: String {
     switch self {
     case .unmodified:
