@@ -135,9 +135,9 @@ That removal:
 - added a public-API validation gate that requires exactly the package and
   external-consumer generated Swift headers and rejects all three former
   Objective-C symbols in every header; and
-- passed the full Debug, heavy Debug, and Release suites with both Xcode 26.6 /
-  Swift 6.3.3 and Xcode 27 / Swift 6.4, plus hosted heavy-Debug and automated
-  review checks on the exact merged head.
+- passed the full Debug, heavy Debug, and Release suites with Xcode 26.6 /
+  Swift 6.3.3 and Xcode 27.0 beta / Swift 6.4, plus hosted heavy-Debug and
+  automated review checks on the exact merged head.
 
 Conditional facade
 [issue #53](https://github.com/plx/hdxl-uri-template/issues/53) then received
