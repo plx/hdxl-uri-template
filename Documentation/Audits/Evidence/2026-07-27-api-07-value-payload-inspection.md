@@ -122,6 +122,25 @@ then produced one transient `large-list` rejection; its separate five-sample
 QA-03 scaling rerun passed all six frozen workloads, with fitted exponents
 ranging from `0.957` to `0.998`.
 
+### Candidate follow-up
+
+The exact post-merge
+[Core CI run 30292601343](https://github.com/plx/hdxl-uri-template/actions/runs/30292601343)
+for the first prepared candidate later reproduced the same measurement-only
+instability in Release. Every functional assertion passed, but the
+grouped-by-size samples measured
+`[0.000400, 0.000496, 0.001597, 0.003208]` seconds and produced one `3.220x`
+adjacent ratio. The candidate was invalidated and its
+[hardening run 30292641952](https://github.com/plx/hdxl-uri-template/actions/runs/30292641952)
+was cancelled before evidence lanes started.
+
+The follow-up stabilization retains the four frozen input sizes,
+`[64, 32, 16, 8]` repetitions, five median samples, `3.0x` adjacent-ratio
+ceiling, and `1.25` fitted-exponent ceiling. It instead warms every input size
+and rotates configuration order across sample rounds. A short-lived
+process-wide load change can therefore no longer align every affected sample
+with only one size.
+
 ## Validation record
 
 All validation used Xcode's Swift 6.3 toolchain. The implementation revision
