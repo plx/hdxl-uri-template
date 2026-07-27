@@ -55,10 +55,11 @@ grep -F "case-seed=" "$qa03_temporary_directory/fuzz-replay.log"
 
 xcrun swift run HDXLURITemplateQA03 verify-scaling-detector \
   >"$qa03_temporary_directory/scaling-detector.json"
-grep -F '"passed" : false' \
-  "$qa03_temporary_directory/scaling-detector.json"
-grep -F '"fittedExponent" : 2' \
-  "$qa03_temporary_directory/scaling-detector.json"
+jq -e '
+  .passed == false
+  and .fittedExponent > 1.999999
+  and .fittedExponent < 2.000001
+' "$qa03_temporary_directory/scaling-detector.json" >/dev/null
 
 cat >"$qa03_temporary_directory/known-race.swift" <<'SWIFT'
 import Dispatch

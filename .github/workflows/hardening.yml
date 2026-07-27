@@ -102,6 +102,9 @@ jobs:
     env:
       QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-asan
       QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
 
     steps:
       - name: Checkout exact target
@@ -117,9 +120,9 @@ jobs:
           ./Scripts/record-qa-03-environment.sh \
             "$QA03_ARTIFACTS" \
             "$QA03_COMMIT" \
-            "${{ needs.validate.outputs.profile }}" \
-            "${{ needs.validate.outputs.seed }}" \
-            "${{ needs.validate.outputs.fuzz_iterations }}"
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
 
       - name: Run full suite under Address Sanitizer
         run: |
@@ -134,7 +137,7 @@ jobs:
           set -o pipefail
           /usr/bin/time -lp \
             xcrun swift run --sanitize address HDXLURITemplateQA03 fuzz \
-            --seed "${{ needs.validate.outputs.seed }}" \
+            --seed "$QA03_SEED" \
             --iterations 20000 \
             --fixtures Tests/HDXLURITemplateTests/Resources \
             >"$QA03_ARTIFACTS/fuzz-report.json" \
@@ -158,6 +161,9 @@ jobs:
     env:
       QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-tsan
       QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
 
     steps:
       - name: Checkout exact target
@@ -173,9 +179,9 @@ jobs:
           ./Scripts/record-qa-03-environment.sh \
             "$QA03_ARTIFACTS" \
             "$QA03_COMMIT" \
-            "${{ needs.validate.outputs.profile }}" \
-            "${{ needs.validate.outputs.seed }}" \
-            "${{ needs.validate.outputs.fuzz_iterations }}"
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
 
       - name: Run full suite under Thread Sanitizer
         run: |
@@ -212,6 +218,9 @@ jobs:
     env:
       QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-fuzz
       QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
 
     steps:
       - name: Checkout exact target
@@ -227,17 +236,17 @@ jobs:
           ./Scripts/record-qa-03-environment.sh \
             "$QA03_ARTIFACTS" \
             "$QA03_COMMIT" \
-            "${{ needs.validate.outputs.profile }}" \
-            "${{ needs.validate.outputs.seed }}" \
-            "${{ needs.validate.outputs.fuzz_iterations }}"
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
 
       - name: Run deterministic parser and value fuzz
         run: |
           set -o pipefail
           /usr/bin/time -lp \
             xcrun swift run -c release HDXLURITemplateQA03 fuzz \
-            --seed "${{ needs.validate.outputs.seed }}" \
-            --iterations "${{ needs.validate.outputs.fuzz_iterations }}" \
+            --seed "$QA03_SEED" \
+            --iterations "$QA03_FUZZ_ITERATIONS" \
             --fixtures Tests/HDXLURITemplateTests/Resources \
             >"$QA03_ARTIFACTS/fuzz-report.json" \
             2>"$QA03_ARTIFACTS/fuzz-resource-and-progress.log"
@@ -260,6 +269,9 @@ jobs:
     env:
       QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-scaling
       QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
 
     steps:
       - name: Checkout exact target
@@ -275,9 +287,9 @@ jobs:
           ./Scripts/record-qa-03-environment.sh \
             "$QA03_ARTIFACTS" \
             "$QA03_COMMIT" \
-            "${{ needs.validate.outputs.profile }}" \
-            "${{ needs.validate.outputs.seed }}" \
-            "${{ needs.validate.outputs.fuzz_iterations }}"
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
 
       - name: Measure frozen release scaling workloads
         run: |
@@ -307,6 +319,9 @@ jobs:
     env:
       QA03_ARTIFACTS: /tmp/hdxl-qa-03-${{ github.run_id }}-detectors
       QA03_COMMIT: ${{ needs.validate.outputs.target_sha }}
+      QA03_FUZZ_ITERATIONS: ${{ needs.validate.outputs.fuzz_iterations }}
+      QA03_PROFILE: ${{ needs.validate.outputs.profile }}
+      QA03_SEED: ${{ needs.validate.outputs.seed }}
 
     steps:
       - name: Checkout exact target
@@ -322,13 +337,11 @@ jobs:
           ./Scripts/record-qa-03-environment.sh \
             "$QA03_ARTIFACTS" \
             "$QA03_COMMIT" \
-            "${{ needs.validate.outputs.profile }}" \
-            "${{ needs.validate.outputs.seed }}" \
-            "${{ needs.validate.outputs.fuzz_iterations }}"
+            "$QA03_PROFILE" \
+            "$QA03_SEED" \
+            "$QA03_FUZZ_ITERATIONS"
 
       - name: Prove fuzz, scaling, and TSan detectors
-        env:
-          QA03_SEED: ${{ needs.validate.outputs.seed }}
         run: |
           set -o pipefail
           ./Scripts/test-qa-03-detectors.sh 2>&1 |
@@ -340,7 +353,7 @@ jobs:
           {
             echo "intentional QA-03 failure probe"
             echo "commit=$QA03_COMMIT"
-            echo "run-id=${{ github.run_id }}"
+            echo "run-id=$GITHUB_RUN_ID"
           } | tee "$QA03_ARTIFACTS/controlled-failure-probe.log"
           exit 86
 
