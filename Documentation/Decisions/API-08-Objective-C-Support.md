@@ -34,26 +34,26 @@ At decision time, the generated interface exposed three Objective-C symbols:
   enumeration, copying, and secure-coding operations; and
 - `HDXLURIVariableValueType`, as a closed `uint8_t` enum.
 
-That surface is not a usable facade for the package's core operation:
+That surface was not a usable facade for the package's core operation:
 
-- `HDXLURITemplate` has no expansion or evaluation API;
-- `initWithURITemplate:` returns `nil` through `try?` and discards the parse
+- `HDXLURITemplate` had no expansion or evaluation API;
+- `initWithURITemplate:` returned `nil` through `try?` and discarded the parse
   failure;
-- the dictionary initializer calls a comparator block `sortDescriptor:`;
-- ordered associations lose their ordering when projected to `NSDictionary`;
-- nullability and callback-pointer safety depend on Objective-C callers
+- the dictionary initializer called a comparator block `sortDescriptor:`;
+- ordered associations lost their ordering when projected to `NSDictionary`;
+- nullability and callback-pointer safety depended on Objective-C callers
   honoring the generated Swift bridge contract; and
-- secure archives delegate to private Swift `Codable` schemas whose
-  compatibility is not an intentional public contract.
+- secure archives delegated to private Swift `Codable` schemas whose
+  compatibility was not an intentional public contract.
 
-The two wrapper source files contain 438 physical lines. Supporting them would
-also require a permanent second public contract for selectors, nullability,
-Foundation collections, `NSError`, copying, secure coding, archive migration,
-and Swift/Clang agreement across future semantic changes.
+The two wrapper source files contained 438 physical lines. Supporting them
+would also have required a permanent second public contract for selectors,
+nullability, Foundation collections, `NSError`, copying, secure coding, archive
+migration, and Swift/Clang agreement across future semantic changes.
 
-The repository identifies no actual or committed Objective-C consumer. The
-project's origin as a recreation of private Objective-C work is provenance, not
-evidence of current demand.
+The repository identified no actual or committed Objective-C consumer. The
+project's origin as a recreation of private Objective-C work was provenance,
+not evidence of current demand.
 
 A real `.m` test fixture existed during the decision review, so the earlier
 absolute claim that there was no Objective-C caller was stale. The fixture
@@ -64,10 +64,10 @@ unsupported facade.
 
 ## Rationale and tradeoff
 
-Removing the incomplete facade before the first release produces one coherent,
-fully usable Swift contract. It avoids implying support for a bridge that
-cannot perform expansion and avoids freezing accidental selectors and archive
-schemas.
+Removing the incomplete facade before the first release produced one coherent,
+fully usable Swift contract. It avoided implying support for a bridge that
+could not perform expansion and avoided freezing accidental selectors and
+archive schemas.
 
 Retaining the facade was a defensible alternative because the package was
 Apple-only, its core Swift API was small, the wrapper code already existed, and
@@ -75,10 +75,10 @@ a SwiftPM Objective-C test target built. Retention would have become preferable
 if a named current or committed consumer had required it. No such consumer or
 compatibility horizon was identified.
 
-Removal can inconvenience an unrecorded private Objective-C caller and can make
-existing wrapper archives unreadable once the wrappers disappear. That cost is
-accepted for the pre-release contract. The package does not promise migration
-of wrapper objects or archives.
+Removal may inconvenience an unrecorded private Objective-C caller and may make
+previously created wrapper archives unreadable now that the wrappers are
+absent. That cost remains accepted for the pre-release contract. The package
+does not promise migration of wrapper objects or archives.
 
 ## Removal contract
 
