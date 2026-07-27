@@ -125,6 +125,7 @@ private func expansionThrowingBoundaryIsNarrow() throws {
     ).evaluate(parameters: parameters)
   }
 
+  // These closures are intentionally not invoked; passing them pins only their typed-throws signatures.
   requireExpansionErrorSignature(evaluateValue)
   requireExpansionErrorSignature(evaluateVariable)
   requireExpansionErrorSignature(evaluateVariableIfDefined)
