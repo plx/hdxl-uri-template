@@ -91,38 +91,6 @@ struct MalformedAssociationPair: Encodable {
   let value: String
 }
 
-@objc(HDXLMalformedAssociationArchiveProxy)
-final class MalformedAssociationArchiveProxy:
-  NSObject,
-  NSSecureCoding {
-
-  static var supportsSecureCoding: Bool {
-    true
-  }
-
-  required init?(coder: NSCoder) {
-    nil
-  }
-
-  override init() {
-    super.init()
-  }
-
-  func encode(with coder: NSCoder) {
-    guard let archiver = coder as? NSKeyedArchiver else {
-      return
-    }
-    do {
-      try archiver.encodeEncodable(
-        MalformedAssociationValuePayload(),
-        forKey: "variableValue"
-      )
-    } catch {
-      coder.failWithError(error)
-    }
-  }
-}
-
 struct AssociationProbeGenerator {
   var state: UInt64
 

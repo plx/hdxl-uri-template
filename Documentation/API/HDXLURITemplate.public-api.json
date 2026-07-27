@@ -1,5 +1,10 @@
 {
   "module": "HDXLURITemplate",
+  "forbiddenObjectiveCDeclarations": [
+    "@interface HDXLURITemplate :",
+    "@interface HDXLURIVariableValue :",
+    "HDXLURIVariableValueType"
+  ],
   "declarations": [
     {
       "path": [

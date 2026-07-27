@@ -1,6 +1,7 @@
 # HDXLURITemplate
 
-Port of (private) Objective-C implementation of URI templates.
+Swift implementation of URI templates, derived from an earlier private
+Objective-C implementation.
 
 ## Supported environments
 
@@ -11,6 +12,23 @@ later, visionOS 26 or later, and Mac Catalyst 26 or later.
 Older Swift toolchains, older Apple OS releases, and non-Apple platforms,
 including Linux, are intentionally unsupported. This deliberately narrow floor
 is the package's maintained compatibility contract.
+
+## Objective-C support
+
+The initial `0.x` contract is Swift-only. Importing or using this package from
+Objective-C is unsupported. The pre-release `HDXLURITemplate` and
+`HDXLURIVariableValue` wrapper classes and the `HDXLURIVariableValueType`
+Objective-C enum were removed before the first supported release contract;
+their selectors, binary interface, and `NSCoding`/`NSSecureCoding` archives
+have no compatibility or migration guarantee.
+
+Migrate wrapper construction and inspection to native Swift:
+
+- use `URITemplate.init(parsing:)`, `templateRepresentation`,
+  `variableNames`, and `evaluate`/`evaluateAsString`;
+- use `URIVariableValue.undefined`, `text`, `list`, and `association`; and
+- use `URIVariableValue.valueType` and the `is…Value` properties for supported
+  value inspection.
 
 ## Build and test
 

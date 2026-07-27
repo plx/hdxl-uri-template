@@ -211,44 +211,6 @@ private func associationDecodingRejectsDuplicateKeys() throws {
   }
 }
 
-@Test("Malformed secure archives cannot bypass association validation")
-private func malformedSecureArchiveCannotBypassAssociationValidation() throws {
-  let archiver = NSKeyedArchiver(requiringSecureCoding: true)
-  archiver.setClassName(
-    NSStringFromClass(URIVariableValueWrapper.self),
-    for: MalformedAssociationArchiveProxy.self
-  )
-  archiver.encode(
-    MalformedAssociationArchiveProxy(),
-    forKey: NSKeyedArchiveRootObjectKey
-  )
-  archiver.finishEncoding()
-
-  let unarchiver = try NSKeyedUnarchiver(
-    forReadingFrom: archiver.encodedData
-  )
-  unarchiver.requiresSecureCoding = true
-  let decoded = unarchiver.decodeObject(
-    of: URIVariableValueWrapper.self,
-    forKey: NSKeyedArchiveRootObjectKey
-  )
-  unarchiver.finishDecoding()
-
-  #expect(decoded == nil)
-  let error = try #require(unarchiver.error) as NSError
-  #expect(
-    error.domain
-      == URIVariableValue.AssociationError.errorDomain
-  )
-  #expect(error.code == 1)
-  let diagnostic = error.description
-    + error.userInfo.description
-  #expect(
-    !diagnostic
-      .contains("private")
-  )
-}
-
 @Test("Large and seeded association inputs preserve the invariant")
 private func largeAndSeededAssociationInputsPreserveInvariant() throws {
   let largePairs = (0..<10_000).map {

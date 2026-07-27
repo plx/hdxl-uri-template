@@ -22,6 +22,12 @@ import Foundation
 /// - note: Deserialization throws `AssociationError` for duplicate association
 ///   keys and `DataValidationError` for other invalid stored values.
 ///
+/// - Important: This package's initial contract is Swift-only. Code that used
+///   the removed `HDXLURIVariableValue` wrapper should migrate to
+///   ``undefined``, ``text(_:)``, ``list(_:)``, and the `association`
+///   factories, then inspect the native value through ``valueType`` and the
+///   `is…Value` properties. Archives of the removed wrapper are not supported.
+///
 public struct URIVariableValue {
 
   // ------------------------------------------------------------------------ //

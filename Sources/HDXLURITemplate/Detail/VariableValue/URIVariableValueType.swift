@@ -1,5 +1,3 @@
-import Foundation
-
 // -------------------------------------------------------------------------- //
 // MARK: URIVariableValueType - Definition
 // -------------------------------------------------------------------------- //
@@ -8,10 +6,8 @@ import Foundation
 /// `text` (simple string), `list` (of simple strings), or `association` (*ordered* list
 /// of key-value pairs).
 ///
-/// Made public and compatible with Objective-C so as to faciliate use of this
-/// package's functionality from Objective-C code.
-///
-@objc(HDXLURIVariableValueType)
+/// This is a native Swift value. The package does not expose an Objective-C
+/// facade.
 public enum URIVariableValueType : UInt8 {
   
   case undefined = 1

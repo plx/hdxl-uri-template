@@ -79,18 +79,6 @@ private func copiesAndEvaluationRetainSource() throws {
   )
 }
 
-@Test("Objective-C wrapper forwards the exact source")
-private func objectiveCWrapperForwardsExactSource() throws {
-  let source = "cafe\u{301}/%2f{?x,y}"
-  let wrapper = try #require(
-    URITemplateWrapper(templateString: source)
-  )
-
-  #expect(
-    wrapper.templateRepresentation.utf8.elementsEqual(source.utf8)
-  )
-}
-
 private func verifyExactSourceRoundTrip(
   source: String,
   parameters: [String: URIVariableValue]

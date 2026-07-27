@@ -70,24 +70,3 @@ private func publicAssociationAPIsPreserveValidBehavior() throws {
   )
   #expect(decoded == orderedValue)
 }
-
-@Test("The public Swift Objective-C wrapper initializer throws on mismatch")
-private func publicWrapperInitializerRejectsMismatchedCounts() {
-  do {
-    _ = try URIVariableValueWrapper(
-      keys: ["private-key"],
-      values: []
-    )
-    Issue.record("Expected mismatched association counts to throw.")
-  } catch let error as URIVariableValue.AssociationError {
-    #expect(
-      error == .mismatchedKeyValueCounts(
-        keyCount: 1,
-        valueCount: 0
-      )
-    )
-    #expect(!String(reflecting: error).contains("private"))
-  } catch {
-    Issue.record("Unexpected public association error: \(error)")
-  }
-}

@@ -15,6 +15,12 @@ import Foundation
 /// class-backed storage. The parsed source and components are immutable; the
 /// storage class coordinates lazy caches for frequently-used derived values.
 ///
+/// - Important: This package's initial contract is Swift-only. Code that used
+///   the removed `HDXLURITemplate` wrapper should migrate to
+///   ``init(parsing:)``, ``templateRepresentation``, ``variableNames``, and
+///   the native evaluation APIs. Archives of the removed wrapper are not a
+///   supported persistence format.
+///
 public struct URITemplate {
   
   @usableFromInline
