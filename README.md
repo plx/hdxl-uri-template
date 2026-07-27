@@ -42,6 +42,10 @@ sensitive data. Variable names can also be sensitive; they are omitted from
 default text and exposed only through deliberate structured access such as
 `failingVariableName`.
 
+Raw `Mirror` child enumeration is deliberate programmatic introspection, not
+a default error representation, and can expose the same retained recovery
+context. Treat mirrored children as sensitive and do not log them by default.
+
 For routine logging, use the localized description or the payload-free
 evaluation category:
 
