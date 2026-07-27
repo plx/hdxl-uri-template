@@ -11,9 +11,8 @@ import Foundation
 /// 1. to make it trivial to preserve the internal state (e.g. maintain the invariants)
 /// 2. to keep the internal types internal (implementation uses `newtype`-like types--making them public would be "noisy")
 ///
-/// Despite being immutable, it is currently implemented as a struct wrapping
-/// class-backed storage. The parsed source and components are immutable; the
-/// storage class coordinates lazy caches for frequently-used derived values.
+/// Its parsed source, components, and derived variable metadata are all
+/// immutable and initialized together.
 ///
 /// - Important: This package's initial contract is Swift-only. Code that used
 ///   the removed `HDXLURITemplate` wrapper should migrate to
@@ -24,7 +23,7 @@ import Foundation
 public struct URITemplate {
 
   @usableFromInline
-  internal var storage: URITemplateStorage
+  internal let storage: URITemplateStorage
 
   @inlinable
   internal init(storage: URITemplateStorage) {

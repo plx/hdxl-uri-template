@@ -128,8 +128,6 @@ private func manualStorageAndComponentCoverage() throws {
   // explicitly.
   let emptyStorage = try URITemplateStorage(parsing: "")
   #expect(emptyStorage.templateRepresentation == "")
-  #expect(emptyStorage.templateVariables.isEmpty)
-  #expect(emptyStorage.templateVariablesNames.isEmpty)
   #expect(emptyStorage.variableNames.isEmpty)
   #expect(emptyStorage.isValid)
 
@@ -142,8 +140,6 @@ private func manualStorageAndComponentCoverage() throws {
   let storage = try URITemplateStorage(parsing: "prefix{/id}")
 
   #expect(storage.templateRepresentation == "prefix{/id}")
-  #expect(storage.templateVariables == [variable])
-  #expect(storage.templateVariablesNames == [variable.variableName])
   #expect(storage.variableNames == ["id"])
   #expect(storage.description.contains("prefix{/id}"))
   #expect(storage.debugDescription.contains("URITemplateStorage"))
@@ -214,7 +210,6 @@ private func propertyStorageAndComponentCoverage() throws {
 
     var injected: Set<URITemplateVariable> = []
     component.injectTemplateVariables(into: &injected)
-    #expect(storage.templateVariables == injected)
     #expect(storage.variableNames == Set(injected.map(\.variableName.rawValue)))
   }
 

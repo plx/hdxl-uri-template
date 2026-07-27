@@ -30,6 +30,11 @@ There are no published versions yet.
 
 ### Changed
 
+- Changed `URITemplate` storage to one immutable, compiler-checked `Sendable`
+  reference initialized with parsed components, exact source, and variable
+  names. Warm metadata reads no longer mutate lazy caches or acquire an unfair
+  lock, while the measured reference representation preserves the existing
+  eight-byte value size and cheap-copy behavior.
 - Changed `URITemplate` encoding to a single validated template-source string.
   Decoding reparses that source through the public grammar; historical
   private-AST payloads are intentionally unsupported and require migration

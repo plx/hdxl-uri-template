@@ -9,6 +9,7 @@ struct PublicAPIConsumer {
     try publicPrefixExample()
     try publicErrorExamples()
     try publicTemplateCodableExamples()
+    try publicImmutableTemplateCopyExample()
     try await publicConcurrencyExample()
 
     let template = try URITemplate(

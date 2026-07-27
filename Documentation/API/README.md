@@ -22,9 +22,11 @@ Foundation bridging approved in
 The same command builds and runs `Tests/PublicAPIConsumer` as a separate
 package. That fixture cannot access `internal` or `package` declarations. It
 exercises documented parsing and expansion, typed Swift and Foundation error
-bridging, all runtime value flavors, `URITemplate.Codable`, and concurrent use
-of a shared `Sendable` template. The symbol graph forbids `Encodable` and
-`Decodable` on `URIVariableValue` and `URIVariableValueType` under the approved
+bridging, all runtime value flavors, `URITemplate.Codable`, immutable template
+copies, and concurrent representation, metadata, equality, hashing, and
+expansion reads from one shared `Sendable` template. The symbol graph forbids
+`Encodable` and `Decodable` on `URIVariableValue` and
+`URIVariableValueType` under the approved
 [API-06 decision](../Decisions/API-06-URIVariableValue-Codable.md).
 
 The check also evaluates the README SwiftPM manifest and requires the two

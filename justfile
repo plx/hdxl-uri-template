@@ -37,6 +37,9 @@ test-release:
 check-public-api:
     {{ swift }} Scripts/check-public-api.swift
 
+check-immutable-template-storage:
+    {{ swift }} Scripts/check-immutable-template-storage.swift
+
 check-pinned-fixtures:
     ./Scripts/check-pinned-fixtures.sh
 
@@ -54,6 +57,9 @@ qa-03-smoke:
 qa-03-detectors:
     ./Scripts/test-qa-03-detectors.sh
 
-test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-public-api test-debug test-heavy-debug test-release
+test-all: check-pinned-fixtures test-check-pinned-fixtures test-warning-guard check-public-api check-immutable-template-storage test-debug test-heavy-debug test-release
 
 check-clean-output: build-debug test-debug build-heavy-debug test-heavy-debug build-release test-release
+
+arch-01-benchmark label commit:
+    {{ swift }} run -c release HDXLURITemplateARCH01Benchmark --label {{ label }} --commit {{ commit }}
