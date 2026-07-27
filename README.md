@@ -41,12 +41,13 @@ Treat templates and values from outside your trust boundary as untrusted:
   delimiters is intentional.
 
 Parse and evaluation errors have bounded, payload-free default descriptions.
-Their explicit recovery properties—including `template`, `parameters`,
-`underlyingError`, and `failingVariableName`—can contain sensitive data.
-Descriptions of `URITemplate` and `URIVariableValue`, and raw `Mirror`
-inspection, can also expose source or values. Do not log that recovery context
-without an application-specific privacy policy; use
-`EvaluationError.kind.description` for a payload-free category.
+Their explicit recovery properties—including `ParseError.template` and
+`EvaluationError.template`, `parameters`, `underlyingError`, and
+`failingVariableName`—can contain sensitive data. Descriptions of
+`URITemplate` and `URIVariableValue`, and raw `Mirror` inspection, can also
+expose source or values. Do not log that recovery context without an
+application-specific privacy policy. Use `ParseError.kind` and
+`EvaluationError.kind` for payload-free categories.
 
 Report suspected vulnerabilities through the repository's
 [private vulnerability-reporting form](https://github.com/plx/hdxl-uri-template/security/advisories),
@@ -217,7 +218,9 @@ association is invalid and throws an `EvaluationError` whose kind is
 The public API keeps three failure stages distinct:
 
 1. `URITemplate.init(parsing:)` throws `URITemplate.ParseError` when source is
-   not valid URI-template syntax.
+   not valid URI-template syntax. Its `kind` is a stable semantic category and
+   its half-open `sourceRange` locates the failure in `template` using UTF-8
+   byte offsets. A zero-length range is an insertion point.
 2. `evaluateAsString(parameters:)` throws `URITemplate.EvaluationError` when a
    parsed expression cannot be expanded, such as a prefix modifier applied to
    a list or association.
@@ -228,6 +231,8 @@ The public API keeps three failure stages distinct:
 Successful string expansion is not proof that the result is an authorized,
 absolute, or network-safe URL. Inspect `.kind` for a payload-free category and
 access the retained recovery context only when the application needs it.
+The complete parse-diagnostic and decoding contract is recorded in
+[API-05](Documentation/Decisions/API-05-Structured-Parse-Diagnostics.md).
 
 ## RFC 6570 conformance
 

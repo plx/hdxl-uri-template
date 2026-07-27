@@ -1,5 +1,6 @@
 import Foundation
 import Testing
+
 @testable import HDXLURITemplate
 
 extension Tag {
@@ -19,17 +20,23 @@ private func manualParsingCoverage() throws {
   #expect(components.map(\.templateRepresentation) == ["pre", "{a}"])
 
   #expect(try "".identifyURITemplateChunkRanges().isEmpty)
-  #expect(throws: String.URITemplateChunkingError.self) {
-    _ = try "{}".identifyURITemplateChunkRanges()
-  }
-  #expect(throws: String.URITemplateChunkingError.self) {
-    _ = try "{a{b}".identifyURITemplateChunkRanges()
-  }
-  #expect(throws: String.URITemplateChunkingError.self) {
-    _ = try "a}".identifyURITemplateChunkRanges()
-  }
-  #expect(throws: String.URITemplateChunkingError.self) {
-    _ = try "{a".identifyURITemplateChunkRanges()
+  let chunkingFailures: [(String, URITemplate.ParseError.Kind)] = [
+    ("{}", .emptyExpression),
+    ("{a{b}", .unexpectedOpeningBrace),
+    ("a}", .unexpectedClosingBrace),
+    ("{a", .unterminatedExpression),
+  ]
+  for (source, expectedKind) in chunkingFailures {
+    do {
+      _ = try source.identifyURITemplateChunkRanges()
+      Issue.record("Expected chunking to reject \(source).")
+    } catch let diagnostic as URITemplateSourceDiagnostic {
+      #expect(diagnostic.kind == expectedKind)
+    } catch {
+      Issue.record(
+        "Expected URITemplateSourceDiagnostic for \(source)."
+      )
+    }
   }
 
   // These examples separate each parser layer's empty and invalid-content cases so failures identify the responsible grammar.
@@ -120,7 +127,7 @@ private func manualExpansionSupportCoverage() throws {
     (.pathSegment, false, false, "", "/", "/", "/"),
     (.pathParameter, false, false, "", ";", ";", ";"),
     (.query, true, false, "=", "?", "&", "?"),
-    (.queryContinuation, true, false, "=", "&", "&", "&")
+    (.queryContinuation, true, false, "=", "&", "&", "&"),
   ]
 
   for (type, isQuery, allowsTriplets, emptySuffix, prefix, separator, format) in expected {
@@ -131,7 +138,9 @@ private func manualExpansionSupportCoverage() throws {
     #expect(type.separatorForExpandedVariableList == separator)
     #expect(type.formatString == format)
     #expect(URIValueExpansionType(formatString: format) == type)
-    #expect(CharacterSet.allowedCharacters(forValueExpansionType: type).isSuperset(of: rfc_unreserved))
+    #expect(
+      CharacterSet.allowedCharacters(forValueExpansionType: type).isSuperset(of: rfc_unreserved)
+    )
   }
   #expect(URIValueExpansionType(formatString: "!") == nil)
 
@@ -200,45 +209,126 @@ private func manualVariableExpansionCoverage() throws {
   let name = URITemplateVariableName(rawValue: "name")
   let text = URIVariableTextValue(rawValue: "hello/world")
   #expect(try text.escapedContents(expansionType: .simple) == "hello%2Fworld")
-  #expect(try text.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified) == "hello%2Fworld")
-  #expect(try text.expansion(expansionType: .query, variableName: name, expansionModifier: .prefix(5)) == "name=hello")
-  #expect(try URIVariableTextValue(rawValue: "").expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified) == "name=")
+  #expect(
+    try text.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified)
+      == "hello%2Fworld"
+  )
+  #expect(
+    try text.expansion(expansionType: .query, variableName: name, expansionModifier: .prefix(5))
+      == "name=hello"
+  )
+  #expect(
+    try URIVariableTextValue(rawValue: "").expansion(
+      expansionType: .query,
+      variableName: name,
+      expansionModifier: .unmodified
+    ) == "name="
+  )
   #expect(text.effectiveVariableValue(forExpansionModifier: .explode) == "hello/world")
   #expect(text.effectiveVariableValue(forExpansionModifier: .prefix(5)) == "hello")
 
   // List and association expansion have distinct exploded/unexploded rules across path, parameter, and query operators.
   let list = URIVariableListValue(strings: ["red", "", "blue"])
-  #expect(try list.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified) == "red,,blue")
-  #expect(try list.expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified) == "name=red,,blue")
-  #expect(try list.expansion(expansionType: .pathParameter, variableName: name, expansionModifier: .explode) == "name=red;name;name=blue")
-  #expect(try URIVariableListValue().expansion(expansionType: .query, variableName: name, expansionModifier: .explode) == "")
+  #expect(
+    try list.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified)
+      == "red,,blue"
+  )
+  #expect(
+    try list.expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified)
+      == "name=red,,blue"
+  )
+  #expect(
+    try list.expansion(
+      expansionType: .pathParameter,
+      variableName: name,
+      expansionModifier: .explode
+    ) == "name=red;name;name=blue"
+  )
+  #expect(
+    try URIVariableListValue().expansion(
+      expansionType: .query,
+      variableName: name,
+      expansionModifier: .explode
+    ) == ""
+  )
 
   let association = try URIVariableAssociationValue(
     validatingStrings: [("a", "1"), ("b", ""), ("c", "3")]
   )
-  #expect(try association.expansion(expansionType: .simple, variableName: name, expansionModifier: .unmodified) == "a,1,b,,c,3")
-  #expect(try association.expansion(expansionType: .query, variableName: name, expansionModifier: .unmodified) == "name=a,1,b,,c,3")
-  #expect(try association.expansion(expansionType: .query, variableName: name, expansionModifier: .explode) == "a=1&b=&c=3")
-  #expect(try association.expansion(expansionType: .pathParameter, variableName: name, expansionModifier: .explode) == "a=1;b;c=3")
-  #expect(try URIVariableAssociationValue().expansion(expansionType: .query, variableName: name, expansionModifier: .explode) == "")
+  #expect(
+    try association.expansion(
+      expansionType: .simple,
+      variableName: name,
+      expansionModifier: .unmodified
+    ) == "a,1,b,,c,3"
+  )
+  #expect(
+    try association.expansion(
+      expansionType: .query,
+      variableName: name,
+      expansionModifier: .unmodified
+    ) == "name=a,1,b,,c,3"
+  )
+  #expect(
+    try association.expansion(
+      expansionType: .query,
+      variableName: name,
+      expansionModifier: .explode
+    ) == "a=1&b=&c=3"
+  )
+  #expect(
+    try association.expansion(
+      expansionType: .pathParameter,
+      variableName: name,
+      expansionModifier: .explode
+    ) == "a=1;b;c=3"
+  )
+  #expect(
+    try URIVariableAssociationValue().expansion(
+      expansionType: .query,
+      variableName: name,
+      expansionModifier: .explode
+    ) == ""
+  )
 
   let variable = URITemplateVariable(variableName: name, expansionModifier: .unmodified)
   let parameters: [String: URIVariableValue] = [
     "name": .text("value"),
-    "emptyList": .emptyList
+    "emptyList": .emptyList,
   ]
   #expect(try variable.evaluate(parameters: parameters, expansionType: .simple) == "value")
-  #expect(try URITemplateVariable(parsing: "missing").evaluate(parameters: parameters, expansionType: .simple) == "")
-  #expect(try URITemplateVariable(parsing: "emptyList").evaluateIfDefined(parameters: parameters, expansionType: .simple) == nil)
+  #expect(
+    try URITemplateVariable(parsing: "missing").evaluate(
+      parameters: parameters,
+      expansionType: .simple
+    ) == ""
+  )
+  #expect(
+    try URITemplateVariable(parsing: "emptyList").evaluateIfDefined(
+      parameters: parameters,
+      expansionType: .simple
+    ) == nil
+  )
 
   let value = try URIVariableValue.association([("a", "1")])
   #expect(try value.evaluate(expansionType: .query, templateVariable: variable) == "name=a,1")
-  #expect(try URIVariableValue.undefined.evaluate(expansionType: .query, templateVariable: variable) == "")
+  #expect(
+    try URIVariableValue.undefined.evaluate(expansionType: .query, templateVariable: variable) == ""
+  )
 
   // Error descriptions are part of the diagnostics contract, even though escaping failure is rare for valid Swift strings.
-  #expect(URIVariableTextValue.ExpansionError.unableToEscapeTextValue("x", .simple).localizedDescription.contains("Unable to escape text"))
-  #expect(URIVariableTextValue.ExpansionError.unableToEscapeVariableName("x", .query).localizedDescription.contains("Unable to escape variable-name"))
-  #expect(URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("x", "v", .query, .explode).localizedDescription.contains("Unable to escape"))
+  #expect(
+    URIVariableTextValue.ExpansionError.unableToEscapeTextValue("x", .simple).localizedDescription
+      .contains("Unable to escape text")
+  )
+  #expect(
+    URIVariableTextValue.ExpansionError.unableToEscapeVariableName("x", .query).localizedDescription
+      .contains("Unable to escape variable-name")
+  )
+  #expect(
+    URIVariableTextValue.ExpansionError.unableToEscapeVariableValue("x", "v", .query, .explode)
+      .localizedDescription.contains("Unable to escape")
+  )
 }
 
 @Test(
@@ -268,7 +358,12 @@ private func propertyVariableExpansionCoverage() throws {
     }
 
     let list = URIVariableListValue(strings: values)
-    #expect(try list.expansion(expansionType: expansionType, templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)).isEmpty == false)
+    #expect(
+      try list.expansion(
+        expansionType: expansionType,
+        templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)
+      ).isEmpty == false
+    )
     #expect(throws: URIVariableValue.ExpansionError.self) {
       _ = try URIVariableValue.list(values).evaluate(
         expansionType: expansionType,
@@ -282,7 +377,12 @@ private func propertyVariableExpansionCoverage() throws {
     let association = try URIVariableAssociationValue(
       validatingStrings: [("a", "1"), ("b", "2")]
     )
-    #expect(try association.expansion(expansionType: expansionType, templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)).isEmpty == false)
+    #expect(
+      try association.expansion(
+        expansionType: expansionType,
+        templateVariable: URITemplateVariable(variableName: name, expansionModifier: .explode)
+      ).isEmpty == false
+    )
     #expect(throws: URIVariableValue.ExpansionError.self) {
       _ = try URIVariableValue.association(
         key: "a",

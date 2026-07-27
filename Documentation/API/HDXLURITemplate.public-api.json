@@ -5,6 +5,11 @@
     "@interface HDXLURIVariableValue :",
     "HDXLURIVariableValueType"
   ],
+  "forbiddenDeclarations": [
+    [
+      "DataValidationError"
+    ]
+  ],
   "declarations": [
     {
       "path": [
@@ -61,6 +66,35 @@
       "forbiddenMembers": [
         "<(_:_:)"
       ]
+    },
+    {
+      "path": [
+        "URITemplate",
+        "ParseError"
+      ],
+      "requiredConformances": [
+        "Foundation.LocalizedError",
+        "Swift.Error",
+        "Swift.Sendable"
+      ],
+      "forbiddenConformances": [],
+      "forbiddenMembers": [
+        "underlyingError"
+      ]
+    },
+    {
+      "path": [
+        "URITemplate",
+        "ParseError",
+        "Kind"
+      ],
+      "requiredConformances": [
+        "Swift.CaseIterable",
+        "Swift.RawRepresentable",
+        "Swift.Sendable"
+      ],
+      "forbiddenConformances": [],
+      "forbiddenMembers": []
     }
   ]
 }

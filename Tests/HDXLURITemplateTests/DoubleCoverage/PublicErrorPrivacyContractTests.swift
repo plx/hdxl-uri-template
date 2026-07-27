@@ -128,11 +128,8 @@ private func parseErrorDefaultDiagnosticsRedactSourceText(
       for: error,
       excluding: probe.sentinels
     )
-    verifySafeDefaultDiagnostics(
-      for: error.underlyingError,
-      labelPrefix: "underlying parse error",
-      excluding: probe.sentinels
-    )
+    #expect(error.failureReason?.isEmpty == false)
+    #expect(error.sourceRange.upperBound <= probe.source.utf8.count)
   } catch {
     Issue.record("Expected URITemplate.ParseError.")
   }

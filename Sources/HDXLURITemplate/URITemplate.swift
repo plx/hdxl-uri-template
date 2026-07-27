@@ -22,23 +22,23 @@ import Foundation
 ///   supported persistence format.
 ///
 public struct URITemplate {
-  
+
   @usableFromInline
   internal var storage: URITemplateStorage
-  
+
   @inlinable
   internal init(storage: URITemplateStorage) {
-#if HEAVY_DEBUG
-    pedanticAssert(storage.isValid)
-    defer { pedanticAssert(storage.isValid) }
-#endif
+    #if HEAVY_DEBUG
+      pedanticAssert(storage.isValid)
+      defer { pedanticAssert(storage.isValid) }
+    #endif
     self.storage = storage
   }
 
   // ------------------------------------------------------------------------ //
   // MARK: Initialization
   // ------------------------------------------------------------------------ //
-  
+
   /// Public initializer, constructs a template by parsing a template string.
   ///
   /// - parameter template: A string containing a URI template.
@@ -48,28 +48,43 @@ public struct URITemplate {
   ///
   @inlinable
   public init(parsing template: String) throws {
+    self.init(
+      storage: try Self.parsedStorage(from: template)
+    )
+  }
+
+  @usableFromInline
+  internal static func parsedStorage(
+    from template: String
+  ) throws -> URITemplateStorage {
     do {
-      self.init(
-        storage: try URITemplateStorage(parsing: template)
-      )
-    }
-    catch let underlyingError {
+      return try URITemplateStorage(parsing: template)
+    } catch let diagnostic as URITemplateSourceDiagnostic {
       throw ParseError(
         template: template,
-        underlyingError: underlyingError
+        kind: diagnostic.kind,
+        sourceRange: template.utf8OffsetRange(
+          for: diagnostic.sourceRange
+        )
+      )
+    } catch {
+      throw ParseError(
+        template: template,
+        kind: .other,
+        sourceRange: 0..<template.utf8.count
       )
     }
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplate - Equatable
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : Sendable { }
-extension URITemplate : Equatable { }
-extension URITemplate : Hashable { }
+extension URITemplate: Sendable {}
+extension URITemplate: Equatable {}
+extension URITemplate: Hashable {}
 
 // -------------------------------------------------------------------------- //
 // MARK: URITemplate - Codable
@@ -116,27 +131,28 @@ extension URITemplate: Codable {
 // MARK: - CustomStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : CustomStringConvertible {
-  
+extension URITemplate: CustomStringConvertible {
+
+  /// A representation of this template suitable for diagnostic display.
   @inlinable
   public var description: String {
     storage.description
   }
-  
-}
 
+}
 
 // -------------------------------------------------------------------------- //
 // MARK: - CustomDebugStringConvertible
 // -------------------------------------------------------------------------- //
 
-extension URITemplate : CustomDebugStringConvertible {
-  
+extension URITemplate: CustomDebugStringConvertible {
+
+  /// A detailed representation of this template suitable for debugging.
   @inlinable
   public var debugDescription: String {
     "URITemplate(storage: \(String(reflecting: storage))) ('\(templateRepresentation)')"
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -144,12 +160,13 @@ extension URITemplate : CustomDebugStringConvertible {
 // -------------------------------------------------------------------------- //
 
 extension URITemplate {
-  
+
+  /// Whether the template's internal state satisfies all invariants.
   @inlinable
   public var isValid: Bool {
     storage.isValid
   }
-  
+
 }
 
 // -------------------------------------------------------------------------- //
@@ -157,7 +174,7 @@ extension URITemplate {
 // -------------------------------------------------------------------------- //
 
 extension URITemplate {
-  
+
   /// Returns the exact validated source string from which this template was
   /// parsed.
   ///
@@ -167,11 +184,11 @@ extension URITemplate {
   public var templateRepresentation: String {
     storage.templateRepresentation
   }
-  
+
   /// The names of the variables within the template (as `String`s).
   @inlinable
   public var variableNames: Set<String> {
     storage.variableNames
   }
-  
+
 }

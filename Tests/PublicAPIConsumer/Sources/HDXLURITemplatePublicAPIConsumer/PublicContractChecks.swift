@@ -23,9 +23,15 @@ func publicErrorExamples() throws {
     let foundationError = erasedError as NSError
 
     precondition(recoveredError?.template == malformedTemplate)
+    precondition(recoveredError?.kind == .unterminatedExpression)
+    precondition(recoveredError?.sourceRange == 1..<1)
     precondition(
       foundationError.localizedDescription
         == "The URI template could not be parsed."
+    )
+    precondition(
+      foundationError.localizedFailureReason
+        == "An expression is missing its closing brace."
     )
   }
 

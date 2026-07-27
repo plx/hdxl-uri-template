@@ -29,22 +29,6 @@ extension RedactedDiagnosticError {
   }
 }
 
-extension String.URITemplateChunkingError: RedactedDiagnosticError {
-  @usableFromInline
-  internal var redactedDiagnosticDescription: String {
-    switch self {
-    case .emptyVariableChunk:
-      "The URI template contains an empty expression."
-    case .strayOpenBracketWithinVariableChunk:
-      "The URI template expression contains an unexpected opening brace."
-    case .unexpectedCloseBracketWithinLiteralChunk:
-      "The URI template literal contains an unexpected closing brace."
-    case .endedWithUnterminatedVariableClause:
-      "The URI template contains an unterminated expression."
-    }
-  }
-}
-
 extension URITemplateExpressionComponent.ParseError:
   RedactedDiagnosticError
 {

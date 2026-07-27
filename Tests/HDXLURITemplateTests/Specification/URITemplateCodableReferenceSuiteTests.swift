@@ -211,6 +211,10 @@ private func verifyRejectedParserInput(
         directParseError.template.utf8
       )
     )
+    #expect(decodingParseError.kind == directParseError.kind)
+    #expect(
+      decodingParseError.sourceRange == directParseError.sourceRange
+    )
   } catch {
     Issue.record(
       """

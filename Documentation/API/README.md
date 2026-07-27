@@ -12,6 +12,13 @@ compares selected conformances and members against
 protects explicit API decisions without treating every symbol-graph detail as a
 permanent compatibility promise.
 
+The checked Swift contract includes `URITemplate.ParseError`, its nested
+structured `Kind`, and the deliberate absence of both
+`ParseError.underlyingError` and `DataValidationError`. Public-only tests lock
+the semantic categories, UTF-8 ranges, Codable propagation, and privacy-safe
+Foundation bridging approved in
+[API-05](../Decisions/API-05-Structured-Parse-Diagnostics.md).
+
 The same command builds and runs `Tests/PublicAPIConsumer` as a separate
 package. That fixture cannot access `internal` or `package` declarations. It
 exercises documented parsing and expansion, typed Swift and Foundation error
